@@ -1,5 +1,6 @@
+package blackjack.deck;
+
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
@@ -7,21 +8,13 @@ public class Deck {
     // Unicode characters for the four suits {spades, hearts, diamonds, clubs}
     private static final String[] SUITS = {"\u2660", "\u2665", "\u2666", "\u2663"};
     private static final String[] RANKS = {"2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K", "A"};
+    private static List<Card> PLAY_DECK = new ArrayList<>();
 
-    static class Card {
-        private String suit;
-        private String rank;
-
-        public Card(String suit, String rank) {
-            this.suit = suit;
-            this.rank = rank;
-        }
-
-        @Override
-        public String toString() {
-            return rank + suit;
-        }
+    public Deck(int numDecks) {
+        PLAY_DECK = createDeck(numDecks);
+        Collections.shuffle(PLAY_DECK);
     }
+
 
     private static List<Card> createDeck(int numDecks) {
         List<Card> deck = new ArrayList<>();
@@ -42,9 +35,11 @@ public class Deck {
         }
     }
 
-    public static void main(String[] args) {
-        List<Card> createdDeck = createDeck(2);
-        // Shuffle the deck
-        Collections.shuffle(createdDeck);
+    public Card deal() {
+        if (PLAY_DECK.isEmpty()) {
+            return null;
+        }
+        return PLAY_DECK.remove(PLAY_DECK.size() - 1);
     }
+
 }

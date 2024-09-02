@@ -1,3 +1,5 @@
+package blackjack.deck;
+
 public class UnicodeCards {
     // Spades
     private static String back = "\uD83C\uDCA0";
