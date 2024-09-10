@@ -7,16 +7,20 @@ import blackjack.deck.Card;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class Player {
     private final PlayerManager playerManager;
     private final List<Card> cardsInHand;
     private int handValue;
-    private double bet = 10;
+    private double money;
+    private double bet;
     private final List<BlackJackAction> actions;
     private boolean surrendered;
     private boolean standing;
     private boolean bust;
+    private boolean isTurn;
+    private boolean hasBlackJack;
     private final String name;
 
 
@@ -28,6 +32,10 @@ public class Player {
         this.standing = false;
         this.surrendered = false;
         this.bust = false;
+        this.isTurn = false;
+        this.hasBlackJack = false;
+        this.money = 2500;
+        this.bet = 10;
 
         this.actions = new ArrayList<>();
         actions.add(new HitAction());
@@ -37,6 +45,14 @@ public class Player {
         actions.add(new SurrenderAction());
 
         Play.addPlayer(this);
+    }
+
+    public boolean isTurn() {
+        return isTurn;
+    }
+
+    public void setTurn(boolean turn) {
+        this.isTurn = turn;
     }
 
     public boolean isBust() { return this.bust; }
@@ -52,6 +68,8 @@ public class Player {
     public double getBet() {
         return this.bet;
     }
+
+    public double getMoney() { return this.money; }
 
     public void setBet(double bet) { this.bet = bet; }
 
@@ -76,20 +94,29 @@ public class Player {
         this.bet *= 2;
     }
 
+    public void removeBet() {
+        this.money -= bet;
+    }
+
     public List<Card> getCardsInHand() {
         return this.cardsInHand;
     }
 
     public void addCardToHand(Card dealtCard) {
         cardsInHand.add(dealtCard);
+        calculateCards();
     }
 
     public int getHandValue() {
         return this.handValue;
     }
 
-    public void setHandValue(int value) {
-        this.handValue = value;
+    public void setBlackJack(boolean isTrue) {
+        this.hasBlackJack = isTrue;
+    }
+
+    public boolean getBlackJack() {
+        return hasBlackJack;
     }
 
     public PlayerManager getPlayerManager() {
@@ -107,6 +134,14 @@ public class Player {
 
     public void splitHand() {
         // todo --> add logic
+    }
+
+    public boolean turnOver() {
+        if (this.isStanding() || this.isSurrendered() || this.isBust()) {
+            this.setTurn(false);
+            return true;
+        }
+        return false;
     }
 
     public void calculateCards() {
@@ -127,10 +162,35 @@ public class Player {
     }
 
     @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Player player = (Player) o;
+        return handValue == player.handValue &&
+                Double.compare(money, player.money) == 0 &&
+                Double.compare(bet, player.bet) == 0 &&
+                surrendered == player.surrendered &&
+                standing == player.standing &&
+                bust == player.bust &&
+                isTurn == player.isTurn &&
+                Objects.equals(playerManager, player.playerManager) &&
+                Objects.equals(cardsInHand, player.cardsInHand) &&
+                Objects.equals(actions, player.actions) &&
+                Objects.equals(name, player.name);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(playerManager, cardsInHand, handValue, money,
+                bet, actions, surrendered, standing, bust, name, isTurn);
+    }
+
+    @Override
     public String toString() {
         return name + " {" +
                 "cardsInHand=" + cardsInHand +
                 ", handValue=" + handValue +
+                ", moneyLeft=" + money +
                 '}';
     }
 }

@@ -10,7 +10,6 @@ import org.mockito.Mockito;
 import java.net.Socket;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
-import java.io.IOException;
 import java.util.ArrayList;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -20,18 +19,15 @@ import static org.mockito.Mockito.*;
 
 public class DoubleTests {
     private PlayerManager mockPlayerManager;
-    private Socket mockSocket;
-    private BufferedReader mockBufferedReader;
-    private BufferedWriter mockBufferedWriter;
 
     @BeforeEach
-    public void setUp() throws IOException {
+    public void setUp() {
         // Create a mock Socket
-        mockSocket = Mockito.mock(Socket.class);
+        Socket mockSocket = Mockito.mock(Socket.class);
 
         // Create mocks for BufferedReader and BufferedWriter
-        mockBufferedReader = Mockito.mock(BufferedReader.class);
-        mockBufferedWriter = Mockito.mock(BufferedWriter.class);
+        BufferedReader mockBufferedReader = Mockito.mock(BufferedReader.class);
+        BufferedWriter mockBufferedWriter = Mockito.mock(BufferedWriter.class);
 
         // Initialize the mock PlayerManager
         mockPlayerManager = Mockito.mock(PlayerManager.class);

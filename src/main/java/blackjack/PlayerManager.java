@@ -35,43 +35,26 @@ public class PlayerManager implements Runnable {
         String clientMessage;
 
         try {
-            while (name == null) {
+            while (true) {
                 if (players.size() > maxPlayers) {
                     sendMessage("Table full.");
                     break;
                 }
 
-                sendMessage("Wanna play some BlackJack? \nPick a name first: ");
-                clientMessage = in.readLine();
-
-                if (clientMessage == null) { // Client disconnected
-                    break;
-                }
-
-                while (!validateName(clientMessage)) {
-                    sendMessage("Name already taken. Pick again: ");
-                    clientMessage = in.readLine();
-                    if (clientMessage == null) { // Client disconnected
-                        break;
-                    }
-                }
-
-                if (clientMessage == null) { // Client disconnected
-                    break;
-                }
-
-                name = clientMessage;
-                player = new Player(name, this);
-                sendMessage("Welcome " + name + "!");
+                chooseName();
 
                 if (Server.getGameOn()) {
                     new Thread(game).start();
                 }
 
-                while ((clientMessage = in.readLine()) != null || !game.allStanding()) {
-                    game.handlePlayerMessage(player, clientMessage);
-                    game.round(player);
+                while ((clientMessage = in.readLine()) != null && !game.allComplete()) {
+                    if (player.isTurn()) {
+                        game.handlePlayerMessage(player, clientMessage);
+                        game.round(player);
+                    }
                 }
+
+                System.out.println("All players completed.");
             }
         } catch (IOException e) {
             System.out.println(e.getMessage());
@@ -80,6 +63,38 @@ public class PlayerManager implements Runnable {
             closeEverything(socket, in, out); // Ensure resources are closed and player is removed
         }
     }
+
+    public void chooseName() {
+        sendMessage("Wanna play some BlackJack? \nPick a name first: ");
+
+        try {
+            String clientMessage = in.readLine();
+
+            if (clientMessage == null) { // Client disconnected
+                closeEverything(socket, in, out);
+            }
+
+            while (!validateName(clientMessage)) {
+                sendMessage("Name already taken. Pick again: ");
+                clientMessage = in.readLine();
+                if (clientMessage == null) { // Client disconnected
+                    closeEverything(socket, in, out);
+                }
+            }
+
+            if (clientMessage == null) { // Client disconnected
+                closeEverything(socket, in, out);
+            }
+
+            name = clientMessage;
+            player = new Player(name, this);
+            sendMessage("Welcome " + name + "!");
+        } catch (IOException e) {
+            System.out.println(e.getMessage());
+            closeEverything(socket, in, out);
+        }
+    }
+
 
     public static boolean validateName(String requestedName) {
         for (PlayerManager player : players) {
@@ -134,6 +149,7 @@ public class PlayerManager implements Runnable {
                 out.close();
             }
         } catch (IOException e) {
+            System.out.println(e.getMessage());
         }
     }
 
