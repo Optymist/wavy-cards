@@ -3,6 +3,7 @@ package blackjack.actions;
 import blackjack.Play;
 import blackjack.PlayerManager;
 import blackjack.deck.Card;
+import blackjack.player.Hand;
 import blackjack.player.Player;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
@@ -44,11 +45,12 @@ public class DoubleTests {
         Play game = new Play(1);
         Player player = new Player("fern", mockPlayerManager);
         player.setBet(10);
-        player.addCardToHand(new Card("♥", "2"));
-        player.addCardToHand(new Card("♥", "2"));
+        Hand hand = player.getCardsInHand();
+        hand.addCard(new Card("♥", "2"));
+        hand.addCard(new Card("♥", "2"));
         player.performAction("double", game);
         assertEquals(20, player.getBet());
-        assertEquals(3, player.getCardsInHand().size());
+        assertEquals(3, hand.getCards().size());
         assertTrue(player.isStanding());
     }
 

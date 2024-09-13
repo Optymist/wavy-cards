@@ -14,7 +14,7 @@ public class HandTest {
     public void testHandGettersAndSetters() {
         Hand hand = new Hand();
         Card card1 = new Card(Deck.SUITS[0], Deck.RANKS[0]);
-        Card card2 =new Card(Deck.SUITS[1], Deck.RANKS[0]);
+        Card card2 = new Card(Deck.SUITS[1], Deck.RANKS[0]);
         hand.addCard(card1);
         hand.addCard(card2);
 
@@ -30,7 +30,7 @@ public class HandTest {
     public void testAddCardCalculation() {
         Hand hand = new Hand();
         Card card1 = new Card(Deck.SUITS[0], Deck.RANKS[0]);
-        Card card2 =new Card(Deck.SUITS[1], Deck.RANKS[0]);
+        Card card2 = new Card(Deck.SUITS[1], Deck.RANKS[0]);
         hand.addCard(card1);
         hand.addCard(card2);
 
@@ -41,9 +41,10 @@ public class HandTest {
     public void testCalculateCardWithAceAndValue10() {
         Hand hand = new Hand();
         Card card1 = new Card(Deck.SUITS[0], Deck.RANKS[3]);
-        Card card2 =new Card(Deck.SUITS[1], Deck.RANKS[3]);
+        Card card2 = new Card(Deck.SUITS[1], Deck.RANKS[3]);
         hand.addCard(card1);
         hand.addCard(card2);
+        assertEquals(10, hand.getValue());
 
         Card aceCard = new Card(Deck.SUITS[0], Deck.RANKS[12]);
         hand.addCard(aceCard);
@@ -54,7 +55,30 @@ public class HandTest {
     @Test
     public void testCalculateCardsWithAceAndValue20() {
         Hand hand = new Hand();
-        Card card1 = new Card(Deck.SUITS[0], Deck.RANKS[3]);
+        Card card1 = new Card(Deck.SUITS[0], Deck.RANKS[11]);
+        Card card2 = new Card(Deck.SUITS[1], Deck.RANKS[10]);
+        hand.addCard(card1);
+        hand.addCard(card2);
+        assertEquals(20, hand.getValue());
 
+        Card aceCard = new Card(Deck.SUITS[0], Deck.RANKS[12]);
+        hand.addCard(aceCard);
+
+        assertEquals(21, hand.getValue());
+    }
+
+    @Test
+    public void testCalculateCardsWithAceAndValue11() {
+        Hand hand = new Hand();
+        Card card1 = new Card(Deck.SUITS[0], Deck.RANKS[3]);
+        Card card2 = new Card(Deck.SUITS[1], Deck.RANKS[4]);
+        hand.addCard(card1);
+        hand.addCard(card2);
+        assertEquals(11, hand.getValue());
+
+        Card aceCard = new Card(Deck.SUITS[0], Deck.RANKS[12]);
+        hand.addCard(aceCard);
+
+        assertEquals(12, hand.getValue());
     }
 }

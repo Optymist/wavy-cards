@@ -1,8 +1,8 @@
 package blackjack.deck;
 
 public class Card {
-    private String suit;
-    private String rank;
+    private final String suit;
+    private final String rank;
 
     public Card(String suit, String rank) {
         this.suit = suit;
@@ -31,7 +31,7 @@ public class Card {
     }
 
     private int aceCardValue(int handValue) {
-        if (handValue > 20) {
+        if (handValue > 10) {
             return 1;
         } else {
             return 11;
