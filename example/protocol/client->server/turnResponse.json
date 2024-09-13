@@ -1,0 +1,5 @@
+{
+  "protolType": "turnResponse",
+  "name": "playerName",
+  "action": `playerAction`
+}

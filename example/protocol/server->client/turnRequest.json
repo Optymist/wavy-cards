@@ -1,0 +1,4 @@
+{
+    protocolType : "turnRequest",
+    actions : [`BlackJackAction`]
+}

@@ -1,0 +1,19 @@
+{
+    protocolType : "update",
+  "currentPlayer": "playerName",
+  "players": [
+    {
+      "name": "playerName",
+      "state": `playerState`,
+      "hand": ["", ""],
+      "handValue": `int`,
+      "money": `int`,
+      "bet": `int`
+    }
+  ],
+  "dealer": {
+    "state": `playerState`,
+    "hand": ["", ""],
+    "handValue": `int`
+  }
+}

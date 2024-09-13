@@ -35,7 +35,7 @@ public class Play implements Runnable {
         try {
             startGame();
         } catch (Exception e) {
-            System.out.println("Game encountered an error: " + e.getMessage());
+            System.out.println("Game encountered an error:\n" + e.getMessage());
         }
     }
 
