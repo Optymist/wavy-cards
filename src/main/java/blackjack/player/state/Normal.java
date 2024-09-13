@@ -32,6 +32,6 @@ public class Normal implements playerState {
         Card two = cards.get(1);
         boolean aces = one.toString().contains("A") && two.toString().contains("A");
         return cards.size() == 2 &&
-                (one.rankValue(cardsInHand.getValue()) == two.rankValue(cardsInHand.getValue()) || aces);
+                (one.rankValue(cardsInHand) == two.rankValue(cardsInHand) || aces);
     }
 }

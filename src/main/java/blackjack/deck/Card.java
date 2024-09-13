@@ -1,6 +1,10 @@
 package blackjack.deck;
 
-public class Card {
+import blackjack.player.Hand;
+
+import java.util.Objects;
+
+public class Card implements Comparable<Card> {
     private final String suit;
     private final String rank;
 
@@ -14,11 +18,23 @@ public class Card {
         return rank + suit;
     }
 
-    public int rankValue(int valueOfHand) {
+    public int getValue() {
+        try {
+            return Integer.parseInt(rank);
+        } catch (NumberFormatException e) {
+            if (rank.contains("A")) {
+                return 11;
+            } else {
+                return 10;
+            }
+        }
+    }
+
+    public int rankValue(Hand hand) {
         try {
             return Integer.parseInt(this.rank);
         } catch (NumberFormatException n) {
-            return faceCardValue(this, valueOfHand);
+            return faceCardValue(this, hand.getValue());
         }
     }
 
@@ -35,6 +51,15 @@ public class Card {
             return 1;
         } else {
             return 11;
+        }
+    }
+
+    @Override
+    public int compareTo(Card o) {
+        if (Objects.equals(this.rank, o.rank)) {
+            return 0;
+        } else {
+            return Integer.compare(this.getValue(), o.getValue());
         }
     }
 }

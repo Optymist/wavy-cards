@@ -108,9 +108,8 @@ public class Play implements Runnable {
                     dealCardToPlayer(player);
                 }
             }
-            if (dealer.getCardsInHand().size() < 2) {
+            if (dealer.getCardsInHand().getCards().size() < 2) {
                 dealer.addCardToHand(deck.deal());
-                dealer.calculateCards();
             }
         }
     }
@@ -132,15 +131,15 @@ public class Play implements Runnable {
     public void dealerTurn() {
         broadcastToAllPlayers("Dealer's turn.");
         broadcastToAllPlayers("Initial cards: " + dealer.toString());
-        while (dealer.getHandValue() < 17) {
+        while (dealer.getCardsInHand().getValue() < 17) {
             dealer.addCardToHand(deck.deal());
             broadcastToAllPlayers(dealer.toString());
         }
-        if (dealer.getHandValue() > 21) {
+        if (dealer.getCardsInHand().getValue() > 21) {
             dealer.setBust(true);
-            broadcastToAllPlayers("Dealer busts with " + dealer.getHandValue() + "!");
+            broadcastToAllPlayers("Dealer busts with " + dealer.getCardsInHand().getValue() + "!");
         } else {
-            broadcastToAllPlayers("Dealer stands on " + dealer.getHandValue() + ".");
+            broadcastToAllPlayers("Dealer stands on " + dealer.getCardsInHand().getValue() + ".");
         }
     }
 

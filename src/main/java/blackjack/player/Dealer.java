@@ -2,35 +2,19 @@ package blackjack.player;
 
 import blackjack.deck.Card;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class Dealer {
-    private List<Card> cardsInHand;
-    private int handValue;
+    private Hand cardsInHand;
     private boolean isBust = false;
 
     public Dealer() {
-        cardsInHand = new ArrayList<>();
+        cardsInHand = new Hand();
     }
 
     public void addCardToHand(Card dealtCard) {
-        cardsInHand.add(dealtCard);
-        calculateCards();
+        cardsInHand.addCard(dealtCard);
     }
 
-    public void calculateCards() {
-        this.handValue = 0;
-        for (Card card : cardsInHand) {
-            this.handValue += card.rankValue(handValue);
-        }
-    }
-
-    public int getHandValue() {
-        return handValue;
-    }
-
-    public List<Card> getCardsInHand() {
+    public Hand getCardsInHand() {
         return this.cardsInHand;
     }
 
@@ -46,7 +30,7 @@ public class Dealer {
     public String toString() {
         return "Dealer {" +
                 "cardsInHand=" + cardsInHand +
-                "handValue=" + handValue +
+                "handValue=" + cardsInHand.getValue() +
                 '}';
     }
 }

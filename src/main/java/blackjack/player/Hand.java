@@ -1,7 +1,6 @@
 package blackjack.player;
 
 import blackjack.deck.Card;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,9 +27,17 @@ public class Hand {
     }
 
     public void calculateCards() {
+        List<Card> sortedCards = sortCards();
         this.handValue = 0;
-        for (Card card : cards) {
-            this.handValue += card.rankValue(handValue);
+        for (Card card : sortedCards) {
+            this.handValue += card.rankValue(this);
         }
     }
+
+    private List<Card> sortCards() {
+        List<Card> sortedCards = cards;
+        sortedCards.sort(Card::compareTo);
+        return sortedCards;
+    }
+
 }
