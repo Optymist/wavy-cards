@@ -29,7 +29,7 @@ public class Dealer {
     @Override
     public String toString() {
         return "Dealer {" +
-                "cardsInHand=" + cardsInHand +
+                "cardsInHand=" + cardsInHand.getCards() +
                 "handValue=" + cardsInHand.getValue() +
                 '}';
     }

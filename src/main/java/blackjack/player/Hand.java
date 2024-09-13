@@ -35,7 +35,7 @@ public class Hand {
     }
 
     private List<Card> sortCards() {
-        List<Card> sortedCards = cards;
+        List<Card> sortedCards = new ArrayList<>(this.cards);
         sortedCards.sort(Card::compareTo);
         return sortedCards;
     }
