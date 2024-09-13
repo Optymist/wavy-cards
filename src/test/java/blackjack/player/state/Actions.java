@@ -100,7 +100,7 @@ public class Actions {
         ArrayList<BlackJackAction> expectedActions = new ArrayList<>(List.of(
                 new DoubleAction(), new HitAction(), new StandAction(),
                 new SurrenderAction(), new SplitAction()));
-        assertEquals(4, actions.size());
+        assertEquals(5, actions.size());
         aseertContainsActions(expectedActions, actions);
 
     }
