@@ -62,6 +62,8 @@ public class Actions {
         Hand hand = new Hand();
         Card card0 = new Card(Deck.SUITS[0], Deck.RANKS[0]);
         Card card1 = new Card(Deck.SUITS[1], Deck.RANKS[1]);
+        hand.addCard(card0);
+        hand.addCard(card1);
 
     }
 
