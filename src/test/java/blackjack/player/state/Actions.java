@@ -50,7 +50,7 @@ public class Actions {
     public void testNormalNoSplit() {
         playerState state = new Normal();
         List<BlackJackAction> actions = state.getActions(new Hand());
-        ArrayList<BlackJackAction> expectedActions = new ArrayList<BlackJackAction>(List.of(
+        ArrayList<BlackJackAction> expectedActions = new ArrayList<>(List.of(
             new DoubleAction(), new HitAction(), new StandAction(), new SurrenderAction()
         ));
         assertEquals(4, actions.size());

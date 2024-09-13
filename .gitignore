@@ -2,3 +2,6 @@
 /shelf/
 /.idea
 target
+.settings/
+.classpath
+.project
