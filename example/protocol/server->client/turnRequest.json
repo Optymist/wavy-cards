@@ -1,4 +1,4 @@
 {
-    protocolType : "turnRequest",
-    actions : [`BlackJackAction`]
+  "protocolType": "turnRequest",
+  "actions": [`BlackJackAction`]
 }
