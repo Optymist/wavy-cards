@@ -17,7 +17,7 @@ import org.junit.jupiter.api.Test;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Actions {
+public class ActionsTests {
 
     @Test
     public void testBust() {
