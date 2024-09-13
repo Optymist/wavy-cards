@@ -15,4 +15,9 @@ public class SplitAction extends BlackJackAction {
             // todo --> find way to print the split decks
 //            player.getPlayerManager().sendMessage(player.getCardsInHand().toString());
     }
+
+    @Override
+    public String toString() {
+        return getActionName();
+    }
 }

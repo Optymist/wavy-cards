@@ -16,4 +16,9 @@ public class DoubleAction extends BlackJackAction {
         System.out.println(player.getName() + " doubles.");
         player.getPlayerManager().sendMessage(player.toString());
     }
+
+    @Override
+    public String toString() {
+        return getActionName();
+    }
 }

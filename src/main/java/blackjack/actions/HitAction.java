@@ -14,4 +14,9 @@ public class HitAction extends BlackJackAction {
         System.out.println(player.getName() + " hits.");
         player.getPlayerManager().sendMessage(player.toString());
     }
+
+    @Override
+    public String toString() {
+        return getActionName();
+    }
 }
