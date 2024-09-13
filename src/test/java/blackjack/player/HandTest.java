@@ -25,4 +25,36 @@ public class HandTest {
         int value = hand.getValue();
         assertEquals(4, value);
     }
+
+    @Test
+    public void testAddCardCalculation() {
+        Hand hand = new Hand();
+        Card card1 = new Card(Deck.SUITS[0], Deck.RANKS[0]);
+        Card card2 =new Card(Deck.SUITS[1], Deck.RANKS[0]);
+        hand.addCard(card1);
+        hand.addCard(card2);
+
+        assertEquals(4, hand.getValue());
+    }
+
+    @Test
+    public void testCalculateCardWithAceAndValue10() {
+        Hand hand = new Hand();
+        Card card1 = new Card(Deck.SUITS[0], Deck.RANKS[3]);
+        Card card2 =new Card(Deck.SUITS[1], Deck.RANKS[3]);
+        hand.addCard(card1);
+        hand.addCard(card2);
+
+        Card aceCard = new Card(Deck.SUITS[0], Deck.RANKS[12]);
+        hand.addCard(aceCard);
+
+        assertEquals(21, hand.getValue());
+    }
+
+    @Test
+    public void testCalculateCardsWithAceAndValue20() {
+        Hand hand = new Hand();
+        Card card1 = new Card(Deck.SUITS[0], Deck.RANKS[3]);
+
+    }
 }

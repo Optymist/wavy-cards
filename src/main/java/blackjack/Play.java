@@ -104,8 +104,8 @@ public class Play implements Runnable {
     public static void dealInitialCards() {
         for (int i = 0; i < 2; i++) {
             for (Player player : players) {
-                if (player.getCardsInHand().size() < 2) {
-                    player.addCardToHand(deck.deal());
+                if (player.getCardsInHand().getCards().size() < 2) {
+                    dealCardToPlayer(player);
                 }
             }
             if (dealer.getCardsInHand().size() < 2) {
@@ -115,8 +115,8 @@ public class Play implements Runnable {
         }
     }
 
-    public void dealCardToPlayer(Player player) {
-        player.addCardToHand(deck.deal());
+    public static void dealCardToPlayer(Player player) {
+        player.getCardsInHand().addCard(deck.deal());
     }
 
     public void moveTurn() {

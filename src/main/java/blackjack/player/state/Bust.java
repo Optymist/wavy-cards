@@ -1,7 +1,7 @@
 package blackjack.player.state;
 
 import blackjack.actions.BlackJackAction;
-import blackjack.deck.Card;
+import blackjack.player.Hand;
 
 import java.util.List;
 
@@ -12,7 +12,7 @@ public class Bust implements playerState {
     }
 
     @Override
-    public List<BlackJackAction> getActions(List<Card> hand) {
+    public List<BlackJackAction> getActions(Hand hand) {
         return List.of();
     }
 }

@@ -12,7 +12,7 @@ import java.util.Objects;
 
 public class Player {
     private final PlayerManager playerManager;
-    private final List<Card> cardsInHand;
+    private final Hand cardsInHand;
     private int handValue;
     private double money;
     private double bet;
@@ -30,7 +30,7 @@ public class Player {
         this.name = name;
         this.playerManager = playerManager;
         this.handValue = 0;
-        this.cardsInHand = new ArrayList<>();
+        this.cardsInHand = new Hand();
         this.standing = false;
         this.surrendered = false;
         this.bust = false;
@@ -113,13 +113,8 @@ public class Player {
         this.money -= bet;
     }
 
-    public List<Card> getCardsInHand() {
+    public Hand getCardsInHand() {
         return this.cardsInHand;
-    }
-
-    public void addCardToHand(Card dealtCard) {
-        cardsInHand.add(dealtCard);
-        calculateCards();
     }
 
     public int getHandValue() {
