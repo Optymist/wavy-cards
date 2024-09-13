@@ -6,8 +6,8 @@ import java.util.List;
 
 public class Deck {
     // Unicode characters for the four suits {spades, hearts, diamonds, clubs}
-    private static final String[] SUITS = {"\u2660", "\u2665", "\u2666", "\u2663"};
-    private static final String[] RANKS = {"2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K", "A"};
+    public static final String[] SUITS = {"\u2660", "\u2665", "\u2666", "\u2663"};
+    public static final String[] RANKS = {"2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K", "A"};
     private static List<Card> PLAY_DECK = new ArrayList<>();
 
     public Deck(int numDecks) {
