@@ -80,7 +80,7 @@ public class Play implements Runnable {
 
     public boolean allComplete() {
         for (Player player : players) {
-            if (!player.isStanding() && !player.isBust() && !player.isSurrendered()) {
+            if (!player.isStanding() || !player.isBust() || !player.isSurrendered()) {
                 return false;
             }
         }

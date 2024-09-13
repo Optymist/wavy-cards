@@ -81,4 +81,18 @@ public class HandTest {
 
         assertEquals(12, hand.getValue());
     }
+
+    @Test
+    public void testAceAlreadyInHandAnd10Drawn() {
+        Hand hand = new Hand();
+        Card card1 = new Card(Deck.SUITS[0], Deck.RANKS[12]);
+        Card card2 = new Card(Deck.SUITS[1], Deck.RANKS[7]);
+        hand.addCard(card1);
+        hand.addCard(card2);
+        assertEquals(20, hand.getValue());
+
+        Card tenCard = new Card(Deck.SUITS[0], Deck.RANKS[11]);
+        hand.addCard(tenCard);
+        assertEquals(21, hand.getValue());
+    }
 }
