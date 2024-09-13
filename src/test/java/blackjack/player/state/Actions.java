@@ -82,46 +82,4 @@ public class Actions {
 
         throw new AssertionError(String.format("%s not in actions", expected));
     }
-
-    @Test
-    public void testSurrender() {
-        playerState state = new Stand();
-        List<BlackJackAction> actions = state.getActions(new ArrayList<>());
-        assertEquals(0, actions.size());
-    }
-
-
-    @Test
-    public void testNormalNoSplit() {
-        playerState state = new Normal();
-        List<BlackJackAction> actions = state.getActions(new Hand());
-        ArrayList<BlackJackAction> expectedActions = new ArrayList<BlackJackAction>(List.of(
-            new DoubleAction(), new HitAction(), new StandAction(), new SurrenderAction()
-        ));
-        assertEquals(4, actions.size());
-        aseertContainsActions(expectedActions, actions);
-    }
-
-    @Test
-    public void testNormalWithSplit() {
-        playerState state = new Normal();
-
-    }
-
-    public static void aseertContainsActions(List<BlackJackAction> expected, List<BlackJackAction> actual) {
-        for (BlackJackAction blackJackAction : expected) {
-            assertActionExists(blackJackAction, actual);
-        }
-    }
-
-    public static void assertActionExists(BlackJackAction expected, List<BlackJackAction> actual) {
-        for (BlackJackAction blackJackAction : actual) {
-            if (blackJackAction.getClass() == expected.getClass()) {
-                return;
-            }
-        }
-
-        throw new AssertionError(String.format("%s not in actions", expected));
-    }
-
 }
