@@ -30,6 +30,6 @@ public class GenerateJson {
         }
         rootNode.put("protocolType", "turnRequest");
         rootNode.set("actions", actionArrayNode);
-        return rootNode.asText();
+        return rootNode.toString();
     }
 }
