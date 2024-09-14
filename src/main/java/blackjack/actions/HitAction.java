@@ -10,7 +10,7 @@ public class HitAction extends BlackJackAction {
 
     @Override
     public void execute(Player player, Play game) {
-        Play.dealCardToPlayer(player);
+        player.addCardToHand(game.getDeck().deal());
         System.out.println(player.getName() + " hits.");
         player.getPlayerManager().sendMessage(player.toString());
     }

@@ -3,6 +3,7 @@ package blackjack.player;
 import blackjack.Play;
 import blackjack.PlayerManager;
 import blackjack.actions.*;
+import blackjack.deck.Card;
 import blackjack.player.state.playerState;
 
 import java.util.ArrayList;
@@ -51,6 +52,10 @@ public class Player {
     public void manageTurn() {
         state.getActions(cardsInHand);
         state.doRound();
+    }
+
+    public void addCardToHand(Card dealtCard) {
+        cardsInHand.addCard(dealtCard);
     }
 
     public void setState(playerState state) {
