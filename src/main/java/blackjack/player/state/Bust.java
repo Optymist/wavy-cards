@@ -15,4 +15,9 @@ public class Bust implements playerState {
     public List<BlackJackAction> getActions(Hand hand) {
         return List.of();
     }
+
+    @Override
+    public String toString() {
+        return "bust";
+    }
 }
