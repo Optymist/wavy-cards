@@ -13,7 +13,6 @@ import blackjack.player.Player;
 
 import java.util.List;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 
 /**
@@ -43,15 +42,16 @@ public class GenerateJson {
         for (Player player : playersInGame) {
             playerArrayNode.add(playerInformation(player));
         }
+
         rootNode.put("protocolType", "update");
         rootNode.put("currentPlayer", game.getCurrentPlayer().getName());
         rootNode.set("players", playerArrayNode);
-        rootNode.put("dealer", dealerInformation(game));
+        rootNode.set("dealer", dealerInformation(game));
 
         return rootNode.toString();
     }
 
-    private static String playerInformation(Player player) {
+    private static ObjectNode playerInformation(Player player) {
         JsonNodeFactory factory = JsonNodeFactory.instance;
         ObjectNode rootNode = new ObjectNode(factory);
         List<Card> cardList = player.getCardsInHand().getCards();
@@ -66,10 +66,10 @@ public class GenerateJson {
         rootNode.put("money", player.getMoney());
         rootNode.put("bet", player.getBet());
 
-        return rootNode.toString();
+        return rootNode;
     }
 
-    private static String dealerInformation(Play game) {
+    private static ObjectNode dealerInformation(Play game) {
         JsonNodeFactory factory = JsonNodeFactory.instance;
         ObjectNode rootNode = new ObjectNode(factory);
         Dealer dealer = game.getDealer();
@@ -82,7 +82,7 @@ public class GenerateJson {
         rootNode.set("hand", cardArrayNode);
         rootNode.put("handValue", dealer.getHandValue());
 
-        return rootNode.toString();
+        return rootNode;
     }
 
 

@@ -51,8 +51,8 @@ public class GenerateJsonTests {
         Player fred = new Player("fred", mockPlayerManager);
         fred.setState(new Normal());
 
-        fred.getCardsInHand().addCard(new Card(Deck.RANKS[0], Deck.RANKS[4]));
-        fred.getCardsInHand().addCard(new Card(Deck.RANKS[0], Deck.RANKS[2]));
+        fred.getCardsInHand().addCard(new Card(Deck.SUITS[0], Deck.RANKS[4]));
+        fred.getCardsInHand().addCard(new Card(Deck.SUITS[0], Deck.RANKS[2]));
         String jsonString = GenerateJson.generateTurnRequest(fred);
         ObjectMapper mapper = new ObjectMapper();
         JsonNode node = mapper.readTree(jsonString);
@@ -71,8 +71,8 @@ public class GenerateJsonTests {
         Player fred = new Player("fred", mockPlayerManager);
         fred.setState(new Normal());
 
-        fred.getCardsInHand().addCard(new Card(Deck.RANKS[0], Deck.RANKS[4]));
-        fred.getCardsInHand().addCard(new Card(Deck.RANKS[0], Deck.RANKS[4]));
+        fred.getCardsInHand().addCard(new Card(Deck.SUITS[0], Deck.RANKS[4]));
+        fred.getCardsInHand().addCard(new Card(Deck.SUITS[0], Deck.RANKS[4]));
         String jsonString = GenerateJson.generateTurnRequest(fred);
         ObjectMapper mapper = new ObjectMapper();
         JsonNode node = mapper.readTree(jsonString);
@@ -89,36 +89,45 @@ public class GenerateJsonTests {
     @Test
     public void testGenerateUpdateResponse() throws JsonProcessingException {
         Play game = new Play(2);
+
         Player sal = new Player("sal", mockPlayerManager);
         Player romeo = new Player("romeo", mockPlayerManager);
         Dealer dealer = game.getDealer();
-        game.addPlayer(sal);
-        game.addPlayer(romeo);
-        sal.setState(new Normal());
-        romeo.setState(new Bust());
 
-        sal.addCardToHand(new Card(Deck.RANKS[0], Deck.RANKS[4]));
-        romeo.addCardToHand(new Card(Deck.RANKS[0], Deck.RANKS[2]));
-        dealer.addCardToHand(new Card(Deck.RANKS[0], Deck.RANKS[10]));
+        sal.setState(new Normal());
+        sal.setBet(20);
+        romeo.setState(new Bust());
+        romeo.setBet(10);
+
+        sal.addCardToHand(new Card(Deck.SUITS[0], Deck.RANKS[4]));
+        romeo.addCardToHand(new Card(Deck.SUITS[0], Deck.RANKS[2]));
+        dealer.addCardToHand(new Card(Deck.SUITS[0], Deck.RANKS[10]));
 
         String jsonString = GenerateJson.generateUpdateRequest(game);
         ObjectMapper mapper = new ObjectMapper();
         JsonNode node = mapper.readTree(jsonString);
-        System.out.println(node);
 
         assertEquals("update", node.get("protocolType").asText());
         assertEquals("sal", node.get("currentPlayer").asText());
         assertTrue(node.toString().contains("players"));
         assertTrue(node.get("players").toString().contains("sal"));
         assertTrue(node.get("players").toString().contains("normal"));
+        assertTrue(node.get("players").toString().contains("6♠"));
+        assertTrue(node.get("players").toString().contains("6"));
+        assertTrue(node.get("players").toString().contains("20.0"));
 
         assertTrue(node.get("players").toString().contains("romeo"));
+        assertTrue(node.get("players").toString().contains("bust"));
+        assertTrue(node.get("players").toString().contains("4♠"));
+        assertTrue(node.get("players").toString().contains("4"));
+        assertTrue(node.get("players").toString().contains("10.0"));
+
+        assertTrue(node.get("players").toString().contains("2500.0"));
 
         assertTrue(node.toString().contains("dealer"));
-        assertEquals("normal", node.get("dealer").get("state").toString());
+        assertEquals("normal", node.get("dealer").get("state").asText());
         assertTrue(node.get("dealer").get("hand").toString().contains("Q♠"));
         assertEquals("10", node.get("dealer").get("handValue").toString());
-
     }
     
 }
