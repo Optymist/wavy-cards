@@ -13,4 +13,9 @@ public class SurrenderAction extends BlackJackAction {
         player.surrender();
         System.out.println(player.getName() + " surrenders.");
     }
+
+    @Override
+    public String toString() {
+        return getActionName();
+    }
 }

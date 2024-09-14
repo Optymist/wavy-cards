@@ -80,7 +80,7 @@ public class Play implements Runnable {
 
     public boolean allComplete() {
         for (Player player : players) {
-            if (!player.isStanding() && !player.isBust() && !player.isSurrendered()) {
+            if (!player.isStanding() || !player.isBust() || !player.isSurrendered()) {
                 return false;
             }
         }
@@ -104,19 +104,18 @@ public class Play implements Runnable {
     public static void dealInitialCards() {
         for (int i = 0; i < 2; i++) {
             for (Player player : players) {
-                if (player.getCardsInHand().size() < 2) {
-                    player.addCardToHand(deck.deal());
+                if (player.getCardsInHand().getCards().size() < 2) {
+                    dealCardToPlayer(player);
                 }
             }
-            if (dealer.getCardsInHand().size() < 2) {
+            if (dealer.getCardsInHand().getCards().size() < 2) {
                 dealer.addCardToHand(deck.deal());
-                dealer.calculateCards();
             }
         }
     }
 
-    public void dealCardToPlayer(Player player) {
-        player.addCardToHand(deck.deal());
+    public static void dealCardToPlayer(Player player) {
+        player.getCardsInHand().addCard(deck.deal());
     }
 
     public void moveTurn() {
@@ -132,15 +131,15 @@ public class Play implements Runnable {
     public void dealerTurn() {
         broadcastToAllPlayers("Dealer's turn.");
         broadcastToAllPlayers("Initial cards: " + dealer.toString());
-        while (dealer.getHandValue() < 17) {
+        while (dealer.getCardsInHand().getValue() < 17) {
             dealer.addCardToHand(deck.deal());
             broadcastToAllPlayers(dealer.toString());
         }
-        if (dealer.getHandValue() > 21) {
+        if (dealer.getCardsInHand().getValue() > 21) {
             dealer.setBust(true);
-            broadcastToAllPlayers("Dealer busts with " + dealer.getHandValue() + "!");
+            broadcastToAllPlayers("Dealer busts with " + dealer.getCardsInHand().getValue() + "!");
         } else {
-            broadcastToAllPlayers("Dealer stands on " + dealer.getHandValue() + ".");
+            broadcastToAllPlayers("Dealer stands on " + dealer.getCardsInHand().getValue() + ".");
         }
     }
 

@@ -3,7 +3,7 @@ package blackjack.player;
 import blackjack.Play;
 import blackjack.PlayerManager;
 import blackjack.actions.*;
-import blackjack.deck.Card;
+import blackjack.player.state.playerState;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,8 +11,8 @@ import java.util.Objects;
 
 public class Player {
     private final PlayerManager playerManager;
-    private final List<Card> cardsInHand;
-    private int handValue;
+    private final Hand cardsInHand;
+//    private int handValue;
     private double money;
     private double bet;
     private final List<BlackJackAction> actions;
@@ -22,13 +22,14 @@ public class Player {
     private boolean isTurn;
     private boolean hasBlackJack;
     private final String name;
+    private playerState state;
 
 
     public Player(String name, PlayerManager playerManager) {
         this.name = name;
         this.playerManager = playerManager;
-        this.handValue = 0;
-        this.cardsInHand = new ArrayList<>();
+//        this.handValue = 0;
+        this.cardsInHand = new Hand();
         this.standing = false;
         this.surrendered = false;
         this.bust = false;
@@ -45,6 +46,19 @@ public class Player {
         actions.add(new SurrenderAction());
 
         Play.addPlayer(this);
+    }
+
+    public void manageTurn() {
+        state.getActions(cardsInHand);
+        state.doRound();
+    }
+
+    public void setState(playerState state) {
+        this.state = state;
+    }
+
+    public playerState getState() {
+        return state;
     }
 
     public boolean isTurn() {
@@ -98,17 +112,12 @@ public class Player {
         this.money -= bet;
     }
 
-    public List<Card> getCardsInHand() {
+    public Hand getCardsInHand() {
         return this.cardsInHand;
     }
 
-    public void addCardToHand(Card dealtCard) {
-        cardsInHand.add(dealtCard);
-        calculateCards();
-    }
-
     public int getHandValue() {
-        return this.handValue;
+        return cardsInHand.getValue();
     }
 
     public void setBlackJack(boolean isTrue) {
@@ -123,14 +132,6 @@ public class Player {
         return playerManager;
     }
 
-    public boolean canSplit() {
-        Card one = cardsInHand.get(0);
-        Card two = cardsInHand.get(1);
-        if (one.toString().contains("A") && two.toString().contains("A")) {
-            return true;
-        }
-        return cardsInHand.size() == 2 && one.rankValue(handValue) == two.rankValue(handValue);
-    }
 
     public void splitHand() {
         // todo --> add logic
@@ -144,12 +145,7 @@ public class Player {
         return false;
     }
 
-    public void calculateCards() {
-        this.handValue = 0;
-        for (Card card : cardsInHand) {
-            this.handValue += card.rankValue(handValue);
-        }
-    }
+
 
     public void performAction(String actionName, Play game) {
         for (BlackJackAction action : actions) {
@@ -166,8 +162,7 @@ public class Player {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Player player = (Player) o;
-        return handValue == player.handValue &&
-                Double.compare(money, player.money) == 0 &&
+        return Double.compare(money, player.money) == 0 &&
                 Double.compare(bet, player.bet) == 0 &&
                 surrendered == player.surrendered &&
                 standing == player.standing &&
@@ -181,15 +176,15 @@ public class Player {
 
     @Override
     public int hashCode() {
-        return Objects.hash(playerManager, cardsInHand, handValue, money,
+        return Objects.hash(playerManager, cardsInHand, money,
                 bet, actions, surrendered, standing, bust, name, isTurn);
     }
 
     @Override
     public String toString() {
         return name + " {" +
-                "cardsInHand=" + cardsInHand +
-                ", handValue=" + handValue +
+                "cardsInHand=" + cardsInHand.getCards() +
+                ", handValue=" + cardsInHand.getValue() +
                 ", moneyLeft=" + money +
                 '}';
     }

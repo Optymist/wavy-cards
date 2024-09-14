@@ -14,4 +14,9 @@ public class StandAction extends BlackJackAction {
         player.getPlayerManager().sendMessage(player.toString());
         player.setStanding(true);
     }
+
+    @Override
+    public String toString() {
+        return getActionName();
+    }
 }
