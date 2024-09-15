@@ -6,6 +6,7 @@ import java.util.List;
 import blackjack.deck.Deck;
 import blackjack.player.Dealer;
 import blackjack.player.Player;
+import blackjack.player.state.BlackJack;
 
 public class Play implements Runnable {
     public static List<Player> players = new ArrayList<>();
@@ -42,10 +43,10 @@ public class Play implements Runnable {
     public void startGame() {
         dealInitialCards();
         for (Player player : players) {
-            player.getPlayerManager().sendMessage(player.toString());
+            player.getPlayerManager().sendMessage(player.toString()); // TODO replace with `update` response
             if (player.getHandValue() == 21) {
-                player.setBlackJack(true);
-                player.getPlayerManager().sendMessage("BlackJack!");
+                player.setState(new BlackJack());
+                player.getPlayerManager().sendMessage("BlackJack!"); // TODO replace with `update` response
             }
             System.out.println(player);
         }
