@@ -4,7 +4,11 @@ import blackjack.Play;
 import blackjack.PlayerManager;
 import blackjack.actions.*;
 import blackjack.deck.Card;
+import blackjack.player.state.Normal;
 import blackjack.player.state.playerState;
+import blackjack.protocol.DecryptJson;
+import blackjack.protocol.GenerateJson;
+import blackjack.protocol.Exceptions.InvalidAction;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,7 +20,7 @@ public class Player {
 //    private int handValue;
     private double money;
     private double bet;
-    private final List<BlackJackAction> actions;
+    private List<BlackJackAction> actions;
     private boolean surrendered;
     private boolean standing;
     private boolean bust;
@@ -24,6 +28,7 @@ public class Player {
     private boolean hasBlackJack;
     private final String name;
     private playerState state;
+    private String turnResponse = null;
 
 
     public Player(String name, PlayerManager playerManager) {
@@ -49,9 +54,44 @@ public class Player {
         Play.addPlayer(this);
     }
 
-    public void manageTurn() {
-        state.getActions(cardsInHand);
-        state.doRound();
+    /**
+     * Handle's the player's turn based on their current state.
+     * @param game The game that the player is connected to so that 
+     *             we can call `action.execute(Play)`
+     */
+    public void manageTurn(Play game) {
+        while (state instanceof Normal) {
+            this.setTurn(true);
+
+            this.actions = state.getActions(cardsInHand);
+
+            String turnRequest = GenerateJson.generateTurnRequest(this);
+            playerManager.sendMessage(turnRequest);
+            // send turnRequest
+
+            boolean continueTurn = true;
+            while (continueTurn) {
+                if (turnResponse != null) {
+                    BlackJackAction action;
+					try {
+						action = DecryptJson.getChosenAction(turnResponse, this);
+                        action.execute(this, game);
+                        continueTurn = false;
+					} catch (InvalidAction e) {
+                        // send invalid action message to client
+                        // technically doing double work but rather have it
+                        // and not need it than need it and not have it 
+                        turnResponse = null;
+					}
+                }
+            }
+
+            this.setTurn(false);
+        }
+    }
+
+    public void setTurnResponse(String response) {
+        this.turnResponse = response;
     }
 
     public void addCardToHand(Card dealtCard) {

@@ -51,6 +51,12 @@ public class Play implements Runnable {
         }
         sendTurnMessages();
         System.out.println(dealer);
+        while (running) {
+            for (Player player : players) {
+                player.manageTurn(this);
+            }
+            dealerTurn();
+        }
     }
 
     public void round(Player player) {
@@ -129,6 +135,7 @@ public class Play implements Runnable {
     }
 
     public void dealerTurn() {
+        // TODO needs to send json 
         broadcastToAllPlayers("Dealer's turn.");
         broadcastToAllPlayers("Initial cards: " + dealer.toString());
         while (dealer.getCardsInHand().getValue() < 17) {
