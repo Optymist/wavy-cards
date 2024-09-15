@@ -7,6 +7,12 @@ package blackjack.protocol;
 import blackjack.actions.BlackJackAction;
 import blackjack.player.Player;
 import blackjack.protocol.Exceptions.InvalidAction;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * DecryptJson
@@ -27,6 +33,20 @@ public class DecryptJson {
         // the action, should probably be renamed to something like `validateAction`
 
         return null;
+    }
+
+    public static List<String> getAvailableActions(String turnRequest) throws JsonProcessingException {
+        ObjectMapper mapper = new ObjectMapper();
+        JsonNode node = mapper.readTree(turnRequest);
+        JsonNode actionsNode = node.get("actions");
+
+        List<String> actionsList = new ArrayList<>();
+
+        for (JsonNode action : actionsNode) {
+            actionsList.add(action.asText());
+        }
+
+        return actionsList;
     }
 
 }

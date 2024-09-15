@@ -94,6 +94,10 @@ public class Player {
         this.turnResponse = response;
     }
 
+    public String getTurnResponse() {
+        return turnResponse;
+    }
+
     public void addCardToHand(Card dealtCard) {
         cardsInHand.addCard(dealtCard);
     }
@@ -189,8 +193,6 @@ public class Player {
         }
         return false;
     }
-
-
 
     public void performAction(String actionName, Play game) {
         for (BlackJackAction action : actions) {
