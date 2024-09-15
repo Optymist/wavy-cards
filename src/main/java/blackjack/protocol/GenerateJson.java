@@ -38,14 +38,14 @@ public class GenerateJson {
         JsonNodeFactory factory = JsonNodeFactory.instance;
         ObjectNode rootNode = new ObjectNode(factory);
         List<Player> playersInGame = game.getPlayers();
-        ArrayNode playerArrayNode = new ArrayNode(factory);
+        ObjectNode playerObjectNode = new ObjectNode(factory);
         for (Player player : playersInGame) {
-            playerArrayNode.add(playerInformation(player));
+            playerObjectNode.set(player.getName(), playerInformation(player));
         }
 
         rootNode.put("protocolType", "update");
         rootNode.put("currentPlayer", game.getCurrentPlayer().getName());
-        rootNode.set("players", playerArrayNode);
+        rootNode.set("players", playerObjectNode);
         rootNode.set("dealer", dealerInformation(game));
 
         return rootNode.toString();

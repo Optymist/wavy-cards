@@ -110,19 +110,20 @@ public class GenerateJsonTests {
         assertEquals("update", node.get("protocolType").asText());
         assertEquals("sal", node.get("currentPlayer").asText());
         assertTrue(node.toString().contains("players"));
+
         assertTrue(node.get("players").toString().contains("sal"));
-        assertTrue(node.get("players").toString().contains("normal"));
-        assertTrue(node.get("players").toString().contains("6♠"));
-        assertTrue(node.get("players").toString().contains("6"));
-        assertTrue(node.get("players").toString().contains("20.0"));
+        assertEquals("normal", node.get("players").get("sal").get("state").asText());
+        assertEquals("[\"6♠\"]", node.get("players").get("sal").get("hand").toString());
+        assertEquals("6", node.get("players").get("sal").get("handValue").asText());
+        assertEquals("20.0", node.get("players").get("sal").get("bet").asText());
+        assertEquals("2500.0", node.get("players").get("sal").get("money").asText());
 
         assertTrue(node.get("players").toString().contains("romeo"));
-        assertTrue(node.get("players").toString().contains("bust"));
-        assertTrue(node.get("players").toString().contains("4♠"));
-        assertTrue(node.get("players").toString().contains("4"));
-        assertTrue(node.get("players").toString().contains("10.0"));
-
-        assertTrue(node.get("players").toString().contains("2500.0"));
+        assertEquals("bust", node.get("players").get("romeo").get("state").asText());
+        assertEquals("[\"4♠\"]", node.get("players").get("romeo").get("hand").toString());
+        assertEquals("4", node.get("players").get("romeo").get("handValue").asText());
+        assertEquals("10.0", node.get("players").get("romeo").get("bet").asText());
+        assertEquals("2500.0", node.get("players").get("romeo").get("money").asText());
 
         assertTrue(node.toString().contains("dealer"));
         assertEquals("normal", node.get("dealer").get("state").asText());
