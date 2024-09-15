@@ -3,6 +3,8 @@ package blackjack;
 import java.net.SocketException;
 import java.util.Scanner;
 
+import blackjack.Client.Client;
+
 import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.util.Enumeration;

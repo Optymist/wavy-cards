@@ -1,8 +1,10 @@
-package blackjack;
+package blackjack.Client;
 
 import java.io.*;
 import java.net.*;
 import java.util.*;
+
+import blackjack.MultiserverManager;
 
 public class Client {
     private static final String SERVER_IP = MultiserverManager.IP;

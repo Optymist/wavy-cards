@@ -49,6 +49,7 @@ public class PlayerManager implements Runnable {
 
                 while ((clientMessage = in.readLine()) != null && !game.allComplete()) {
                     if (player.isTurn()) {
+                        System.out.println(clientMessage);
                         player.setTurnResponse(clientMessage);
                         // game.handlePlayerMessage(player, clientMessage);
                         // game.round(player);
@@ -96,7 +97,6 @@ public class PlayerManager implements Runnable {
         }
     }
 
-
     public static boolean validateName(String requestedName) {
         for (PlayerManager player : players) {
             if (!(player.name == null) && player.name.equals(requestedName)) {
@@ -108,7 +108,7 @@ public class PlayerManager implements Runnable {
 
     public void removeClient() {
         players.remove(this);
-        if (!(game==null)) {
+        if (!(game == null)) {
             game.removePlayer(player);
         }
         broadcastMessage(name + " has left the game.");

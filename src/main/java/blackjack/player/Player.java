@@ -43,6 +43,7 @@ public class Player {
         this.hasBlackJack = false;
         this.money = 2500;
         this.bet = 10;
+        this.state = new Normal();
 
         this.actions = new ArrayList<>();
         actions.add(new HitAction());
