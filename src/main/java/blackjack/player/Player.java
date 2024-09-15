@@ -49,9 +49,14 @@ public class Player {
         Play.addPlayer(this);
     }
 
-    public void manageTurn() {
-        state.getActions(cardsInHand);
-        state.doRound();
+    public void manageTurn(Play game) {
+        while (true) {
+            state.getActions(cardsInHand);
+
+            // send turnRequest
+            state.doRound();
+
+        }
     }
 
     public void addCardToHand(Card dealtCard) {
