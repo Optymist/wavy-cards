@@ -4,7 +4,9 @@ import blackjack.Play;
 import blackjack.PlayerManager;
 import blackjack.actions.*;
 import blackjack.deck.Card;
+import blackjack.player.state.Normal;
 import blackjack.player.state.playerState;
+import blackjack.protocol.GenerateJson;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,7 +18,7 @@ public class Player {
 //    private int handValue;
     private double money;
     private double bet;
-    private final List<BlackJackAction> actions;
+    private List<BlackJackAction> actions;
     private boolean surrendered;
     private boolean standing;
     private boolean bust;
@@ -50,12 +52,17 @@ public class Player {
     }
 
     public void manageTurn(Play game) {
-        while (true) {
-            state.getActions(cardsInHand);
+        while (state instanceof Normal) {
+            this.setTurn(true);
 
+            this.actions = state.getActions(cardsInHand);
+
+            String turnRequest = GenerateJson.generateTurnRequest(this);
+            playerManager.sendMessage(turnRequest);
             // send turnRequest
-            state.doRound();
 
+            state.doRound();
+            this.setTurn(false);
         }
     }
 

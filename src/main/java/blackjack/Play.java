@@ -53,7 +53,7 @@ public class Play implements Runnable {
         System.out.println(dealer);
         while (running) {
             for (Player player : players) {
-                player.manageTurn();
+                player.manageTurn(this);
             }
             dealerTurn();
         }
