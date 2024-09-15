@@ -49,7 +49,8 @@ public class PlayerManager implements Runnable {
 
                 while ((clientMessage = in.readLine()) != null && !game.allComplete()) {
                     if (player.isTurn()) {
-                        game.handlePlayerMessage(player, clientMessage);
+                        player.setTurnResponse(clientMessage);
+                        // game.handlePlayerMessage(player, clientMessage);
                         // game.round(player);
                     }
                 }
