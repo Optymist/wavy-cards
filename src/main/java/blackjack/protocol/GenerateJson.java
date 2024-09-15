@@ -34,6 +34,17 @@ public class GenerateJson {
         return rootNode.toString();
     }
 
+    public static String generateTurnResponse(Player player) {
+        JsonNodeFactory factory = JsonNodeFactory.instance;
+        ObjectNode rootNode = new ObjectNode(factory);
+
+        rootNode.put("protocolType", "turnResponse");
+        rootNode.put("currentPlayer", player.getName());
+        rootNode.put("action", player.getTurnResponse());
+
+        return rootNode.toString();
+    }
+
     public static String generateUpdateRequest(Play game) {
         JsonNodeFactory factory = JsonNodeFactory.instance;
         ObjectNode rootNode = new ObjectNode(factory);
