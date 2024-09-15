@@ -105,7 +105,7 @@ public class Play implements Runnable {
         for (int i = 0; i < 2; i++) {
             for (Player player : players) {
                 if (player.getCardsInHand().getCards().size() < 2) {
-                    dealCardToPlayer(player);
+                    player.addCardToHand(deck.deal());
                 }
             }
             if (dealer.getCardsInHand().getCards().size() < 2) {
@@ -114,9 +114,9 @@ public class Play implements Runnable {
         }
     }
 
-    public static void dealCardToPlayer(Player player) {
-        player.getCardsInHand().addCard(deck.deal());
-    }
+//    public static void dealCardToPlayer(Player player) {
+//        player.getCardsInHand().addCard(deck.deal());
+//    }
 
     public void moveTurn() {
         currentPlayerIndex += 1;
@@ -166,5 +166,21 @@ public class Play implements Runnable {
                 player.getPlayerManager().sendMessage(message);
             }
         }
+    }
+
+    public Dealer getDealer() {
+        return dealer;
+    }
+
+    public Deck getDeck() {
+        return deck;
+    }
+
+    public List<Player> getPlayers() {
+        return players;
+    }
+
+    public Player getCurrentPlayer() {
+        return players.get(currentPlayerIndex);
     }
 }

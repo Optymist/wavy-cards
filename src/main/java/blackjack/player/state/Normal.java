@@ -33,4 +33,9 @@ public class Normal implements playerState {
 
         return cards.size() == 2 && one.getValue() == two.getValue();
     }
+
+    @Override
+    public String toString() {
+        return "normal";
+    }
 }

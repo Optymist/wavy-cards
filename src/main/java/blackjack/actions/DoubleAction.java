@@ -11,7 +11,7 @@ public class DoubleAction extends BlackJackAction {
     @Override
     public void execute(Player player, Play game) {
         player.doubleBet();
-        Play.dealCardToPlayer(player);
+        player.addCardToHand(game.getDeck().deal());
         player.setStanding(true);
         System.out.println(player.getName() + " doubles.");
         player.getPlayerManager().sendMessage(player.toString());
