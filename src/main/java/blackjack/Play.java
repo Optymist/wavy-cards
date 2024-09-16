@@ -7,6 +7,7 @@ import blackjack.deck.Deck;
 import blackjack.player.Dealer;
 import blackjack.player.Player;
 import blackjack.player.state.BlackJack;
+import blackjack.player.state.Normal;
 import blackjack.protocol.GenerateJson;
 
 public class Play implements Runnable {
@@ -63,34 +64,10 @@ public class Play implements Runnable {
         }
     }
 
-    public void round(Player player) {
-        if (player.getBlackJack()) {
-            player.setStanding(true);
-            player.turnOver();
-            moveTurn();
-        } else {
-            if (player.getHandValue() > 21) {
-                player.getPlayerManager().sendMessage("Bust!");
-                player.setBust(true);
-                player.removeBet();
-                player.getPlayerManager().sendMessage("You lost your bet. " + player.getMoney() + " remaining.");
-                player.turnOver();
-                moveTurn();
-            } else if (player.getHandValue() == 21 || player.isStanding()) {
-                player.getPlayerManager().sendMessage("Standing...");
-                player.setStanding(true);
-                player.turnOver();
-                moveTurn();
-            } else {
-                player.getPlayerManager().sendMessage("What do you want to do? ");
-            }
-        }
-
-    }
 
     public boolean allComplete() {
         for (Player player : players) {
-            if (!player.isStanding() || !player.isBust() || !player.isSurrendered()) {
+            if (!( player.getState() instanceof Normal )) {
                 return false;
             }
         }
@@ -100,7 +77,8 @@ public class Play implements Runnable {
     public synchronized void handlePlayerMessage(Player player, String message) {
         System.out.println("Received message from player " + player.getName() + ": " + message);
         player.getPlayerManager().sendMessage("Acknowledged: " + message);
-        player.performAction(message, this);
+        // TODO !!!!!  I think
+        // player.performAction(message, this);
     }
 
     public static void addPlayer(Player player) {
@@ -177,6 +155,10 @@ public class Play implements Runnable {
                 player.getPlayerManager().sendMessage(message);
             }
         }
+    }
+
+    public void clearAllPlayers() {
+        players.clear();
     }
 
     public Dealer getDealer() {
