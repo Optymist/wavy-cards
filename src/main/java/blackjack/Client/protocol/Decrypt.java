@@ -18,7 +18,7 @@ public class Decrypt {
         String actionMessage = "Available actions:\n";
 
         for (JsonNode action : actionsNode) {
-            actionMessage += action.toString() + "\n";
+            actionMessage += action.asText() + "\n";
         }
 
         return actionMessage;
