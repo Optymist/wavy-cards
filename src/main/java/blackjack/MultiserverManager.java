@@ -3,6 +3,8 @@ package blackjack;
 import java.net.SocketException;
 import java.util.Scanner;
 
+import blackjack.Client.Client;
+
 import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.util.Enumeration;
@@ -120,14 +122,15 @@ public class MultiserverManager {
     }
 
     private static void joinServer(Scanner scanner){
-        System.out.print("\nEnter the IP address of the server you want to join: ");
+        System.out.print("\nEnter the IP address of the server you want to join: (leave empty to use localhost): ");
         String ipAddress = scanner.nextLine().trim().strip();
-
-        if((ipAddress.split("\\.").length != 4)){
+        if (ipAddress.isEmpty()) {
+            IP = "localhost";
+        } else if((ipAddress.split("\\.").length != 4)){
             System.out.println("Invalid ip address");
             IP = "";
             return;
-        }else{
+        } else {
             IP = ipAddress;
         }
 

@@ -20,6 +20,29 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
  */
 public class GenerateJson {
 
+    public static String generateGeneralMessage(String message) {
+        JsonNodeFactory nodeFactory = JsonNodeFactory.instance;
+        ObjectNode rootNode = nodeFactory.objectNode();
+
+        rootNode.put("protocolType", "general");
+        rootNode.put("message", message);
+
+        return rootNode.toString();
+    }
+
+    public static String generateConnectedUpdate(Player player) {
+        JsonNodeFactory nodeFactory = JsonNodeFactory.instance;
+        ObjectNode rootNode = nodeFactory.objectNode();
+        String message = "Welcome " + player.getName() + "!";
+
+        rootNode.put("protocolType", "connectedUpdate");
+        rootNode.put("message", message);
+        rootNode.put("playerName", player.getName());
+        rootNode.put("money", player.getMoney());
+
+        return rootNode.toString();
+    }
+
     public static String generateTurnRequest(Player player) {
         JsonNodeFactory factory = JsonNodeFactory.instance;
         ObjectNode rootNode = new ObjectNode(factory);
@@ -34,7 +57,7 @@ public class GenerateJson {
         return rootNode.toString();
     }
 
-    public static String generateUpdateRequest(Play game) {
+    public static String generateUpdate(Play game) {
         JsonNodeFactory factory = JsonNodeFactory.instance;
         ObjectNode rootNode = new ObjectNode(factory);
         List<Player> playersInGame = game.getPlayers();
