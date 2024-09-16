@@ -187,22 +187,10 @@ public class Player {
         // todo --> add logic
     }
 
-    public boolean turnOver() {
-        if (this.isStanding() || this.isSurrendered() || this.isBust()) {
-            this.setTurn(false);
-            return true;
-        }
-        return false;
-    }
 
-    public void performAction(String actionName, Play game) {
-        for (BlackJackAction action : actions) {
-            if (action.getActionName().equalsIgnoreCase(actionName)) {
-                action.execute(this, game);
-                return;
-            }
-        }
-        playerManager.sendMessage("Invalid action: " + actionName);
+    public void performAction(BlackJackAction action, Play game) {
+        action.execute(this, game);
+        // playerManager.sendMessage("Invalid action: " + actionName);
     }
 
     @Override

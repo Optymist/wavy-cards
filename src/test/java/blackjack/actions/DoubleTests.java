@@ -5,6 +5,8 @@ import blackjack.PlayerManager;
 import blackjack.deck.Card;
 import blackjack.player.Hand;
 import blackjack.player.Player;
+import blackjack.player.state.Stand;
+
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
 import org.mockito.Mockito;
@@ -48,10 +50,10 @@ public class DoubleTests {
         Hand hand = player.getCardsInHand();
         hand.addCard(new Card("♥", "2"));
         hand.addCard(new Card("♥", "2"));
-        player.performAction("double", game);
+        player.performAction(new DoubleAction(), game);
         assertEquals(20, player.getBet());
         assertEquals(3, hand.getCards().size());
-        assertTrue(player.isStanding());
+        assertTrue(player.getState() instanceof Stand);
     }
 
 }

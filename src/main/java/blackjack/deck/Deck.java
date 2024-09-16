@@ -29,17 +29,15 @@ public class Deck {
         return deck;
     }
 
-    private static void printDeck(List<Card> deck) {
-        for (Card card : deck) {
-            System.out.println(card);
-        }
-    }
-
     public Card deal() {
         if (PLAY_DECK.isEmpty()) {
             return null;
         }
         return PLAY_DECK.remove(PLAY_DECK.size() - 1);
+    }
+
+    public void addCard(Card newCard) {
+        PLAY_DECK.add(newCard);
     }
 
 }
