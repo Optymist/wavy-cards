@@ -35,18 +35,4 @@ public class DecryptJson {
         return null;
     }
 
-    public static List<String> getAvailableActions(String turnRequest) throws JsonProcessingException {
-        ObjectMapper mapper = new ObjectMapper();
-        JsonNode node = mapper.readTree(turnRequest);
-        JsonNode actionsNode = node.get("actions");
-
-        List<String> actionsList = new ArrayList<>();
-
-        for (JsonNode action : actionsNode) {
-            actionsList.add(action.asText());
-        }
-
-        return actionsList;
-    }
-
 }

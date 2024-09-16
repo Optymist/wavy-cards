@@ -1,6 +1,11 @@
 package blackjack.player;
 
 import blackjack.deck.Card;
+import blackjack.player.state.BlackJack;
+import blackjack.player.state.Bust;
+import blackjack.player.state.Normal;
+import blackjack.player.state.playerState;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -13,9 +18,10 @@ public class Hand {
         this.handValue = 0;
     }
 
-    public void addCard(Card cardToAdd) {
+    public playerState addCard(Card cardToAdd) {
         this.cards.add(cardToAdd);
         calculateCards();
+        return determineState();
     }
 
     public List<Card> getCards() {
@@ -31,6 +37,16 @@ public class Hand {
         this.handValue = 0;
         for (Card card : sortedCards) {
             this.handValue += card.rankValue(this);
+        }
+    }
+
+    private playerState determineState() {
+        if (cards.size() == 2 && handValue == 21) {
+            return new BlackJack();
+        } else if (handValue > 21) {
+            return new Bust();
+        } else {
+            return new Normal();
         }
     }
 

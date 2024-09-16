@@ -1,0 +1,6 @@
+{
+  "protocolType": "connectedUpdate",
+  "message" : "string",
+  "playerName" : "string",
+  "money": "int"
+}

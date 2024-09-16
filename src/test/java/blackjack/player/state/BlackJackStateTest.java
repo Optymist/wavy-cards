@@ -1,15 +1,9 @@
-package blackjack.actions;
+package blackjack.player.state;
 
 import blackjack.Play;
 import blackjack.PlayerManager;
 import blackjack.deck.Card;
-import blackjack.deck.Deck;
-import blackjack.player.Hand;
 import blackjack.player.Player;
-import blackjack.player.state.Bust;
-import blackjack.player.state.Normal;
-import blackjack.player.state.Stand;
-import blackjack.player.state.Surrender;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
@@ -19,11 +13,13 @@ import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.util.ArrayList;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.*;
 
-public class SurrenderTests {
+/**
+ * BlackJackStateTest
+ */
+public class BlackJackStateTest {
 
     private PlayerManager mockPlayerManager;
 
@@ -45,24 +41,18 @@ public class SurrenderTests {
         doNothing().when(mockPlayerManager).closeEverything(mockSocket, mockBufferedReader, mockBufferedWriter);
     }
 
-
     @Test
-    public void testSurrenderAction() {
-
+    public void testBlackJackStateOnAddCard() {
         Play game = new Play(1);
+        game.getDeck().addCard(new Card("♥", "Q"));
+        game.getDeck().addCard(new Card("♥", "A"));
         Player player = new Player("fern", mockPlayerManager);
         player.setBet(10);
-
-        Hand hand = player.getCardsInHand();
-        hand.addCard(new Card("♥", "2"));
-        hand.addCard(new Card("♥", "2"));
-
-        player.performAction(new SurrenderAction(), game);
-
-        assertEquals(2, hand.getCards().size());
-        assertTrue(player.getState() instanceof Surrender);
+        for (int i = 0; i < 2; i++) {
+            player.addCardToHand(game.getDeck().deal());
+        }
+        assertTrue(player.getState() instanceof BlackJack, 
+            String.format("State expected: blackjack, but got: %s", player.getState().toString()));
     }
-
-
-
+    
 }

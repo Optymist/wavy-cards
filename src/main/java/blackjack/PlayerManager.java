@@ -1,6 +1,7 @@
 package blackjack;
 
 import blackjack.player.Player;
+import blackjack.protocol.GenerateJson;
 
 import java.io.*;
 import java.net.Socket;
@@ -37,7 +38,7 @@ public class PlayerManager implements Runnable {
         try {
             while (true) {
                 if (players.size() > maxPlayers) {
-                    sendMessage("Table full.");
+                    sendMessage(GenerateJson.generateGeneralMessage("Table full."));
                     break;
                 }
 
@@ -67,7 +68,8 @@ public class PlayerManager implements Runnable {
     }
 
     public void chooseName() {
-        sendMessage("Wanna play some BlackJack? \nPick a name first: ");
+//        sendMessage("Wanna play some BlackJack? \nPick a name first: ");
+        sendMessage(GenerateJson.generateGeneralMessage("Wanna play some BlackJack? \nPick a name first: "));
 
         try {
             String clientMessage = in.readLine();
@@ -77,7 +79,7 @@ public class PlayerManager implements Runnable {
             }
 
             while (!validateName(clientMessage)) {
-                sendMessage("Name already taken. Pick again: ");
+                sendMessage(GenerateJson.generateGeneralMessage("Name already taken. Pick again: "));
                 clientMessage = in.readLine();
                 if (clientMessage == null) { // Client disconnected
                     closeEverything(socket, in, out);
@@ -90,7 +92,7 @@ public class PlayerManager implements Runnable {
 
             name = clientMessage;
             player = new Player(name, this);
-            sendMessage("Welcome " + name + "!");
+            sendMessage(GenerateJson.generateConnectedUpdate(player));
         } catch (IOException e) {
             System.out.println(e.getMessage());
             closeEverything(socket, in, out);
