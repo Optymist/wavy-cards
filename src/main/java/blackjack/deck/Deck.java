@@ -29,12 +29,6 @@ public class Deck {
         return deck;
     }
 
-    private static void printDeck(List<Card> deck) {
-        for (Card card : deck) {
-            System.out.println(card);
-        }
-    }
-
     public Card deal() {
         if (PLAY_DECK.isEmpty()) {
             return null;
@@ -44,6 +38,10 @@ public class Deck {
 
     public List<Card> getPlayDeck() {
         return PLAY_DECK;
+    }
+  
+    public void addCard(Card newCard) {
+        PLAY_DECK.add(newCard);
     }
 
 }
