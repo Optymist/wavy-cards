@@ -100,7 +100,7 @@ public class Player {
     }
 
     public void addCardToHand(Card dealtCard) {
-        cardsInHand.addCard(dealtCard);
+        this.setState(cardsInHand.addCard(dealtCard));
     }
 
     public void setState(playerState state) {
@@ -150,7 +150,6 @@ public class Player {
     }
 
     public void surrender() {
-        this.surrendered = true;
         this.bet /= 2;
     }
 
