@@ -1,49 +1,28 @@
 package blackjack.actions;
 
 import blackjack.Play;
-import blackjack.PlayerManager;
 import blackjack.deck.Card;
+import blackjack.helperClasses.mockedPlayerManager;
 import blackjack.player.Hand;
 import blackjack.player.Player;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
-import org.mockito.Mockito;
-import java.net.Socket;
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.util.ArrayList;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.*;
 
 
 public class DoubleTests {
-    private PlayerManager mockPlayerManager;
 
     @BeforeEach
     public void setUp() {
-        // Create a mock Socket
-        Socket mockSocket = Mockito.mock(Socket.class);
-
-        // Create mocks for BufferedReader and BufferedWriter
-        BufferedReader mockBufferedReader = Mockito.mock(BufferedReader.class);
-        BufferedWriter mockBufferedWriter = Mockito.mock(BufferedWriter.class);
-
-        // Initialize the mock PlayerManager
-        mockPlayerManager = Mockito.mock(PlayerManager.class);
-
-        // Mock behaviors
-        when(mockPlayerManager.getPlayers()).thenReturn(new ArrayList<>());
-        doNothing().when(mockPlayerManager).sendMessage(anyString());
-        doNothing().when(mockPlayerManager).closeEverything(mockSocket, mockBufferedReader, mockBufferedWriter);
+        mockedPlayerManager.setUp();
     }
-
 
     @Test
     public void doubleSuccessfulTest() {
         Play game = new Play(1);
-        Player player = new Player("fern", mockPlayerManager);
+        Player player = new Player("fern", mockedPlayerManager.mockPlayerManager);
         player.setBet(10);
         Hand hand = player.getCardsInHand();
         hand.addCard(new Card("♥", "2"));
