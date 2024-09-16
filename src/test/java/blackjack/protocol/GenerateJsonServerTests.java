@@ -69,6 +69,7 @@ public class GenerateJsonServerTests {
     @Test
     public void testGenerateUpdateRequest() throws JsonProcessingException {
         Play game = new Play(2);
+        game.clearAllPlayers();
 
         Player sal = new Player("sal", mockPlayerManager);
         Player romeo = new Player("romeo", mockPlayerManager);
