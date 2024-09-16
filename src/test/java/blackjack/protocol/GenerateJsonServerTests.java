@@ -25,7 +25,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 
-public class GenerateJsonTests {
+public class GenerateJsonServerTests {
     private PlayerManager mockPlayerManager;
 
     @BeforeEach

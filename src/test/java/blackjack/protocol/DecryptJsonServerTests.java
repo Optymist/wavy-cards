@@ -21,7 +21,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 
-public class DecryptJsonTests {
+public class DecryptJsonServerTests {
     private PlayerManager mockPlayerManager;
 
     @BeforeEach

@@ -4,7 +4,12 @@ import java.io.*;
 import java.net.*;
 import java.util.*;
 
+import blackjack.Client.protocol.Generate;
 import blackjack.MultiserverManager;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import static blackjack.Client.protocol.Decrypt.*;
 
 public class Client {
     private static final String SERVER_IP = MultiserverManager.IP;
@@ -13,6 +18,8 @@ public class Client {
     private Socket socket;
     private BufferedWriter out;
     private BufferedReader in;
+    private String name;
+    private String serverRequestType;
 
     public Client(Socket socket) {
         try {
@@ -53,8 +60,28 @@ public class Client {
                         break;
                     }
 
-                    System.out.println(serverMessage);
+                    JsonNode messageNode = decryptServerMessage(serverMessage);
 
+                    switch (messageNode.get("protocolType").asText()) {
+                        case ("general"):
+                            serverRequestType = "general";
+                            System.out.println(messageNode.get("message").asText());
+                            break;
+                        case ("connectedUpdate"):
+                            serverRequestType = "connectedUpdate";
+                            this.name = messageNode.get("playerName").asText();
+                            System.out.println(messageNode.get("message").asText());
+                            break;
+                        case ("turnRequest"):
+                            serverRequestType = "turnRequest";
+                            System.out.println(getAvailableActions(messageNode));
+                            break;
+                        case ("update"):
+                            serverRequestType = "update";
+                            System.out.println(getTurn(messageNode));
+                            System.out.println(getPlayerCardInfo(messageNode, name));
+                            break;
+                    }
 
 
                 } catch (IOException e) {
@@ -70,7 +97,12 @@ public class Client {
         while (socket.isConnected()) {
             String messageToSend = scanner.nextLine();
 
-            sendMessage(messageToSend);
+            if (serverRequestType.equals("turnRequest")) {
+                sendMessage(Generate.generateTurnResponse(name, messageToSend));
+            } else {
+                sendMessage(messageToSend);
+            }
+
         }
     }
 
