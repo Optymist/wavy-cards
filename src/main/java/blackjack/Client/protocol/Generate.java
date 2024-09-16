@@ -9,7 +9,7 @@ public class Generate {
         ObjectNode rootNode = new ObjectNode(factory);
 
         rootNode.put("protocolType", "turnResponse");
-        rootNode.put("currentPlayer", name);
+        rootNode.put("playerName", name);
         rootNode.put("action", action);
 
         return rootNode.toString();

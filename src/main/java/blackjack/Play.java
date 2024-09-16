@@ -179,6 +179,10 @@ public class Play implements Runnable {
         }
     }
 
+    public void clearAllPlayers() {
+        players.clear();
+    }
+
     public Dealer getDealer() {
         return dealer;
     }

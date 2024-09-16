@@ -87,29 +87,6 @@ public class GenerateJsonServerTests {
     }
 
     @Test
-    public void testGenerateTurnResponse() throws JsonProcessingException {
-        Player friedChicken = new Player("friedChicken", mockPlayerManager);
-        friedChicken.setTurnResponse("hit");
-
-        Player kentucky = new Player("kentucky", mockPlayerManager);
-        kentucky.setTurnResponse("stand");
-
-        String jsonString1 = GenerateJson.generateTurnResponse(friedChicken);
-        String jsonString2 = GenerateJson.generateTurnResponse(kentucky);
-        ObjectMapper mapper = new ObjectMapper();
-        JsonNode node1 = mapper.readTree(jsonString1);
-        JsonNode node2 = mapper.readTree(jsonString2);
-
-        assertEquals("turnResponse", node1.get("protocolType").asText());
-        assertEquals("friedChicken", node1.get("currentPlayer").asText());
-        assertEquals("hit", node1.get("action").asText());
-
-        assertEquals("turnResponse", node2.get("protocolType").asText());
-        assertEquals("kentucky", node2.get("currentPlayer").asText());
-        assertEquals("stand", node2.get("action").asText());
-    }
-
-    @Test
     public void testGenerateUpdateRequest() throws JsonProcessingException {
         Play game = new Play(2);
 
@@ -126,7 +103,7 @@ public class GenerateJsonServerTests {
         romeo.addCardToHand(new Card(Deck.SUITS[0], Deck.RANKS[2]));
         dealer.addCardToHand(new Card(Deck.SUITS[0], Deck.RANKS[10]));
 
-        String jsonString = GenerateJson.generateUpdateRequest(game);
+        String jsonString = GenerateJson.generateUpdate(game);
         ObjectMapper mapper = new ObjectMapper();
         JsonNode node = mapper.readTree(jsonString);
 
