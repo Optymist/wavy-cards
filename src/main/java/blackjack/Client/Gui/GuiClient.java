@@ -1,4 +1,4 @@
-package blackjack.Client;
+package blackjack.Client.Gui;
 
 /**
  * GuiClient
