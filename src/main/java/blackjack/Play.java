@@ -67,7 +67,7 @@ public class Play implements Runnable {
 
     public boolean allComplete() {
         for (Player player : players) {
-            if (!( player.getState() instanceof Normal )) {
+            if (player.getState() instanceof Normal) {
                 return false;
             }
         }
