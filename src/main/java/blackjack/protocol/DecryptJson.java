@@ -28,11 +28,14 @@ public class DecryptJson {
      * @throws InvalidAction If a non-valid action was chosen.
      */
     public static BlackJackAction getChosenAction(
-            String turnResponse, Player player) throws InvalidAction {
+            String turnResponse, Player player) throws InvalidAction, JsonProcessingException {
         // player is parsed in so that we can call `performAction` to validate 
         // the action, should probably be renamed to something like `validateAction`
+        ObjectMapper mapper = new ObjectMapper();
+        JsonNode rootNode = mapper.readTree(turnResponse);
+        String actionName = rootNode.get("action").asText();
 
-        return null;
+        return BlackJackAction.create(actionName);
     }
 
 }

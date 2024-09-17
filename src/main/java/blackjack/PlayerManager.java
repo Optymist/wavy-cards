@@ -36,14 +36,14 @@ public class PlayerManager implements Runnable {
         String clientMessage;
 
         try {
+            if (players.size() > maxPlayers) {
+                sendMessage(GenerateJson.generateGeneralMessage("Table full."));
+                closeEverything(socket, in, out);
+            }
+
+            chooseName();
+
             while (true) {
-                if (players.size() > maxPlayers) {
-                    sendMessage(GenerateJson.generateGeneralMessage("Table full."));
-                    break;
-                }
-
-                chooseName();
-
                 if (Server.getGameOn()) {
                     new Thread(game).start();
                 }
