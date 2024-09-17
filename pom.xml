@@ -87,6 +87,12 @@
                 </configuration>
             </plugin>
 
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <version>3.3.0</version>
+            </plugin>
+
             <!-- Includes external packages when building -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
