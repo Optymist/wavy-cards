@@ -74,12 +74,18 @@ public class Player {
 
             boolean continueTurn = true;
             while (continueTurn) {
+                try {
+					Thread.sleep(1000);
+				} catch (InterruptedException e) {
+                    System.out.println("Sleep inturuppted");
+				}
                 if (turnResponse != null) {
                     BlackJackAction action;
 					try {
 						action = DecryptJson.getChosenAction(turnResponse, this);
                         action.execute(this, game);
                         continueTurn = false;
+                        turnResponse = null;
 					} catch (InvalidAction e) {
                         // send invalid action message to client
                         // technically doing double work but rather have it
@@ -92,6 +98,7 @@ public class Player {
 						e.printStackTrace();
 					}
                 }
+                // System.out.println(turnResponse);
             }
 
             this.setTurn(false);
@@ -100,6 +107,7 @@ public class Player {
 
     public void setTurnResponse(String response) {
         this.turnResponse = response;
+        System.out.println("Setting response: " + response);
     }
 
     public String getTurnResponse() {
