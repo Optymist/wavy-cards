@@ -45,25 +45,27 @@ public class Play implements Runnable {
     public void startGame() {
         dealInitialCards();
         for (Player player : players) {
-//            player.getPlayerManager().sendMessage(player.toString()); // TODO replace with `update` response
+            // player.getPlayerManager().sendMessage(player.toString()); // TODO replace
+            // with `update` response
             if (player.getHandValue() == 21) {
                 player.setState(new BlackJack());
-//                player.getPlayerManager().sendMessage("BlackJack!"); // TODO replace with `update` response
+                // player.getPlayerManager().sendMessage("BlackJack!"); // TODO replace with
+                // `update` response
             }
             System.out.println(player);
         }
-//        sendTurnMessages();
+        // sendTurnMessages();
         System.out.println(dealer);
         while (running) {
             for (Player player : players) {
                 broadcastToAllPlayers(GenerateJson.generateUpdate(this));
                 player.manageTurn(this);
             }
+            broadcastToAllPlayers(GenerateJson.generateUpdate(this));
             dealerTurn();
             stopGame();
         }
     }
-
 
     public boolean allComplete() {
         for (Player player : players) {
@@ -77,7 +79,7 @@ public class Play implements Runnable {
     public synchronized void handlePlayerMessage(Player player, String message) {
         System.out.println("Received message from player " + player.getName() + ": " + message);
         player.getPlayerManager().sendMessage("Acknowledged: " + message);
-        // TODO !!!!!  I think
+        // TODO !!!!! I think
         // player.performAction(message, this);
     }
 
@@ -102,33 +104,33 @@ public class Play implements Runnable {
         }
     }
 
-//    public static void dealCardToPlayer(Player player) {
-//        player.getCardsInHand().addCard(deck.deal());
-//    }
+    // public static void dealCardToPlayer(Player player) {
+    // player.getCardsInHand().addCard(deck.deal());
+    // }
 
     public void moveTurn() {
         currentPlayerIndex += 1;
         if (currentPlayerIndex > (players.size()) - 1) {
             dealerTurn();
             currentPlayerIndex = 0;
-        }  else {
+        } else {
             sendTurnMessages();
         }
     }
 
     public void dealerTurn() {
-        // TODO needs to send json 
-        broadcastToAllPlayers("Dealer's turn.");
-        broadcastToAllPlayers("Initial cards: " + dealer.toString());
+        // TODO needs to send json
+        broadcastToAllPlayers(GenerateJson.generateGeneralMessage("Dealer's turn."));
+        broadcastToAllPlayers(GenerateJson.generateGeneralMessage("Initial cards: " + dealer.toString()));
         while (dealer.getCardsInHand().getValue() < 17) {
             dealer.addCardToHand(deck.deal());
-            broadcastToAllPlayers(dealer.toString());
+            broadcastToAllPlayers(GenerateJson.generateGeneralMessage(dealer.toString()));
         }
         if (dealer.getCardsInHand().getValue() > 21) {
             dealer.setBust(true);
-            broadcastToAllPlayers("Dealer busts with " + dealer.getCardsInHand().getValue() + "!");
+            broadcastToAllPlayers(GenerateJson.generateGeneralMessage("Dealer busts with " + dealer.getCardsInHand().getValue() + "!"));
         } else {
-            broadcastToAllPlayers("Dealer stands on " + dealer.getCardsInHand().getValue() + ".");
+            broadcastToAllPlayers(GenerateJson.generateGeneralMessage("Dealer stands on " + dealer.getCardsInHand().getValue() + "."));
         }
     }
 
@@ -144,6 +146,7 @@ public class Play implements Runnable {
     }
 
     public void broadcastToAllPlayers(String message) {
+        System.out.println(message);
         for (Player player : players) {
             player.getPlayerManager().sendMessage(message);
         }

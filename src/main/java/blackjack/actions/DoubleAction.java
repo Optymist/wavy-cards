@@ -5,6 +5,7 @@ import blackjack.player.Player;
 import blackjack.player.state.Bust;
 import blackjack.player.state.Normal;
 import blackjack.player.state.Stand;
+import blackjack.protocol.GenerateJson;
 
 public class DoubleAction extends BlackJackAction {
     public DoubleAction() {
@@ -17,7 +18,7 @@ public class DoubleAction extends BlackJackAction {
         player.addCardToHand(game.getDeck().deal());
         System.out.println(player.getName() + " doubles.");
         // TODO idk what to do, you can choose \/
-        player.getPlayerManager().sendMessage(player.toString());
+        player.getPlayerManager().sendMessage(GenerateJson.generateGeneralMessage(player.toString()));
 
         switch (player.getState().toString()) {
             case "normal":

@@ -14,6 +14,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+
 public class Player {
     private final PlayerManager playerManager;
     private final Hand cardsInHand;
@@ -82,7 +84,10 @@ public class Player {
                         // send invalid action message to client
                         // technically doing double work but rather have it
                         // and not need it than need it and not have it 
+                        playerManager.sendMessage(turnRequest);
                         turnResponse = null;
+					} catch (JsonProcessingException e) {
+						e.printStackTrace();
 					}
                 }
             }
