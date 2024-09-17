@@ -87,6 +87,8 @@ public class Player {
                         playerManager.sendMessage(turnRequest);
                         turnResponse = null;
 					} catch (JsonProcessingException e) {
+                        playerManager.sendMessage(turnRequest);
+                        turnResponse = null;
 						e.printStackTrace();
 					}
                 }
