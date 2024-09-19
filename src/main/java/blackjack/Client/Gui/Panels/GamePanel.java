@@ -3,9 +3,15 @@ package blackjack.Client.Gui.Panels;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Image;
+import java.awt.Button;
+import java.awt.Component;
+import java.awt.event.ActionListener;
+import java.awt.image.BufferedImage;
+import java.util.ArrayList;
 
 import javax.swing.JPanel;
 
+import blackjack.Client.Gui.Entities.GameEntity;
 import blackjack.Client.Gui.Frames.GameFrame;
 
 /**
@@ -18,6 +24,7 @@ public abstract class GamePanel extends JPanel implements Runnable {
     public final static int fps = 60;
     private final int lambda = 1000000000;
     protected GameFrame window;
+    private ArrayList<GameEntity> entities = new ArrayList<>();
 
     public GamePanel() {
         super();
@@ -122,11 +129,8 @@ public abstract class GamePanel extends JPanel implements Runnable {
         return new ArrayList<GameEntity>(entities);
     }
 
-    public ArrayList<Component> components() {
-        return components;
+    public Thread getGameThread() {
+        return this.gameThread;
     }
 
-    public void addComponent(Component c) {
-        this.components.add(c);
-    }
 }

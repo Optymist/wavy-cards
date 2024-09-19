@@ -28,7 +28,7 @@ public class GameFrame extends JFrame {
     }
 
     public void removePanel() {
-        currentPanel.gameThread.interrupt();
+        this.currentPanel.getGameThread().interrupt();
         this.remove(currentPanel);
         this.pack();
     }
