@@ -56,4 +56,8 @@ public class Hand {
         return sortedCards;
     }
 
+    public void clearCards() {
+        this.cards.clear();
+    }
+
 }

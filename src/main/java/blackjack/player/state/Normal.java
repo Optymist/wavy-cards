@@ -28,10 +28,14 @@ public class Normal implements playerState {
 
     public boolean canSplit(Hand cardsInHand) {
         List<Card> cards = cardsInHand.getCards();
-        Card one = cards.get(0);
-        Card two = cards.get(1);
+        if (cards.size() == 2) {
+            Card one = cards.get(0);
+            Card two = cards.get(1);
 
-        return cards.size() == 2 && one.getValue() == two.getValue();
+            return one.getValue() == two.getValue();
+        } else {
+            return false;
+        }
     }
 
     @Override

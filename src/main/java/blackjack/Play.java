@@ -39,26 +39,26 @@ public class Play implements Runnable {
             startGame();
         } catch (Exception e) {
             System.out.println("Game encountered an error:\n" + e.getMessage());
+            e.printStackTrace();
         }
     }
 
     public void startGame() {
         dealInitialCards();
+        broadcastToAllPlayers(GenerateJson.generateUpdate(this));
         for (Player player : players) {
-            // player.getPlayerManager().sendMessage(player.toString()); // TODO replace
-            // with `update` response
             if (player.getHandValue() == 21) {
                 player.setState(new BlackJack());
-                // player.getPlayerManager().sendMessage("BlackJack!"); // TODO replace with
-                // `update` response
+                player.getPlayerManager().sendMessage(GenerateJson.generateGeneralMessage("You got blackjack!"));
             }
             System.out.println(player);
         }
-        // sendTurnMessages();
+
         System.out.println(dealer);
+
         while (running) {
             for (Player player : players) {
-                broadcastToAllPlayers(GenerateJson.generateUpdate(this));
+                broadcastExcludingCurrent(GenerateJson.generateGeneralMessage(player.getName() + "'s turn."), player);
                 player.manageTurn(this);
             }
             broadcastToAllPlayers(GenerateJson.generateUpdate(this));

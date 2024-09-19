@@ -4,8 +4,6 @@ import blackjack.Play;
 import blackjack.player.Player;
 import blackjack.protocol.GenerateJson;
 
-// checking I can commit to github
-
 public class HitAction extends BlackJackAction {
     public HitAction() {
         super("hit");

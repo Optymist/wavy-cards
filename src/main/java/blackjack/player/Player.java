@@ -19,7 +19,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 public class Player {
     private final PlayerManager playerManager;
     private final Hand cardsInHand;
-//    private int handValue;
+    private List<Player> splitPlay = new ArrayList<>();
     private double money;
     private double bet;
     private List<BlackJackAction> actions;
@@ -63,45 +63,58 @@ public class Player {
      *             we can call `action.execute(Play)`
      */
     public void manageTurn(Play game) {
-        while (state instanceof Normal) {
-            this.setTurn(true);
+        if (!splitPlay.isEmpty()) {
+            System.out.println(splitPlay);
+            handleSplitPlay(game);
+        } else {
+            while (state instanceof Normal) {
+                this.setTurn(true);
 
-            this.actions = state.getActions(cardsInHand);
+                this.actions = state.getActions(cardsInHand);
 
-            String turnRequest = GenerateJson.generateTurnRequest(this);
-            playerManager.sendMessage(turnRequest);
-            // send turnRequest
+                String turnRequest = GenerateJson.generateTurnRequest(this);
+                playerManager.sendMessage(turnRequest);
+                // send turnRequest
 
-            boolean continueTurn = true;
-            while (continueTurn) {
-                try {
-					Thread.sleep(1000);
-				} catch (InterruptedException e) {
-                    System.out.println("Sleep inturuppted");
-				}
-                if (turnResponse != null) {
-                    BlackJackAction action;
-					try {
-						action = DecryptJson.getChosenAction(turnResponse, this);
-                        action.execute(this, game);
-                        continueTurn = false;
-                        turnResponse = null;
-					} catch (InvalidAction e) {
-                        // send invalid action message to client
-                        // technically doing double work but rather have it
-                        // and not need it than need it and not have it 
-                        playerManager.sendMessage(turnRequest);
-                        turnResponse = null;
-					} catch (JsonProcessingException e) {
-                        playerManager.sendMessage(turnRequest);
-                        turnResponse = null;
-						e.printStackTrace();
-					}
+                boolean continueTurn = true;
+                while (continueTurn) {
+                    try {
+                        Thread.sleep(1000);
+                    } catch (InterruptedException e) {
+                        System.out.println("Sleep inturuppted");
+                    }
+                    if (turnResponse != null) {
+                        BlackJackAction action;
+                        try {
+                            action = DecryptJson.getChosenAction(turnResponse, this);
+                            action.execute(this, game);
+                            continueTurn = false;
+                            turnResponse = null;
+                        } catch (InvalidAction e) {
+                            // send invalid action message to client
+                            // technically doing double work but rather have it
+                            // and not need it than need it and not have it
+                            playerManager.sendMessage(turnRequest);
+                            turnResponse = null;
+                        } catch (JsonProcessingException e) {
+                            playerManager.sendMessage(turnRequest);
+                            turnResponse = null;
+                            e.printStackTrace();
+                        }
+                    }
+                    // System.out.println(turnResponse);
                 }
-                // System.out.println(turnResponse);
-            }
 
-            this.setTurn(false);
+                this.setTurn(false);
+            }
+        }
+
+    }
+
+    // todo --> allow player to play on both hands... Currently only allowing one
+    private void handleSplitPlay(Play game) {
+        for (Player player : splitPlay) {
+            player.manageTurn(game);
         }
     }
 
@@ -197,14 +210,29 @@ public class Player {
     }
 
 
-    public void splitHand() {
-        // todo --> add logic
+    public Player splitHand(Play game) {
+        List<Card> cards = getCardsInHand().getCards();
+        Card newDeckCard = getCardsInHand().getCards().remove(cards.size() - 1);
+        Player splitPlayer = this;
+        splitPlayer.getCardsInHand().clearCards();
+        splitPlayer.addCardToHand(newDeckCard);
+
+        this.addCardToHand(game.getDeck().deal());
+        splitPlayer.addCardToHand(game.getDeck().deal());
+
+        splitPlay.add(this);
+        splitPlay.add(splitPlayer);
+
+        return splitPlayer;
+    }
+
+    public List<Player> getSplitPlay() {
+        return this.splitPlay;
     }
 
 
     public void performAction(BlackJackAction action, Play game) {
         action.execute(this, game);
-        // playerManager.sendMessage("Invalid action: " + actionName);
     }
 
     @Override

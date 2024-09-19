@@ -7,7 +7,6 @@ import java.util.*;
 import blackjack.Client.protocol.Generate;
 import blackjack.MultiserverManager;
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 import static blackjack.Client.protocol.Decrypt.*;
 
@@ -78,7 +77,7 @@ public class Client {
                             break;
                         case ("update"):
                             serverRequestType = "update";
-                            System.out.println(getTurn(messageNode));
+//                            System.out.println(getTurn(messageNode));
                             System.out.println(getPlayerCardInfo(messageNode, name));
                             break;
                     }
