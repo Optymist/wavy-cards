@@ -7,10 +7,13 @@ import blackjack.Client.Gui.Panels.GamePanel;
  */
 public class CreateGamePanel extends GamePanel {
 
+    public CreateGamePanel() {
+        super();
+    }
+
 	@Override
 	public void packPanel() {
 
 	}
 
-    
 }

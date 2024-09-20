@@ -12,10 +12,14 @@ public class GameFrame extends JFrame {
     private volatile GamePanel currentPanel;
 
     public GameFrame() {
+        this("WavyCards");
+    }
+
+    public GameFrame(String title) {
         super();
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setResizable(false);
-        setTitle("WavyCards");
+        setTitle(title);
     }
 
     public void setPanel(GamePanel newPanel) {

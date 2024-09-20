@@ -1,4 +1,6 @@
-package blackjack.Client.Gui.Panels;
+package blackjack.Client.Gui.Panels.JoinGamePanels;
+
+import blackjack.Client.Gui.Panels.GamePanel;
 
 /**
  * JoinGamePanel
