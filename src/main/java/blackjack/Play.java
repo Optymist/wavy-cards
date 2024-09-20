@@ -48,8 +48,7 @@ public class Play implements Runnable {
         dealInitialCards();
         broadcastToAllPlayers(GenerateJson.generateUpdate(this));
         for (Player player : players) {
-            if (player.getHandValue() == 21) {
-                player.getCardsInHand().setState(new BlackJack());
+            if (player.getCardsInHand().getState() instanceof BlackJack) {
                 player.getPlayerManager().sendMessage(GenerateJson.generateGeneralMessage("You got blackjack!"));
             }
             System.out.println(player);

@@ -42,6 +42,10 @@ public class Hand {
         for (Card card : sortedCards) {
             this.handValue += card.rankValue(this);
         }
+        if (sortedCards.size() == 2 && handValue == 21) {
+            this.state = new BlackJack();
+        }
+
     }
 
     private handState determineState() {

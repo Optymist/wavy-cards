@@ -13,12 +13,6 @@ public class Deck {
     public Deck(int numDecks) {
         PLAY_DECK = createDeck(numDecks);
         Collections.shuffle(PLAY_DECK);
-        PLAY_DECK.add(new Card(SUITS[0], RANKS[0]));
-        PLAY_DECK.add(new Card(SUITS[0], RANKS[0]));
-        PLAY_DECK.add(new Card(SUITS[0], RANKS[0]));
-        PLAY_DECK.add(new Card(SUITS[0], RANKS[0]));
-        PLAY_DECK.add(new Card(SUITS[0], RANKS[0]));
-        PLAY_DECK.add(new Card(SUITS[0], RANKS[0]));
     }
 
 
