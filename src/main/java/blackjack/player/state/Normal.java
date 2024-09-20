@@ -1,16 +1,18 @@
 package blackjack.player.state;
 
+import blackjack.Play;
 import blackjack.actions.BlackJackAction;
 import blackjack.actions.*;
 import blackjack.deck.Card;
 import blackjack.player.Hand;
+import blackjack.player.Player;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class Normal implements playerState {
+public class Normal implements handState {
     @Override
-    public void doRound() {
+    public void doRound(Player player, Play game) {
 
     }
 
@@ -19,7 +21,7 @@ public class Normal implements playerState {
         List<BlackJackAction> availableActions =
                 new ArrayList<>(List.of(new DoubleAction(), new HitAction(), new StandAction(), new SurrenderAction()));
 
-        if (canSplit(hand)) {
+        if (canSplit(hand) && !hand.isBeanSplit()) {
             availableActions.add(new SplitAction());
         }
 
@@ -28,10 +30,14 @@ public class Normal implements playerState {
 
     public boolean canSplit(Hand cardsInHand) {
         List<Card> cards = cardsInHand.getCards();
-        Card one = cards.get(0);
-        Card two = cards.get(1);
+        if (cards.size() == 2) {
+            Card one = cards.get(0);
+            Card two = cards.get(1);
 
-        return cards.size() == 2 && one.getValue() == two.getValue();
+            return one.getValue() == two.getValue();
+        } else {
+            return false;
+        }
     }
 
     @Override

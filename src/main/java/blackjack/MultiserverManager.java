@@ -24,9 +24,9 @@ public class MultiserverManager {
                 System.out.println("How many players would you like to host: ");
                 String players = scanner.nextLine();
 
-                while (!players.matches("[1-6]+")) {
+                while (!players.matches("[1-8]")) {
                     System.out.println("Not a valid input.");
-                    System.out.println("Enter a number from 1 to 6:");
+                    System.out.println("Enter a number from 1 to 8:");
                     players = scanner.nextLine();
                 }
                 setupServer(scanner);

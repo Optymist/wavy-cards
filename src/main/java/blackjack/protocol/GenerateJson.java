@@ -4,6 +4,7 @@ package blackjack.protocol;
 
 import blackjack.deck.Card;
 import blackjack.player.Dealer;
+import blackjack.player.Hand;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
@@ -43,10 +44,10 @@ public class GenerateJson {
         return rootNode.toString();
     }
 
-    public static String generateTurnRequest(Player player) {
+    public static String generateTurnRequest(Player player, Hand currentHand) {
         JsonNodeFactory factory = JsonNodeFactory.instance;
         ObjectNode rootNode = new ObjectNode(factory);
-        List<BlackJackAction> actions = player.getState().getActions(player.getCardsInHand());
+        List<BlackJackAction> actions = currentHand.getState().getActions(currentHand);
         ArrayNode actionArrayNode = new ArrayNode(factory);
         for (BlackJackAction blackJackAction : actions) {
             actionArrayNode.add(blackJackAction.toString());
@@ -83,7 +84,7 @@ public class GenerateJson {
             cardArrayNode.add(card.toString());
         }
         rootNode.put("name", player.getName());
-        rootNode.put("state", player.getState().toString());
+        rootNode.put("state", player.getCardsInHand().getState().toString());
         rootNode.set("hand", cardArrayNode);
         rootNode.put("handValue", player.getHandValue());
         rootNode.put("money", player.getMoney());
@@ -101,7 +102,7 @@ public class GenerateJson {
         for (Card card : cardList) {
             cardArrayNode.add(card.toString());
         }
-        rootNode.put("state", dealer.getState().toString());
+        rootNode.put("state", dealer.getCardsInHand().getState().toString());
         rootNode.set("hand", cardArrayNode);
         rootNode.put("handValue", dealer.getHandValue());
 

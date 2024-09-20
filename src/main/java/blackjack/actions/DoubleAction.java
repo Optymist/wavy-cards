@@ -1,10 +1,11 @@
 package blackjack.actions;
 
 import blackjack.Play;
+import blackjack.player.Hand;
 import blackjack.player.Player;
 import blackjack.player.state.Bust;
-import blackjack.player.state.Normal;
 import blackjack.player.state.Stand;
+import blackjack.protocol.GenerateJson;
 
 public class DoubleAction extends BlackJackAction {
     public DoubleAction() {
@@ -12,19 +13,19 @@ public class DoubleAction extends BlackJackAction {
     }
 
     @Override
-    public void execute(Player player, Play game) {
+    public void execute(Hand playingHand, Player player, Play game) {
         player.doubleBet();
-        player.addCardToHand(game.getDeck().deal());
+        playingHand.setState(playingHand.addCard(game.getDeck().deal()));
         System.out.println(player.getName() + " doubles.");
         // TODO idk what to do, you can choose \/
-        player.getPlayerManager().sendMessage(player.toString());
+        player.getPlayerManager().sendMessage(GenerateJson.generateGeneralMessage(player.toString()));
 
-        switch (player.getState().toString()) {
+        switch (playingHand.getState().toString()) {
             case "normal":
-                player.setState(new Stand());
+                playingHand.setState(new Stand());
                 break;
             default:
-                player.setState(new Bust());
+                playingHand.setState(new Bust());
         }
     }
 

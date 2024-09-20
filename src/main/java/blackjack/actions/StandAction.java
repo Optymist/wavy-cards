@@ -1,9 +1,11 @@
 package blackjack.actions;
 
 import blackjack.Play;
+import blackjack.player.Hand;
 import blackjack.player.Player;
 import blackjack.player.state.Normal;
 import blackjack.player.state.Stand;
+import blackjack.protocol.GenerateJson;
 
 public class StandAction extends BlackJackAction {
     public StandAction() {
@@ -11,11 +13,11 @@ public class StandAction extends BlackJackAction {
     }
 
     @Override
-    public void execute(Player player, Play game) {
+    public void execute(Hand playingHand, Player player, Play game) {
         System.out.println(player.getName() + " stands.");
-        player.getPlayerManager().sendMessage(player.toString());
-        if (player.getState() instanceof Normal) {
-            player.setState(new Stand());
+        player.getPlayerManager().sendMessage(GenerateJson.generateGeneralMessage(player.toString()));
+        if (playingHand.getState() instanceof Normal) {
+            playingHand.setState(new Stand());
         }
     }
 

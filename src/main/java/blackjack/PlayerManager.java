@@ -36,14 +36,14 @@ public class PlayerManager implements Runnable {
         String clientMessage;
 
         try {
+            if (players.size() > maxPlayers) {
+                sendMessage(GenerateJson.generateGeneralMessage("Table full."));
+                closeEverything(socket, in, out);
+            }
+
+            chooseName();
+
             while (true) {
-                if (players.size() > maxPlayers) {
-                    sendMessage(GenerateJson.generateGeneralMessage("Table full."));
-                    break;
-                }
-
-                chooseName();
-
                 if (Server.getGameOn()) {
                     new Thread(game).start();
                 }
@@ -52,12 +52,17 @@ public class PlayerManager implements Runnable {
                     if (player.isTurn()) {
                         System.out.println(clientMessage);
                         player.setTurnResponse(clientMessage);
-                        // game.handlePlayerMessage(player, clientMessage);
-                        // game.round(player);
                     }
                 }
 
-                System.out.println("All players completed.");
+                if (clientMessage == null) {
+                    removeClient();
+                    break;
+                }
+
+                broadcastMessage(GenerateJson.generateGeneralMessage("All players completed.\n"));
+
+//                System.out.println("All players completed.");
             }
         } catch (IOException e) {
             System.out.println(e.getMessage());
@@ -75,19 +80,19 @@ public class PlayerManager implements Runnable {
             String clientMessage = in.readLine();
 
             if (clientMessage == null) { // Client disconnected
-                closeEverything(socket, in, out);
+                removeClient();
             }
 
             while (!validateName(clientMessage)) {
                 sendMessage(GenerateJson.generateGeneralMessage("Name already taken. Pick again: "));
                 clientMessage = in.readLine();
                 if (clientMessage == null) { // Client disconnected
-                    closeEverything(socket, in, out);
+                    removeClient();
                 }
             }
 
             if (clientMessage == null) { // Client disconnected
-                closeEverything(socket, in, out);
+                removeClient();
             }
 
             name = clientMessage;
@@ -113,7 +118,7 @@ public class PlayerManager implements Runnable {
         if (!(game == null)) {
             game.removePlayer(player);
         }
-        broadcastMessage(name + " has left the game.");
+        System.out.println(name + " has left the game.");
     }
 
     public void broadcastMessage(String message) {
