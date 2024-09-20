@@ -1,6 +1,7 @@
 package blackjack.actions;
 
 import blackjack.Play;
+import blackjack.player.Hand;
 import blackjack.player.Player;
 import blackjack.protocol.Exceptions.InvalidAction;
 
@@ -12,7 +13,7 @@ public abstract class BlackJackAction {
         this.actionName = actionName;
     }
 
-    public abstract void execute(Player player, Play game);
+    public abstract void execute(Hand playingHand, Player player, Play game);
 
     public String getActionName() {
         return actionName;

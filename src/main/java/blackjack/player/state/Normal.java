@@ -8,7 +8,7 @@ import blackjack.player.Hand;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Normal implements playerState {
+public class Normal implements handState {
     @Override
     public void doRound() {
 

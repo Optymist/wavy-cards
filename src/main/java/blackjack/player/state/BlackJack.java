@@ -5,7 +5,7 @@ import blackjack.player.Hand;
 
 import java.util.List;
 
-public class BlackJack implements playerState {
+public class BlackJack implements handState {
     @Override
     public void doRound() {
         return;

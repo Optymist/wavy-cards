@@ -1,9 +1,13 @@
 package blackjack.actions;
 
 import blackjack.Play;
+import blackjack.player.Hand;
 import blackjack.player.Player;
 import blackjack.player.state.Split;
 import blackjack.protocol.GenerateJson;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class SplitAction extends BlackJackAction {
     public SplitAction() {
@@ -11,12 +15,29 @@ public class SplitAction extends BlackJackAction {
     }
 
     @Override
-    public void execute(Player player, Play game) {
-        player.setState(new Split());
-        Player splitPlayer = player.splitHand(game);
+    public void execute(Hand playingHand, Player player, Play game) {
+        playingHand.setState(new Split());
+        Hand splitPlayerHand = player.splitHand(game);
+        Hand otherHand = player.getCardsInHand();
         System.out.println(player.getName() + " splits.");
-        player.getPlayerManager().sendMessage(GenerateJson.generateGeneralMessage(player.toString()));
-        player.getPlayerManager().sendMessage(GenerateJson.generateGeneralMessage(splitPlayer.toString()));
+        player.getPlayerManager().sendMessage(GenerateJson.generateGeneralMessage(player.getCardsInHand().toString()));
+        player.getPlayerManager().sendMessage(GenerateJson.generateGeneralMessage(splitPlayerHand.toString()));
+
+        handleSplitPlay(splitPlayerHand, otherHand, player, game);
+//        player.getPlayerManager().sendMessage("Playing on this hand first: ");
+//        player.getPlayerManager().sendMessage(GenerateJson.generateGeneralMessage(player.getCardsInHand().toString()));
+
+    }
+
+    // todo --> allow player to play on both hands... Currently only allowing one
+    public void handleSplitPlay(Hand splitHand, Hand playerHand, Player player, Play game) {
+        List<Hand> playerHands = new ArrayList<>();
+        playerHands.add(playerHand);
+        playerHands.add(splitHand);
+        for (Hand hand : playerHands) {
+            player.getPlayerManager().sendMessage(GenerateJson.generateGeneralMessage("Playing on hand: " + playerHand));
+            player.manageTurn(hand, game);
+        }
     }
 
     @Override

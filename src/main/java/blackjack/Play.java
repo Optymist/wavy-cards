@@ -48,7 +48,7 @@ public class Play implements Runnable {
         broadcastToAllPlayers(GenerateJson.generateUpdate(this));
         for (Player player : players) {
             if (player.getHandValue() == 21) {
-                player.setState(new BlackJack());
+                player.getCardsInHand().setState(new BlackJack());
                 player.getPlayerManager().sendMessage(GenerateJson.generateGeneralMessage("You got blackjack!"));
             }
             System.out.println(player);
@@ -59,7 +59,7 @@ public class Play implements Runnable {
         while (running) {
             for (Player player : players) {
                 broadcastExcludingCurrent(GenerateJson.generateGeneralMessage(player.getName() + "'s turn."), player);
-                player.manageTurn(this);
+                player.manageTurn(player.getCardsInHand(), this);
             }
             broadcastToAllPlayers(GenerateJson.generateUpdate(this));
             dealerTurn();
@@ -69,7 +69,7 @@ public class Play implements Runnable {
 
     public boolean allComplete() {
         for (Player player : players) {
-            if (player.getState() instanceof Normal) {
+            if (player.getCardsInHand().getState() instanceof Normal) {
                 return false;
             }
         }
@@ -95,7 +95,7 @@ public class Play implements Runnable {
         for (int i = 0; i < 2; i++) {
             for (Player player : players) {
                 if (player.getCardsInHand().getCards().size() < 2) {
-                    player.addCardToHand(deck.deal());
+                    player.getCardsInHand().addCard(deck.deal());
                 }
             }
             if (dealer.getCardsInHand().getCards().size() < 2) {

@@ -46,7 +46,7 @@ public class GenerateJson {
     public static String generateTurnRequest(Player player) {
         JsonNodeFactory factory = JsonNodeFactory.instance;
         ObjectNode rootNode = new ObjectNode(factory);
-        List<BlackJackAction> actions = player.getState().getActions(player.getCardsInHand());
+        List<BlackJackAction> actions = player.getCardsInHand().getState().getActions(player.getCardsInHand());
         ArrayNode actionArrayNode = new ArrayNode(factory);
         for (BlackJackAction blackJackAction : actions) {
             actionArrayNode.add(blackJackAction.toString());
@@ -83,7 +83,7 @@ public class GenerateJson {
             cardArrayNode.add(card.toString());
         }
         rootNode.put("name", player.getName());
-        rootNode.put("state", player.getState().toString());
+        rootNode.put("state", player.getCardsInHand().getState().toString());
         rootNode.set("hand", cardArrayNode);
         rootNode.put("handValue", player.getHandValue());
         rootNode.put("money", player.getMoney());
@@ -101,7 +101,7 @@ public class GenerateJson {
         for (Card card : cardList) {
             cardArrayNode.add(card.toString());
         }
-        rootNode.put("state", dealer.getState().toString());
+        rootNode.put("state", dealer.getCardsInHand().getState().toString());
         rootNode.set("hand", cardArrayNode);
         rootNode.put("handValue", dealer.getHandValue());
 

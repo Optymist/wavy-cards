@@ -5,7 +5,6 @@ import blackjack.PlayerManager;
 import blackjack.actions.*;
 import blackjack.deck.Card;
 import blackjack.player.state.Normal;
-import blackjack.player.state.playerState;
 import blackjack.protocol.DecryptJson;
 import blackjack.protocol.GenerateJson;
 import blackjack.protocol.Exceptions.InvalidAction;
@@ -19,7 +18,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 public class Player {
     private final PlayerManager playerManager;
     private final Hand cardsInHand;
-    private List<Player> splitPlay = new ArrayList<>();
+    private Hand splitPlay = new Hand();
     private double money;
     private double bet;
     private List<BlackJackAction> actions;
@@ -29,7 +28,6 @@ public class Player {
     private boolean isTurn;
     private boolean hasBlackJack;
     private final String name;
-    private playerState state;
     private String turnResponse = null;
 
 
@@ -45,7 +43,6 @@ public class Player {
         this.hasBlackJack = false;
         this.money = 2500;
         this.bet = 10;
-        this.state = new Normal();
 
         this.actions = new ArrayList<>();
         actions.add(new HitAction());
@@ -62,15 +59,15 @@ public class Player {
      * @param game The game that the player is connected to so that 
      *             we can call `action.execute(Play)`
      */
-    public void manageTurn(Play game) {
-        if (!splitPlay.isEmpty()) {
-            System.out.println(splitPlay);
-            handleSplitPlay(game);
-        } else {
-            while (state instanceof Normal) {
+    public void manageTurn(Hand playerHand, Play game) {
+//        if (!(splitPlay.getCards().isEmpty())) {
+//            System.out.println(splitPlay);
+//            handleSplitPlay(game);
+//        } else {
+            while (playerHand.getState() instanceof Normal) {
                 this.setTurn(true);
 
-                this.actions = state.getActions(cardsInHand);
+                this.actions = playerHand.getState().getActions(cardsInHand);
 
                 String turnRequest = GenerateJson.generateTurnRequest(this);
                 playerManager.sendMessage(turnRequest);
@@ -87,7 +84,7 @@ public class Player {
                         BlackJackAction action;
                         try {
                             action = DecryptJson.getChosenAction(turnResponse, this);
-                            action.execute(this, game);
+                            action.execute(playerHand,this, game);
                             continueTurn = false;
                             turnResponse = null;
                         } catch (InvalidAction e) {
@@ -107,16 +104,10 @@ public class Player {
 
                 this.setTurn(false);
             }
-        }
 
     }
 
-    // todo --> allow player to play on both hands... Currently only allowing one
-    private void handleSplitPlay(Play game) {
-        for (Player player : splitPlay) {
-            player.manageTurn(game);
-        }
-    }
+
 
     public void setTurnResponse(String response) {
         this.turnResponse = response;
@@ -127,17 +118,17 @@ public class Player {
         return turnResponse;
     }
 
-    public void addCardToHand(Card dealtCard) {
-        this.setState(cardsInHand.addCard(dealtCard));
-    }
-
-    public void setState(playerState state) {
-        this.state = state;
-    }
-
-    public playerState getState() {
-        return state;
-    }
+//    public void addCardToHand(Card dealtCard) {
+//        this.setState(cardsInHand.addCard(dealtCard));
+//    }
+//
+//    public void setState(playerState state) {
+//        this.state = state;
+//    }
+//
+//    public playerState getState() {
+//        return state;
+//    }
 
     public boolean isTurn() {
         return isTurn;
@@ -210,29 +201,27 @@ public class Player {
     }
 
 
-    public Player splitHand(Play game) {
+    public Hand splitHand(Play game) {
+        splitPlay = new Hand();
+
         List<Card> cards = getCardsInHand().getCards();
         Card newDeckCard = getCardsInHand().getCards().remove(cards.size() - 1);
-        Player splitPlayer = this;
-        splitPlayer.getCardsInHand().clearCards();
-        splitPlayer.addCardToHand(newDeckCard);
 
-        this.addCardToHand(game.getDeck().deal());
-        splitPlayer.addCardToHand(game.getDeck().deal());
+        splitPlay.addCard(newDeckCard);
 
-        splitPlay.add(this);
-        splitPlay.add(splitPlayer);
+        this.cardsInHand.addCard(game.getDeck().deal());
+        splitPlay.addCard(game.getDeck().deal());
 
-        return splitPlayer;
+        return splitPlay;
     }
 
-    public List<Player> getSplitPlay() {
+    public Hand getSplitPlay() {
         return this.splitPlay;
     }
 
 
     public void performAction(BlackJackAction action, Play game) {
-        action.execute(this, game);
+        action.execute(this.cardsInHand,this, game);
     }
 
     @Override

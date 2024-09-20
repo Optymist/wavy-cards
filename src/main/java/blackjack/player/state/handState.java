@@ -6,7 +6,7 @@ import blackjack.player.Hand;
 
 import java.util.List;
 
-public interface playerState {
+public interface handState {
     void doRound();
 
     List<BlackJackAction> getActions(Hand hand);
