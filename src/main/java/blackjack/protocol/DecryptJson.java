@@ -1,17 +1,11 @@
-// todo
-// takes json string and crafts objects from it 
-// action objects 
-
 package blackjack.protocol;
 
 import blackjack.actions.BlackJackAction;
-import blackjack.player.Player;
 import blackjack.protocol.Exceptions.InvalidAction;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -23,19 +17,23 @@ public class DecryptJson {
      * This method takes a client's turnResponse and gets the chosen action.
      *
      * @param turnResponse The response from the client
-     * @param player       The player linked to the client.
+     * @param actionsAllowed the valid actions available for the player to choose from
      * @return The Chosen BlackJackAction.
      * @throws InvalidAction If a non-valid action was chosen.
      */
     public static BlackJackAction getChosenAction(
-            String turnResponse, Player player) throws InvalidAction, JsonProcessingException {
-        // player is parsed in so that we can call `performAction` to validate 
-        // the action, should probably be renamed to something like `validateAction`
+            String turnResponse, List<BlackJackAction> actionsAllowed) throws InvalidAction, JsonProcessingException {
         ObjectMapper mapper = new ObjectMapper();
         JsonNode rootNode = mapper.readTree(turnResponse);
         String actionName = rootNode.get("action").asText();
 
-        return BlackJackAction.create(actionName);
+        for (BlackJackAction action : actionsAllowed) {
+            if (action.toString().equals(actionName)) {
+                return BlackJackAction.create(actionName);
+            }
+        }
+
+        throw new InvalidAction(actionName);
     }
 
 }
