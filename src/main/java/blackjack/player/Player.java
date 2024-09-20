@@ -269,10 +269,25 @@ public class Player {
 
     @Override
     public String toString() {
-        return name + " {" +
-                "cardsInHand=" + cardsInHand.getCards() +
-                ", handValue=" + cardsInHand.getValue() +
-                ", moneyLeft=" + money +
-                '}';
+        if (splitPlay.isEmpty()) {
+            return name + " {" +
+                    "cardsInHand=" + cardsInHand.getCards() +
+                    ", handValue=" + cardsInHand.getValue() +
+                    ", moneyLeft=" + money +
+                    '}';
+        } else {
+            Hand splitHand = splitPlay.get(1);
+            return name + " {" +
+                    "cardsInHand=" + cardsInHand.getCards() +
+                    ", handValue=" + cardsInHand.getValue() +
+                    ", moneyLeft=" + money +
+                    '}' +
+                    name + " {" +
+                    "cardsInHand=" + splitHand.getCards() +
+                    ", handValue=" + splitHand.getValue() +
+                    ", moneyLeft=" + money +
+                    '}';
+        }
+
     }
 }

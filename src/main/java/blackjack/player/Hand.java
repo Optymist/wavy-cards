@@ -13,11 +13,13 @@ public class Hand {
     private final List<Card> cards;
     private int handValue;
     private handState state;
+    private boolean beanSplit;
 
     public Hand() {
         this.cards = new ArrayList<>();
         this.handValue = 0;
         this.state = new Normal();
+        this.beanSplit = false;
     }
 
     public handState addCard(Card cardToAdd) {
@@ -68,6 +70,14 @@ public class Hand {
 
     public handState getState() {
         return state;
+    }
+
+    public boolean isBeanSplit() {
+        return beanSplit;
+    }
+
+    public void setBeanSplit(boolean beanSplit) {
+        this.beanSplit = beanSplit;
     }
 
     @Override

@@ -64,6 +64,7 @@ public class Play implements Runnable {
                 if (player.getIsSplit()) {
                     player.setIsSplit(false);
                     for (Hand hand : player.getSplitPlay()) {
+                        hand.setBeanSplit(true);
                         player.getPlayerManager().sendMessage(GenerateJson.generateGeneralMessage("Current playing hand: " + hand));
                         player.manageTurn(hand, this);
                     }
