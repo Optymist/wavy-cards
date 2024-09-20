@@ -5,6 +5,7 @@ import blackjack.PlayerManager;
 import blackjack.actions.*;
 import blackjack.deck.Card;
 import blackjack.player.state.Normal;
+import blackjack.player.state.Split;
 import blackjack.protocol.DecryptJson;
 import blackjack.protocol.GenerateJson;
 import blackjack.protocol.Exceptions.InvalidAction;
@@ -87,6 +88,10 @@ public class Player {
                             action.execute(playerHand,this, game);
                             continueTurn = false;
                             turnResponse = null;
+                            if (playerHand.getState() instanceof Split) {
+                                this.getCardsInHand().getState().doRound(this, game);
+                                break;
+                            }
                         } catch (InvalidAction e) {
                             // send invalid action message to client
                             // technically doing double work but rather have it
@@ -106,7 +111,6 @@ public class Player {
             }
 
     }
-
 
 
     public void setTurnResponse(String response) {

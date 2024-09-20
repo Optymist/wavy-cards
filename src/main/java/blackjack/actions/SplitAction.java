@@ -18,27 +18,18 @@ public class SplitAction extends BlackJackAction {
     public void execute(Hand playingHand, Player player, Play game) {
         playingHand.setState(new Split());
         Hand splitPlayerHand = player.splitHand(game);
-        Hand otherHand = player.getCardsInHand();
+//        Hand otherHand = player.getCardsInHand();
         System.out.println(player.getName() + " splits.");
         player.getPlayerManager().sendMessage(GenerateJson.generateGeneralMessage(player.getCardsInHand().toString()));
         player.getPlayerManager().sendMessage(GenerateJson.generateGeneralMessage(splitPlayerHand.toString()));
 
-        handleSplitPlay(splitPlayerHand, otherHand, player, game);
+//        handleSplitPlay(splitPlayerHand, otherHand, player, game);
 //        player.getPlayerManager().sendMessage("Playing on this hand first: ");
 //        player.getPlayerManager().sendMessage(GenerateJson.generateGeneralMessage(player.getCardsInHand().toString()));
 
     }
 
-    // todo --> allow player to play on both hands... Currently only allowing one
-    public void handleSplitPlay(Hand splitHand, Hand playerHand, Player player, Play game) {
-        List<Hand> playerHands = new ArrayList<>();
-        playerHands.add(playerHand);
-        playerHands.add(splitHand);
-        for (Hand hand : playerHands) {
-            player.getPlayerManager().sendMessage(GenerateJson.generateGeneralMessage("Playing on hand: " + playerHand));
-            player.manageTurn(hand, game);
-        }
-    }
+
 
     @Override
     public String toString() {

@@ -1,16 +1,18 @@
 package blackjack.player.state;
 
+import blackjack.Play;
 import blackjack.actions.BlackJackAction;
 import blackjack.actions.*;
 import blackjack.deck.Card;
 import blackjack.player.Hand;
+import blackjack.player.Player;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class Normal implements handState {
     @Override
-    public void doRound() {
+    public void doRound(Player player, Play game) {
 
     }
 
