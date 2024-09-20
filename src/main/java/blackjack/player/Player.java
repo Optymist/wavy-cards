@@ -80,7 +80,7 @@ public class Player {
 
                 this.actions = playerHand.getState().getActions(cardsInHand);
 
-                String turnRequest = GenerateJson.generateTurnRequest(this);
+                String turnRequest = GenerateJson.generateTurnRequest(this, playerHand);
                 playerManager.sendMessage(turnRequest);
                 // send turnRequest
 

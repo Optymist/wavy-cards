@@ -62,7 +62,9 @@ public class Play implements Runnable {
                 broadcastExcludingCurrent(GenerateJson.generateGeneralMessage(player.getName() + "'s turn."), player);
                 player.manageTurn(player.getCardsInHand(), this);
                 if (player.getIsSplit()) {
+                    player.setIsSplit(false);
                     for (Hand hand : player.getSplitPlay()) {
+                        player.getPlayerManager().sendMessage(GenerateJson.generateGeneralMessage("Current playing hand: " + hand));
                         player.manageTurn(hand, this);
                     }
                 }
