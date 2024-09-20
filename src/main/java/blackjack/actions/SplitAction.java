@@ -16,7 +16,7 @@ public class SplitAction extends BlackJackAction {
 
     @Override
     public void execute(Hand playingHand, Player player, Play game) {
-        playingHand.setState(new Split());
+        // playingHand.setState(new Split());
         Hand splitPlayerHand = player.splitHand(game);
 //        Hand otherHand = player.getCardsInHand();
         System.out.println(player.getName() + " splits.");

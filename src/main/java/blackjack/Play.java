@@ -5,6 +5,7 @@ import java.util.List;
 
 import blackjack.deck.Deck;
 import blackjack.player.Dealer;
+import blackjack.player.Hand;
 import blackjack.player.Player;
 import blackjack.player.state.BlackJack;
 import blackjack.player.state.Normal;
@@ -60,6 +61,11 @@ public class Play implements Runnable {
             for (Player player : players) {
                 broadcastExcludingCurrent(GenerateJson.generateGeneralMessage(player.getName() + "'s turn."), player);
                 player.manageTurn(player.getCardsInHand(), this);
+                if (player.getIsSplit()) {
+                    for (Hand hand : player.getSplitPlay()) {
+                        player.manageTurn(hand, this);
+                    }
+                }
             }
             broadcastToAllPlayers(GenerateJson.generateUpdate(this));
             dealerTurn();

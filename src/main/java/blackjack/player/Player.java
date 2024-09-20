@@ -19,7 +19,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 public class Player {
     private final PlayerManager playerManager;
     private final Hand cardsInHand;
-    private Hand splitPlay = new Hand();
+    private ArrayList<Hand> splitPlay = new ArrayList<>();
     private double money;
     private double bet;
     private List<BlackJackAction> actions;
@@ -30,6 +30,7 @@ public class Player {
     private boolean hasBlackJack;
     private final String name;
     private String turnResponse = null;
+    private boolean isSplit;
 
 
     public Player(String name, PlayerManager playerManager) {
@@ -41,6 +42,7 @@ public class Player {
         this.surrendered = false;
         this.bust = false;
         this.isTurn = false;
+        this.isSplit = false;
         this.hasBlackJack = false;
         this.money = 2500;
         this.bet = 10;
@@ -53,6 +55,14 @@ public class Player {
         actions.add(new SurrenderAction());
 
         Play.addPlayer(this);
+    }
+
+    public void setIsSplit(boolean bool) {
+        this.isSplit = bool;
+    }
+
+    public boolean getIsSplit() {
+        return this.isSplit;
     }
 
     /**
@@ -88,9 +98,10 @@ public class Player {
                             action.execute(playerHand,this, game);
                             continueTurn = false;
                             turnResponse = null;
-                            if (playerHand.getState() instanceof Split) {
-                                this.getCardsInHand().getState().doRound(this, game);
-                                break;
+                            if (this.isSplit) {
+                                // this.getCardsInHand().getState().doRound(this, game);
+                                // break;
+                                return;
                             }
                         } catch (InvalidAction e) {
                             // send invalid action message to client
@@ -206,20 +217,25 @@ public class Player {
 
 
     public Hand splitHand(Play game) {
-        splitPlay = new Hand();
+        isSplit = true;
+        Hand secondHand = new Hand();
 
         List<Card> cards = getCardsInHand().getCards();
         Card newDeckCard = getCardsInHand().getCards().remove(cards.size() - 1);
 
-        splitPlay.addCard(newDeckCard);
+        secondHand.addCard(newDeckCard);
 
         this.cardsInHand.addCard(game.getDeck().deal());
-        splitPlay.addCard(game.getDeck().deal());
+        secondHand.addCard(game.getDeck().deal());
 
-        return splitPlay;
+        this.splitPlay.add(cardsInHand);
+        this.splitPlay.add(secondHand);
+
+        return secondHand;
     }
 
-    public Hand getSplitPlay() {
+
+    public List<Hand> getSplitPlay() {
         return this.splitPlay;
     }
 

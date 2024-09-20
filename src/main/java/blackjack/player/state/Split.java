@@ -13,29 +13,30 @@ public class Split extends Normal{
     @Override
     public void doRound(Player player, Play game) {
         // todo --> add the split functionality here.
-        player.getSplitPlay().setState(new Normal());
-        player.getCardsInHand().setState(new Normal());
-        Hand splitHand = player.getSplitPlay();
-        System.out.println(splitHand);
-        Hand ogHand = player.getCardsInHand();
-        System.out.println(ogHand);
-        handleSplitPlay(splitHand, ogHand, player, game);
+        // player.getSplitPlay().setState(new Normal());
+        // player.getCardsInHand().setState(new Normal());
+        // Hand splitHand = player.getSplitPlay();
+        // System.out.println(splitHand);
+        // Hand ogHand = player.getCardsInHand();
+        // System.out.println(ogHand);
+        // handleSplitPlay(splitHand, ogHand, player, game);
     }
 
     @Override
     public List<BlackJackAction> getActions(Hand hand) {
+        // TODO
         return List.of();
     }
 
     // todo --> allow player to play on both hands... Currently only allowing one
     public void handleSplitPlay(Hand splitHand, Hand playerHand, Player player, Play game) {
-        List<Hand> playerHands = new ArrayList<>();
-        playerHands.add(playerHand);
-        playerHands.add(splitHand);
-        for (Hand hand : playerHands) {
-            player.getPlayerManager().sendMessage(GenerateJson.generateGeneralMessage("Playing on hand: " + hand));
-            player.manageTurn(hand, game);
-        }
+        // List<Hand> playerHands = new ArrayList<>();
+        // playerHands.add(playerHand);
+        // playerHands.add(splitHand);
+        // for (Hand hand : playerHands) {
+        //     player.getPlayerManager().sendMessage(GenerateJson.generateGeneralMessage("Playing on hand: " + hand));
+        //     player.manageTurn(hand, game);
+        // }
     }
 
     @Override
