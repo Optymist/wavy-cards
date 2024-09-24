@@ -6,6 +6,7 @@ import blackjack.protocol.GenerateJson;
 import java.io.*;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.List;
 
 public class PlayerManager implements Runnable {
     public static ArrayList<PlayerManager> players = new ArrayList<>();
@@ -43,9 +44,14 @@ public class PlayerManager implements Runnable {
 
             chooseName();
 
+            chooseBet();
+
             while (true) {
-                if (Server.getGameOn()) {
+
+                if (Server.getGameOn() && allPlayersChosenBet()) {
                     new Thread(game).start();
+                } else {
+                    continue;
                 }
 
                 while ((clientMessage = in.readLine()) != null && !game.allComplete()) {
@@ -72,8 +78,23 @@ public class PlayerManager implements Runnable {
         }
     }
 
+    private void chooseBet() {
+        sendMessage(GenerateJson.generateGeneralMessage("Your starting amount is $2500. Please choose a bet amount: "));
+
+        try {
+            String clientMessage = in.readLine();
+            int bet = Integer.parseInt(clientMessage);
+            player.setBet(bet);
+            sendMessage(GenerateJson.generateGeneralMessage("Your bet is $" + bet + "."));
+        } catch (IOException e){
+            System.out.println("An error occurred.");
+        } catch (NumberFormatException n) {
+            System.out.println("Please choose a valid number.");
+            chooseBet();
+        }
+    }
+
     public void chooseName() {
-//        sendMessage("Wanna play some BlackJack? \nPick a name first: ");
         sendMessage(GenerateJson.generateGeneralMessage("Wanna play some BlackJack? \nPick a name first: "));
 
         try {
@@ -134,6 +155,17 @@ public class PlayerManager implements Runnable {
                 System.out.println("Failed to write message out.");
             }
         }
+    }
+
+    private boolean allPlayersChosenBet() {
+        List<Player> players = game.getPlayers();
+
+        for (Player player : players) {
+            if (player.getBet() == 0.0) {
+                return false;
+            }
+        }
+        return true;
     }
 
     public void sendMessage(String message) {
