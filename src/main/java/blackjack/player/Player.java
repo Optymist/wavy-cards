@@ -4,7 +4,9 @@ import blackjack.Play;
 import blackjack.PlayerManager;
 import blackjack.actions.*;
 import blackjack.deck.Card;
+import blackjack.player.state.Bust;
 import blackjack.player.state.Normal;
+import blackjack.player.state.Surrender;
 import blackjack.protocol.DecryptJson;
 import blackjack.protocol.GenerateJson;
 import blackjack.protocol.Exceptions.InvalidAction;
@@ -30,7 +32,6 @@ public class Player {
     private boolean standing;
     private boolean bust;
     private boolean isTurn;
-    private boolean hasBlackJack;
     private final String name;
     private String turnResponse = null;
     private boolean isSplit;
@@ -50,9 +51,7 @@ public class Player {
         this.bust = false;
         this.isTurn = false;
         this.isSplit = false;
-        this.hasBlackJack = false;
         this.money = 2500;
-        this.bet = 10;
 
         this.actions = new ArrayList<>();
         actions.add(new HitAction());
@@ -108,7 +107,24 @@ public class Player {
                     }
                 }
             }
+            bustOrSurrendered(playerHand);
+
             this.setTurn(false);
+            game.incrementPlayerIndex();
+        }
+    }
+
+    private void bustOrSurrendered(Hand playerHand) {
+        if (playerHand.getState() instanceof Bust) {
+            this.removeBet();
+            playerManager.sendMessage(GenerateJson.generateGeneralMessage("You have been busted! \n" +
+                    "You have lost your bet of $" + bet + "\n" +
+                    "Money remaining: " + money));
+        }
+        if (playerHand.getState() instanceof Surrender) {
+            this.surrenderPayout();
+            playerManager.sendMessage(GenerateJson.generateGeneralMessage("You have lost half your bet: $" + bet + "\n" +
+                    "Money remaining: " + money));
         }
     }
 
@@ -203,6 +219,17 @@ public class Player {
         this.money -= bet;
     }
 
+    public void surrenderPayout() {
+        this.money += bet;
+    }
+
+    public void blackJackPayout() {
+        double payout = bet + (1.5*bet);
+        this.money += payout;
+        playerManager.sendMessage(GenerateJson.generateGeneralMessage("Payout: $" + payout + "\n" +
+                "Money remaining: $" + money));
+    }
+
     public Hand getCardsInHand() {
         return this.cardsInHand;
     }
@@ -211,13 +238,7 @@ public class Player {
         return cardsInHand.getValue();
     }
 
-    public void setBlackJack(boolean isTrue) {
-        this.hasBlackJack = isTrue;
-    }
 
-    public boolean getBlackJack() {
-        return hasBlackJack;
-    }
 
     public PlayerManager getPlayerManager() {
         return playerManager;

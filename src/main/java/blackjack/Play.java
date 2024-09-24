@@ -48,8 +48,10 @@ public class Play implements Runnable {
         dealInitialCards();
         broadcastToAllPlayers(GenerateJson.generateUpdate(this));
         for (Player player : players) {
+            player.removeBet();
             if (player.getCardsInHand().getState() instanceof BlackJack) {
                 player.getPlayerManager().sendMessage(GenerateJson.generateGeneralMessage("You got blackjack!"));
+                player.blackJackPayout();
             }
             System.out.println(player);
         }
@@ -84,13 +86,6 @@ public class Play implements Runnable {
         return true;
     }
 
-    public synchronized void handlePlayerMessage(Player player, String message) {
-        System.out.println("Received message from player " + player.getName() + ": " + message);
-        player.getPlayerManager().sendMessage("Acknowledged: " + message);
-        // TODO !!!!! I think
-        // player.performAction(message, this);
-    }
-
     public static void addPlayer(Player player) {
         players.add(player);
     }
@@ -112,22 +107,7 @@ public class Play implements Runnable {
         }
     }
 
-    // public static void dealCardToPlayer(Player player) {
-    // player.getCardsInHand().addCard(deck.deal());
-    // }
-
-    public void moveTurn() {
-        currentPlayerIndex += 1;
-        if (currentPlayerIndex > (players.size()) - 1) {
-            dealerTurn();
-            currentPlayerIndex = 0;
-        } else {
-            sendTurnMessages();
-        }
-    }
-
     public void dealerTurn() {
-        // TODO needs to send json
         broadcastToAllPlayers(GenerateJson.generateGeneralMessage("Dealer's turn."));
         broadcastToAllPlayers(GenerateJson.generateGeneralMessage("Initial cards: " + dealer.toString()));
         while (dealer.getCardsInHand().getValue() < 17) {
@@ -146,12 +126,6 @@ public class Play implements Runnable {
         running = false;
     }
 
-    public void sendTurnMessages() {
-        Player currentPlayer = players.get(currentPlayerIndex);
-        currentPlayer.setTurn(true);
-        broadcastExcludingCurrent(currentPlayer.getName() + "'s turn.", currentPlayer);
-        currentPlayer.getPlayerManager().sendMessage("Your turn.");
-    }
 
     public void broadcastToAllPlayers(String message) {
         System.out.println(message);
@@ -182,6 +156,15 @@ public class Play implements Runnable {
 
     public List<Player> getPlayers() {
         return players;
+    }
+
+    public void incrementPlayerIndex() {
+        if (currentPlayerIndex < players.size() - 1) {
+            currentPlayerIndex++;
+        } else {
+            currentPlayerIndex = 0;
+        }
+
     }
 
     public Player getCurrentPlayer() {
