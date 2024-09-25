@@ -50,8 +50,6 @@ public class PlayerManager implements Runnable {
 
                 if (Server.getGameOn() && allPlayersChosenBet()) {
                     new Thread(game).start();
-                } else {
-                    continue;
                 }
 
                 while ((clientMessage = in.readLine()) != null && !game.allComplete()) {
@@ -67,8 +65,6 @@ public class PlayerManager implements Runnable {
                 }
 
                 broadcastMessage(GenerateJson.generateGeneralMessage("All players completed.\n"));
-
-//                System.out.println("All players completed.");
             }
         } catch (IOException e) {
             System.out.println(e.getMessage());

@@ -116,7 +116,6 @@ public class Player {
 
     private void bustOrSurrendered(Hand playerHand) {
         if (playerHand.getState() instanceof Bust) {
-            this.removeBet();
             playerManager.sendMessage(GenerateJson.generateGeneralMessage("You have been busted! \n" +
                     "You have lost your bet of $" + bet + "\n" +
                     "Money remaining: " + money));
@@ -217,10 +216,25 @@ public class Player {
 
     public void removeBet() {
         this.money -= bet;
+        playerManager.sendMessage(GenerateJson.generateGeneralMessage("You have placed a bet of $" + bet + "\n" +
+                "Money remaining: " + money));
     }
 
     public void surrenderPayout() {
         this.money += bet;
+    }
+
+    public void winBet() {
+        this.money += 2*bet;
+    }
+
+    public void pushBet() {
+        this.money += bet;
+    }
+
+    public void loseBet() {
+        playerManager.sendMessage(GenerateJson.generateGeneralMessage("You lost your bet.\n" +
+                "Money remaining: " + money));
     }
 
     public void blackJackPayout() {

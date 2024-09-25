@@ -9,6 +9,7 @@ import blackjack.player.Hand;
 import blackjack.player.Player;
 import blackjack.player.state.BlackJack;
 import blackjack.player.state.Normal;
+import blackjack.player.state.Stand;
 import blackjack.protocol.GenerateJson;
 
 public class Play implements Runnable {
@@ -63,6 +64,7 @@ public class Play implements Runnable {
                 broadcastExcludingCurrent(GenerateJson.generateGeneralMessage(player.getName() + "'s turn."), player);
                 player.manageTurn(player.getCardsInHand(), this);
                 if (player.getIsSplit()) {
+                    player.removeBet();
                     player.setIsSplit(false);
                     for (Hand hand : player.getSplitPlay()) {
                         hand.setBeanSplit(true);
@@ -73,6 +75,7 @@ public class Play implements Runnable {
             }
             broadcastToAllPlayers(GenerateJson.generateUpdate(this));
             dealerTurn();
+            payout();
             stopGame();
         }
     }
@@ -122,8 +125,56 @@ public class Play implements Runnable {
         }
     }
 
+    private void payout() {
+        for (Player player : players) {
+            if (!(player.getSplitPlay().isEmpty())) {
+                handleSplitPlayPayout(player);
+            } else {
+                determinePayout(player, player.getCardsInHand());
+            }
+        }
+    }
+
+    private void determinePayout(Player player, Hand hand) {
+        if (dealer.getBust() && hand.getState() instanceof Stand) {
+            player.winBet();
+        } else {
+            handleCardAnalysis(player, hand);
+        }
+    }
+
+    private void handleSplitPlayPayout(Player player) {
+        for (Hand hand : player.getSplitPlay()) {
+            determinePayout(player, hand);
+        }
+    }
+
+    private void handleCardAnalysis(Player player, Hand hand) {
+        int comparison = analyseCards(hand.getValue());
+        if (comparison == 0) {
+            player.pushBet();
+        } else if (comparison == 1) {
+            player.winBet();
+        } else {
+            player.loseBet();
+        }
+
+    }
+
+    /**
+     * Returns -1 if the playerHandValue is less than the dealers.
+     * Returns 0 if they are equal.
+     * Returns 1 if the playerHandValue is greater than the dealers.
+     * @param playerHandValue --> final hand value for the player.
+     * @return --> int comparison.
+     */
+    private int analyseCards(int playerHandValue) {
+        return Integer.compare(playerHandValue, dealer.getHandValue());
+    }
+
     public void stopGame() {
         running = false;
+        System.out.println("Stopping");
     }
 
 
