@@ -1,6 +1,8 @@
 package blackjack;
 
 import blackjack.player.Player;
+import blackjack.protocol.DecryptJson;
+import blackjack.protocol.Exceptions.InvalidBet;
 import blackjack.protocol.GenerateJson;
 
 import java.io.*;
@@ -44,25 +46,26 @@ public class PlayerManager implements Runnable {
 
             chooseName();
 
-//            chooseBet();
-
             while (true) {
 
                 if (Server.getGameOn()) {
                     new Thread(game).start();
                 }
 
-                while ((clientMessage = in.readLine()) != null && !game.allComplete()) {
+                while ((clientMessage = in.readLine()) != null) {
                     if (player.isTurn()) {
                         System.out.println(clientMessage);
                         player.setTurnResponse(clientMessage);
+                    } else if (player.getIsChoosingBet()){
+                        player.setBetResponse(clientMessage);
                     }
+
                 }
 
-                if (clientMessage == null) {
-                    removeClient();
-                    break;
-                }
+//                if (clientMessage == null) {
+//                    removeClient();
+//                    break;
+//                }
 
                 broadcastMessage(GenerateJson.generateGeneralMessage("All players completed.\n"));
             }
@@ -75,19 +78,19 @@ public class PlayerManager implements Runnable {
     }
 
     public void chooseBet() {
-        sendMessage(GenerateJson.generateGeneralMessage("Your starting amount is $2500. Please choose a bet amount: "));
-
-        try {
-            String clientMessage = in.readLine();
-            int bet = Integer.parseInt(clientMessage);
-            player.setBet(bet);
-            sendMessage(GenerateJson.generateGeneralMessage("Your bet is $" + bet + "."));
-        } catch (IOException e){
-            System.out.println("An error occurred.");
-        } catch (NumberFormatException n) {
-            System.out.println("Please choose a valid number.");
-            chooseBet();
-        }
+        sendMessage(GenerateJson.generateBetRequest(name, "Your starting amount is $2500. Please choose a bet amount: "));
+//
+//        try {
+//            String clientMessage = in.readLine();
+//            int bet = DecryptJson.getBet(clientMessage);
+//            player.setBet(bet);
+//            sendMessage(GenerateJson.generateGeneralMessage("Your bet is $" + bet + "."));
+//        } catch (IOException e){
+//            System.out.println("An error occurred.");
+//        } catch (InvalidBet i) {
+//            System.out.println("Invalid bet.");
+//            chooseBet();
+//        }
     }
 
     private void chooseName() {

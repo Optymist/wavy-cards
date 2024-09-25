@@ -8,10 +8,12 @@ import blackjack.player.Dealer;
 import blackjack.player.Hand;
 import blackjack.player.Player;
 import blackjack.player.state.BlackJack;
-import blackjack.player.state.Normal;
 import blackjack.player.state.Stand;
 import blackjack.protocol.GenerateJson;
 
+/**
+ * Play class that manages the game play.
+ */
 public class Play implements Runnable {
     public static List<Player> players = new ArrayList<>();
     private volatile boolean running = true;
@@ -20,6 +22,10 @@ public class Play implements Runnable {
     private static Deck deck;
     private int currentPlayerIndex;
 
+    /**
+     * Constructor that sets up the dealer and the deck.
+     * @param maxPlayers --> the number of players in the game.
+     */
     public Play(int maxPlayers) {
         dealer = new Dealer();
         numPlayers = maxPlayers;
@@ -27,6 +33,9 @@ public class Play implements Runnable {
         currentPlayerIndex = 0;
     }
 
+    /**
+     * Setting up the deck based on the amount of players.
+     */
     private void setupDeck() {
         int numDecks = 1;
         if (numPlayers > 3) {
@@ -35,8 +44,18 @@ public class Play implements Runnable {
         deck = new Deck(numDecks);
     }
 
+    /**
+     * Run method that checks whether deck needs to be setup again.
+     * Calls the getBets method before starting the game.
+     */
     @Override
     public void run() {
+        if (deck.getPlayDeck().size() < numPlayers*5) {
+            setupDeck();
+        }
+        broadcastToAllPlayers(GenerateJson.generateGeneralMessage("\nRound Starting...\n"));
+        running = true;
+        getBets();
         try {
             startGame();
         } catch (Exception e) {
@@ -45,8 +64,10 @@ public class Play implements Runnable {
         }
     }
 
+    /**
+     * Handles a round for the blackjack game.
+     */
     public void startGame() {
-        getBets();
         dealInitialCards();
         broadcastToAllPlayers(GenerateJson.generateUpdate(this));
         for (Player player : players) {
@@ -82,23 +103,34 @@ public class Play implements Runnable {
         this.run();
     }
 
-    public boolean allComplete() {
+    /**
+     * Loops through players in the game and calls the method to manage the bet chosen by each player.
+     */
+    private void getBets() {
         for (Player player : players) {
-            if (player.getCardsInHand().getState() instanceof Normal) {
-                return false;
-            }
+            player.manageBet();
         }
-        return true;
     }
 
+    /**
+     * Adds a player to the game.
+     * @param player --> the player to add to the game.
+     */
     public static void addPlayer(Player player) {
         players.add(player);
     }
 
+    /**
+     * Removes a player from the game.
+     * @param player --> the player to remove from the game.
+     */
     public void removePlayer(Player player) {
         players.remove(player);
     }
 
+    /**
+     * Deals the starting cards to the players and the dealer.
+     */
     public static void dealInitialCards() {
         for (int i = 0; i < 2; i++) {
             for (Player player : players) {
@@ -112,12 +144,9 @@ public class Play implements Runnable {
         }
     }
 
-    private void getBets() {
-        for (Player player : players) {
-            player.getPlayerManager().chooseBet();
-        }
-    }
-
+    /**
+     * Handles the dealers turn.
+     */
     public void dealerTurn() {
         broadcastToAllPlayers(GenerateJson.generateGeneralMessage("Dealer's turn."));
         broadcastToAllPlayers(GenerateJson.generateGeneralMessage("Initial cards: " + dealer.toString()));
@@ -133,6 +162,9 @@ public class Play implements Runnable {
         }
     }
 
+    /**
+     * Handles the payout to the players.
+     */
     private void payout() {
         for (Player player : players) {
             if (!(player.getSplitPlay().isEmpty())) {
@@ -143,6 +175,11 @@ public class Play implements Runnable {
         }
     }
 
+    /**
+     * Determines whether player instantly wins or whether cards need to be compared to the dealers.
+     * @param player --> player we are checking.
+     * @param hand --> their current hand.
+     */
     private void determinePayout(Player player, Hand hand) {
         if (dealer.getBust() && hand.getState() instanceof Stand) {
             player.winBet();
@@ -151,12 +188,21 @@ public class Play implements Runnable {
         }
     }
 
+    /**
+     * Calls the payout determination of a split hand.
+     * @param player --> player whose hands we are checking.
+     */
     private void handleSplitPlayPayout(Player player) {
         for (Hand hand : player.getSplitPlay()) {
             determinePayout(player, hand);
         }
     }
 
+    /**
+     * Handles the payout after card analysis.
+     * @param player --> current player who's cards we are analysing.
+     * @param hand --> hand to analyse.
+     */
     private void handleCardAnalysis(Player player, Hand hand) {
         int comparison = analyseCards(hand.getValue());
         if (comparison == 0) {
@@ -180,16 +226,23 @@ public class Play implements Runnable {
         return Integer.compare(playerHandValue, dealer.getHandValue());
     }
 
+    /**
+     * Calling for the players and dealers to be reset so a new round can start.
+     * Sets running to false so that the loop stops.
+     */
     public void stopGame() {
         running = false;
-        System.out.println("Stopping round.");
+        broadcastToAllPlayers(GenerateJson.generateGeneralMessage("\nStopping round...\n"));
         for (Player player : players) {
             player.reset();
         }
         dealer.reset();
     }
 
-
+    /**
+     * Send a broadcast message to all players.
+     * @param message --> the json String we would like to send.
+     */
     public void broadcastToAllPlayers(String message) {
         System.out.println(message);
         for (Player player : players) {
@@ -197,6 +250,11 @@ public class Play implements Runnable {
         }
     }
 
+    /**
+     * Send a broadcast message to all players except one.
+     * @param message --> the json String we would like to send.
+     * @param toExclude --> the player to exclude from being sent the message.
+     */
     public void broadcastExcludingCurrent(String message, Player toExclude) {
         for (Player player : players) {
             if (!player.equals(toExclude)) {
@@ -205,6 +263,9 @@ public class Play implements Runnable {
         }
     }
 
+    /**
+     * Remove all the players currently in the game.
+     */
     public void clearAllPlayers() {
         players.clear();
     }
@@ -221,13 +282,15 @@ public class Play implements Runnable {
         return players;
     }
 
+    /**
+     * Add to the currentPlayerIndex so that it moves to the next player in the list.
+     */
     public void incrementPlayerIndex() {
         if (currentPlayerIndex < players.size() - 1) {
             currentPlayerIndex++;
         } else {
             currentPlayerIndex = 0;
         }
-
     }
 
     public Player getCurrentPlayer() {

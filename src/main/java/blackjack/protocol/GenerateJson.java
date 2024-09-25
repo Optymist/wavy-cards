@@ -58,6 +58,15 @@ public class GenerateJson {
         return rootNode.toString();
     }
 
+    public static String generateBetRequest(String name, String message) {
+        JsonNodeFactory factory = JsonNodeFactory.instance;
+        ObjectNode rootNode = new ObjectNode(factory);
+        rootNode.put("protocolType", "betRequest");
+        rootNode.put("playerName", name);
+        rootNode.put("message", message);
+        return rootNode.toString();
+    }
+
     public static String generateUpdate(Play game) {
         JsonNodeFactory factory = JsonNodeFactory.instance;
         ObjectNode rootNode = new ObjectNode(factory);

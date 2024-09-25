@@ -8,6 +8,7 @@ import blackjack.player.state.Bust;
 import blackjack.player.state.Normal;
 import blackjack.player.state.Surrender;
 import blackjack.protocol.DecryptJson;
+import blackjack.protocol.Exceptions.InvalidBet;
 import blackjack.protocol.GenerateJson;
 import blackjack.protocol.Exceptions.InvalidAction;
 
@@ -35,6 +36,8 @@ public class Player {
     private final String name;
     private String turnResponse = null;
     private boolean isSplit;
+    private String betResponse = null;
+    private boolean isChoosingBet;
 
 
     /**
@@ -51,6 +54,7 @@ public class Player {
         this.bust = false;
         this.isTurn = false;
         this.isSplit = false;
+        this.isChoosingBet = false;
         this.money = 2500;
 
         this.actions = new ArrayList<>();
@@ -62,8 +66,6 @@ public class Player {
 
         Play.addPlayer(this);
     }
-
-
 
     /**
      * Handle's the player's turn based on their current hand's state.
@@ -114,6 +116,10 @@ public class Player {
         }
     }
 
+    /**
+     * Checks whether the player has busted or surrendered and acts accordingly.
+     * @param playerHand --> the hand the turn is currently on.
+     */
     private void bustOrSurrendered(Hand playerHand) {
         if (playerHand.getState() instanceof Bust) {
             playerManager.sendMessage(GenerateJson.generateGeneralMessage("You have been busted! \n" +
@@ -150,6 +156,43 @@ public class Player {
         return secondHand;
     }
 
+    /**
+     * Handles the betting choice of the player.
+     */
+    public void manageBet() {
+        this.setIsChoosingBet(true);
+
+        String betRequest = GenerateJson.generateBetRequest(name, "Please choose a bet amount: ");
+        playerManager.sendMessage(betRequest);
+
+        boolean betting = true;
+        while (betting) {
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                System.out.println("Sleep interrupted");
+            }
+            if (betResponse != null) {
+                int betChoice;
+                try {
+                    betChoice = DecryptJson.getBet(this.betResponse);
+                    bet = betChoice;
+                    betting = false;
+                    betResponse = null;
+                } catch (InvalidBet e) {
+                    playerManager.sendMessage(GenerateJson.generateGeneralMessage("Invalid bet."));
+                    playerManager.sendMessage(betRequest);
+                    betResponse = null;
+                } catch (JsonProcessingException e) {
+                    playerManager.sendMessage(GenerateJson.generateGeneralMessage("Json processing error."));
+                    playerManager.sendMessage(betRequest);
+                    betResponse = null;
+                }
+            }
+        }
+        this.setIsChoosingBet(false);
+    }
+
 
     /**
      * Set the response sent from the client (the chosen action).
@@ -158,6 +201,19 @@ public class Player {
     public void setTurnResponse(String response) {
         this.turnResponse = response;
         System.out.println("Setting response: " + response);
+    }
+
+    public void setBetResponse(String response) {
+        this.betResponse = response;
+        System.out.println("Setting response: " + response);
+    }
+
+    public boolean getIsChoosingBet() {
+        return isChoosingBet;
+    }
+
+    public void setIsChoosingBet(boolean isChoosingBet) {
+        this.isChoosingBet = isChoosingBet;
     }
 
     public void setIsSplit(boolean bool) {
@@ -193,18 +249,6 @@ public class Player {
     public double getMoney() { return this.money; }
 
     public void setBet(double bet) { this.bet = bet; }
-
-    public boolean isStanding() {
-        return standing;
-    }
-
-    public void setStanding(boolean standing) {
-        this.standing = standing;
-    }
-
-    public boolean isSurrendered() {
-        return surrendered;
-    }
 
     public void surrender() {
         this.bet /= 2;

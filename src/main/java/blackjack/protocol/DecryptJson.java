@@ -2,6 +2,7 @@ package blackjack.protocol;
 
 import blackjack.actions.BlackJackAction;
 import blackjack.protocol.Exceptions.InvalidAction;
+import blackjack.protocol.Exceptions.InvalidBet;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -34,6 +35,19 @@ public class DecryptJson {
         }
 
         throw new InvalidAction(actionName);
+    }
+
+    public static int getBet(String betResponse) throws InvalidBet, JsonProcessingException {
+        ObjectMapper mapper = new ObjectMapper();
+        JsonNode rootNode = mapper.readTree(betResponse);
+        Integer bet = rootNode.get("bet").asInt();
+        System.out.println(bet);
+
+        if (bet == null) {
+            throw new InvalidBet("Not a valid bet.");
+        } else {
+            return bet;
+        }
     }
 
 }
