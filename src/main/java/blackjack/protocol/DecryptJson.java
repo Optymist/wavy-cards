@@ -37,13 +37,12 @@ public class DecryptJson {
         throw new InvalidAction(actionName);
     }
 
-    public static int getBet(String betResponse) throws InvalidBet, JsonProcessingException {
+    public static int getBet(double money, String betResponse) throws InvalidBet, JsonProcessingException {
         ObjectMapper mapper = new ObjectMapper();
         JsonNode rootNode = mapper.readTree(betResponse);
-        Integer bet = rootNode.get("bet").asInt();
-        System.out.println(bet);
+        int bet = rootNode.get("bet").asInt();
 
-        if (bet == null) {
+        if (bet == 0.0 || bet > money) {
             throw new InvalidBet("Not a valid bet.");
         } else {
             return bet;

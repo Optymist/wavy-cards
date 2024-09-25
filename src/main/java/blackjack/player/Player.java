@@ -162,7 +162,8 @@ public class Player {
     public void manageBet() {
         this.setIsChoosingBet(true);
 
-        String betRequest = GenerateJson.generateBetRequest(name, "Please choose a bet amount: ");
+        String betRequest = GenerateJson.generateBetRequest(name, "Starting amount: $" + money + "\n" +
+                "Please choose a bet amount: ");
         playerManager.sendMessage(betRequest);
 
         boolean betting = true;
@@ -175,7 +176,7 @@ public class Player {
             if (betResponse != null) {
                 int betChoice;
                 try {
-                    betChoice = DecryptJson.getBet(this.betResponse);
+                    betChoice = DecryptJson.getBet(this.money, this.betResponse);
                     bet = betChoice;
                     betting = false;
                     betResponse = null;
