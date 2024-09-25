@@ -1,15 +1,15 @@
 package blackjack;
 
 import blackjack.player.Player;
-import blackjack.protocol.DecryptJson;
-import blackjack.protocol.Exceptions.InvalidBet;
 import blackjack.protocol.GenerateJson;
 
 import java.io.*;
 import java.net.Socket;
 import java.util.ArrayList;
-import java.util.List;
 
+/**
+ * Player manager that handles the sending and receiving of messages to anf from the client.
+ */
 public class PlayerManager implements Runnable {
     public static ArrayList<PlayerManager> players = new ArrayList<>();
     private int maxPlayers;
@@ -20,6 +20,11 @@ public class PlayerManager implements Runnable {
     private Player player;
     private final Play game;
 
+    /**
+     * Initialize the player's manager.
+     * @param socket --> that the client is connected to
+     * @param maxPlayers --> max number of players chosen by the server admin.
+     */
     public PlayerManager(Socket socket, int maxPlayers) {
         game = Server.getGame();
         try {
@@ -34,6 +39,10 @@ public class PlayerManager implements Runnable {
         }
     }
 
+    /**
+     * Run method that determines whether the table is full or not and if not,
+     * It starts the game and reads input from the client.
+     */
     @Override
     public void run() {
         String clientMessage;
@@ -47,7 +56,6 @@ public class PlayerManager implements Runnable {
             chooseName();
 
             while (true) {
-
                 if (Server.getGameOn()) {
                     new Thread(game).start();
                 }
@@ -59,15 +67,7 @@ public class PlayerManager implements Runnable {
                     } else if (player.getIsChoosingBet()){
                         player.setBetResponse(clientMessage);
                     }
-
                 }
-
-//                if (clientMessage == null) {
-//                    removeClient();
-//                    break;
-//                }
-
-                broadcastMessage(GenerateJson.generateGeneralMessage("All players completed.\n"));
             }
         } catch (IOException e) {
             System.out.println(e.getMessage());
@@ -77,22 +77,10 @@ public class PlayerManager implements Runnable {
         }
     }
 
-    public void chooseBet() {
-        sendMessage(GenerateJson.generateBetRequest(name, "Your starting amount is $2500. Please choose a bet amount: "));
-//
-//        try {
-//            String clientMessage = in.readLine();
-//            int bet = DecryptJson.getBet(clientMessage);
-//            player.setBet(bet);
-//            sendMessage(GenerateJson.generateGeneralMessage("Your bet is $" + bet + "."));
-//        } catch (IOException e){
-//            System.out.println("An error occurred.");
-//        } catch (InvalidBet i) {
-//            System.out.println("Invalid bet.");
-//            chooseBet();
-//        }
-    }
-
+    /**
+     * Method to validate and set the name chosen by the client.
+     * Creates the instance of the player in the game.
+     */
     private void chooseName() {
         sendMessage(GenerateJson.generateGeneralMessage("Wanna play some BlackJack? \nPick a name first: "));
 
@@ -124,6 +112,11 @@ public class PlayerManager implements Runnable {
         }
     }
 
+    /**
+     * Check whether there is another player with the same name.
+     * @param requestedName --> chosen name.
+     * @return boolean --> true if it is available.
+     */
     public static boolean validateName(String requestedName) {
         for (PlayerManager player : players) {
             if (!(player.name == null) && player.name.equals(requestedName)) {
@@ -133,6 +126,9 @@ public class PlayerManager implements Runnable {
         return true;
     }
 
+    /**
+     * Remove the client.
+     */
     public void removeClient() {
         players.remove(this);
         if (!(game == null)) {
@@ -141,32 +137,10 @@ public class PlayerManager implements Runnable {
         System.out.println(name + " has left the game.");
     }
 
-    public void broadcastMessage(String message) {
-        for (PlayerManager player : players) {
-            try {
-                if (socket.isConnected() && !player.name.equals(name)) {
-                    player.out.write(message);
-                    player.out.newLine();
-                    player.out.flush();
-                }
-            } catch (IOException e) {
-                System.out.println(e.getMessage());
-                System.out.println("Failed to write message out.");
-            }
-        }
-    }
-
-    private boolean allPlayersChosenBet() {
-        List<Player> players = game.getPlayers();
-
-        for (Player player : players) {
-            if (player.getBet() == 0.0) {
-                return false;
-            }
-        }
-        return true;
-    }
-
+    /**
+     * Write out a message to the client.
+     * @param message --> Json String to send.
+     */
     public void sendMessage(String message) {
         try {
             out.write(message);
@@ -177,6 +151,12 @@ public class PlayerManager implements Runnable {
         }
     }
 
+    /**
+     * Close the connection to the server.
+     * @param socket --> that the client is connected to
+     * @param in --> bufferedReader for input
+     * @param out --> bufferedWriter for output
+     */
     public void closeEverything(Socket socket, BufferedReader in, BufferedWriter out) {
         removeClient();
         try {

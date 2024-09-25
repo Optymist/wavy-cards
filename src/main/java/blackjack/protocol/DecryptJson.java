@@ -10,7 +10,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.List;
 
 /**
- * DecryptJson
+ * DecryptJson - get the required information from a json string
  */
 public class DecryptJson {
 
@@ -37,6 +37,16 @@ public class DecryptJson {
         throw new InvalidAction(actionName);
     }
 
+    /**
+     * This method takes a client's betResponse and gets the bet.
+     * It compares it to money to determine whether it is valid.
+     *
+     * @param money --> the amount of money the player has.
+     * @param betResponse --> the response string that the client sent.
+     * @return int bet value.
+     * @throws InvalidBet if the bet is zero or greater than the client's remaining money.
+     * @throws JsonProcessingException if it cannot convert the string into a json node.
+     */
     public static int getBet(double money, String betResponse) throws InvalidBet, JsonProcessingException {
         ObjectMapper mapper = new ObjectMapper();
         JsonNode rootNode = mapper.readTree(betResponse);
@@ -48,5 +58,4 @@ public class DecryptJson {
             return bet;
         }
     }
-
 }
