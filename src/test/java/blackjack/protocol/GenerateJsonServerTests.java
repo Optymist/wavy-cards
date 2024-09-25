@@ -82,7 +82,7 @@ public class GenerateJsonServerTests {
 
         sal.getCardsInHand().addCard(new Card(Deck.SUITS[0], Deck.RANKS[4]));
         romeo.getCardsInHand().addCard(new Card(Deck.SUITS[0], Deck.RANKS[2]));
-        dealer.addCardToHand(new Card(Deck.SUITS[0], Deck.RANKS[10]));
+        dealer.getCardsInHand().addCard(new Card(Deck.SUITS[0], Deck.RANKS[10]));
 
         String jsonString = GenerateJson.generateUpdate(game);
         ObjectMapper mapper = new ObjectMapper();

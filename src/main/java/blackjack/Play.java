@@ -139,7 +139,7 @@ public class Play implements Runnable {
                 }
             }
             if (dealer.getCardsInHand().getCards().size() < 2) {
-                dealer.addCardToHand(deck.deal());
+                dealer.getCardsInHand().addCard(deck.deal());
             }
         }
     }
@@ -151,7 +151,7 @@ public class Play implements Runnable {
         broadcastToAllPlayers(GenerateJson.generateGeneralMessage("Dealer's turn."));
         broadcastToAllPlayers(GenerateJson.generateGeneralMessage("Initial cards: " + dealer.toString()));
         while (dealer.getCardsInHand().getValue() < 17) {
-            dealer.addCardToHand(deck.deal());
+            dealer.getCardsInHand().addCard(deck.deal());
             broadcastToAllPlayers(GenerateJson.generateGeneralMessage(dealer.toString()));
         }
         if (dealer.getCardsInHand().getValue() > 21) {
