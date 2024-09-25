@@ -46,6 +46,7 @@ public class Play implements Runnable {
     }
 
     public void startGame() {
+        getBets();
         dealInitialCards();
         broadcastToAllPlayers(GenerateJson.generateUpdate(this));
         for (Player player : players) {
@@ -78,6 +79,7 @@ public class Play implements Runnable {
             payout();
             stopGame();
         }
+        this.run();
     }
 
     public boolean allComplete() {
@@ -107,6 +109,12 @@ public class Play implements Runnable {
             if (dealer.getCardsInHand().getCards().size() < 2) {
                 dealer.addCardToHand(deck.deal());
             }
+        }
+    }
+
+    private void getBets() {
+        for (Player player : players) {
+            player.getPlayerManager().chooseBet();
         }
     }
 
@@ -174,7 +182,11 @@ public class Play implements Runnable {
 
     public void stopGame() {
         running = false;
-        System.out.println("Stopping");
+        System.out.println("Stopping round.");
+        for (Player player : players) {
+            player.reset();
+        }
+        dealer.reset();
     }
 
 

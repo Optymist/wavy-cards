@@ -19,14 +19,6 @@ public class Dealer {
         return this.cardsInHand;
     }
 
-//    public void setState(playerState state) {
-//        this.state = state;
-//    }
-//
-//    public playerState getState() {
-//        return this.state;
-//    }
-
     public void setBust(boolean isBust) {
         this.isBust = isBust;
     }
@@ -37,6 +29,11 @@ public class Dealer {
 
     public boolean getBust() {
         return isBust;
+    }
+
+    public void reset() {
+        this.cardsInHand.clearCards();
+        this.isBust = false;
     }
 
     @Override

@@ -44,11 +44,11 @@ public class PlayerManager implements Runnable {
 
             chooseName();
 
-            chooseBet();
+//            chooseBet();
 
             while (true) {
 
-                if (Server.getGameOn() && allPlayersChosenBet()) {
+                if (Server.getGameOn()) {
                     new Thread(game).start();
                 }
 
@@ -74,7 +74,7 @@ public class PlayerManager implements Runnable {
         }
     }
 
-    private void chooseBet() {
+    public void chooseBet() {
         sendMessage(GenerateJson.generateGeneralMessage("Your starting amount is $2500. Please choose a bet amount: "));
 
         try {
@@ -90,7 +90,7 @@ public class PlayerManager implements Runnable {
         }
     }
 
-    public void chooseName() {
+    private void chooseName() {
         sendMessage(GenerateJson.generateGeneralMessage("Wanna play some BlackJack? \nPick a name first: "));
 
         try {

@@ -226,10 +226,14 @@ public class Player {
 
     public void winBet() {
         this.money += 2*bet;
+        playerManager.sendMessage(GenerateJson.generateGeneralMessage("You won. \n" +
+                "Money remaining: " + money));
     }
 
     public void pushBet() {
         this.money += bet;
+        playerManager.sendMessage(GenerateJson.generateGeneralMessage("You pushed. \n" +
+                "Money remaining: " + money));
     }
 
     public void loseBet() {
@@ -252,7 +256,16 @@ public class Player {
         return cardsInHand.getValue();
     }
 
-
+    public void reset() {
+        this.cardsInHand.clearCards();
+        this.splitPlay.clear();
+        this.standing = false;
+        this.surrendered = false;
+        this.bust = false;
+        this.isTurn = false;
+        this.isSplit = false;
+        this.bet = 0.0;
+    }
 
     public PlayerManager getPlayerManager() {
         return playerManager;

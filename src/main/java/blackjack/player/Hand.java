@@ -66,6 +66,7 @@ public class Hand {
 
     public void clearCards() {
         this.cards.clear();
+        this.state = new Normal();
     }
 
     public void setState(handState state) {
