@@ -256,6 +256,7 @@ public class Player {
     }
 
     public void doubleBet() {
+        removeBet();
         this.bet *= 2;
     }
 

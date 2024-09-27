@@ -232,7 +232,7 @@ public class Play implements Runnable {
      */
     public void stopGame() {
         running = false;
-        broadcastToAllPlayers(GenerateJson.generateGeneralMessage("\nStopping round...\n"));
+        broadcastToAllPlayers(GenerateJson.generateGeneralMessage("\nStopping round..."));
         for (Player player : players) {
             player.reset();
         }
