@@ -27,4 +27,16 @@ public class GenerateClientTests {
         assertEquals("stand", node1.get("action").asText());
         assertEquals("double", node2.get("action").asText());
     }
+
+    @Test
+    public void testGenerateBetResponse() throws JsonProcessingException {
+        ObjectMapper mapper = new ObjectMapper();
+
+        String response = Generate.generateBetResponse("sal", 20);
+        JsonNode node = mapper.readTree(response);
+
+        assertEquals("betResponse", node.get("protocolType").asText());
+        assertEquals("sal", node.get("playerName").asText());
+        assertEquals(20, node.get("bet").asInt());
+    }
 }

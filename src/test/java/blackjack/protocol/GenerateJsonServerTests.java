@@ -67,6 +67,17 @@ public class GenerateJsonServerTests {
     }
 
     @Test
+    public void testGenerateBetRequest() throws JsonProcessingException {
+        String jsonString = GenerateJson.generateBetRequest("Ted", "Choose a bet.");
+        ObjectMapper mapper = new ObjectMapper();
+        JsonNode node = mapper.readTree(jsonString);
+
+        assertEquals("betRequest", node.get("protocolType").asText());
+        assertEquals("Ted", node.get("playerName").asText());
+        assertEquals("Choose a bet.", node.get("message").asText());
+    }
+
+    @Test
     public void testGenerateUpdateRequest() throws JsonProcessingException {
         Play game = new Play(2);
         game.clearAllPlayers();
