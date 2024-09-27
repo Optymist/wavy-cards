@@ -8,6 +8,7 @@ import blackjack.player.Dealer;
 import blackjack.player.Hand;
 import blackjack.player.Player;
 import blackjack.player.state.BlackJack;
+import blackjack.player.state.Bust;
 import blackjack.player.state.Stand;
 import blackjack.protocol.GenerateJson;
 
@@ -183,6 +184,8 @@ public class Play implements Runnable {
     private void determinePayout(Player player, Hand hand) {
         if (dealer.getBust() && hand.getState() instanceof Stand) {
             player.winBet();
+        } else if (hand.getState() instanceof Bust) {
+            player.loseBet();
         } else {
             handleCardAnalysis(player, hand);
         }
