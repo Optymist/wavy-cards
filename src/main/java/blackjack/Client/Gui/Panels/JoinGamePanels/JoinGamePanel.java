@@ -22,11 +22,13 @@ public class JoinGamePanel extends GamePanel {
     private TextField socketTextField;
     private Button joinGameButton;
     private Button backButton;
+    private GameFrame window;
 
     private List<Component> comps;
 
     public JoinGamePanel(GameFrame mainFrame) {
         super(mainFrame);
+        this.window = mainFrame;
         comps = new ArrayList<>();
         ipTextField = createIpField();
         socketTextField = createSocketField();
