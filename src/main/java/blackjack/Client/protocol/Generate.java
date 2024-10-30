@@ -15,4 +15,15 @@ public class Generate {
         return rootNode.toString();
     }
 
+    public static String generateBetResponse(String name, Integer bet) {
+        JsonNodeFactory factory = JsonNodeFactory.instance;
+        ObjectNode rootNode = new ObjectNode(factory);
+
+        rootNode.put("protocolType", "betResponse");
+        rootNode.put("playerName", name);
+        rootNode.put("bet", bet);
+
+        return rootNode.toString();
+    }
+
 }

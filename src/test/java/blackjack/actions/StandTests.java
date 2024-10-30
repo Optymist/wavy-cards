@@ -4,6 +4,7 @@ import blackjack.Play;
 import blackjack.PlayerManager;
 import blackjack.deck.Card;
 import blackjack.deck.Deck;
+import blackjack.helperClasses.mockedPlayerManager;
 import blackjack.player.Hand;
 import blackjack.player.Player;
 import blackjack.player.state.Bust;
@@ -18,8 +19,7 @@ import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.util.ArrayList;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 public class StandTests {
@@ -27,20 +27,8 @@ public class StandTests {
 
     @BeforeEach
     public void setUp() {
-        // Create a mock Socket
-        Socket mockSocket = Mockito.mock(Socket.class);
-
-        // Create mocks for BufferedReader and BufferedWriter
-        BufferedReader mockBufferedReader = Mockito.mock(BufferedReader.class);
-        BufferedWriter mockBufferedWriter = Mockito.mock(BufferedWriter.class);
-
-        // Initialize the mock PlayerManager
-        mockPlayerManager = Mockito.mock(PlayerManager.class);
-
-        // Mock behaviors
-        when(mockPlayerManager.getPlayers()).thenReturn(new ArrayList<>());
-        doNothing().when(mockPlayerManager).sendMessage(anyString());
-        doNothing().when(mockPlayerManager).closeEverything(mockSocket, mockBufferedReader, mockBufferedWriter);
+        mockedPlayerManager.setUp();
+        this.mockPlayerManager = mockedPlayerManager.mockPlayerManager;
     }
 
     @Test
@@ -59,7 +47,7 @@ public class StandTests {
         player.performAction(new StandAction(), game);
 
         assertEquals(2, hand.getCards().size());
-        assertTrue(player.getState() instanceof Stand);
+        assertInstanceOf(Stand.class, hand.getState());
     }
 
 

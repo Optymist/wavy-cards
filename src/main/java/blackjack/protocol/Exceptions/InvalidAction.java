@@ -1,7 +1,7 @@
 package blackjack.protocol.Exceptions;
 
 /**
- * InvalidAction
+ * InvalidAction exception
  */
 public class InvalidAction extends Exception {
     public InvalidAction() {

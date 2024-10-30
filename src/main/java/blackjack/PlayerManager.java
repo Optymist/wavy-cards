@@ -7,6 +7,9 @@ import java.io.*;
 import java.net.Socket;
 import java.util.ArrayList;
 
+/**
+ * Player manager that handles the sending and receiving of messages to anf from the client.
+ */
 public class PlayerManager implements Runnable {
     public static ArrayList<PlayerManager> players = new ArrayList<>();
     private int maxPlayers;
@@ -17,6 +20,11 @@ public class PlayerManager implements Runnable {
     private Player player;
     private final Play game;
 
+    /**
+     * Initialize the player's manager.
+     * @param socket --> that the client is connected to
+     * @param maxPlayers --> max number of players chosen by the server admin.
+     */
     public PlayerManager(Socket socket, int maxPlayers) {
         game = Server.getGame();
         try {
@@ -31,6 +39,10 @@ public class PlayerManager implements Runnable {
         }
     }
 
+    /**
+     * Run method that determines whether the table is full or not and if not,
+     * It starts the game and reads input from the client.
+     */
     @Override
     public void run() {
         String clientMessage;
@@ -48,21 +60,14 @@ public class PlayerManager implements Runnable {
                     new Thread(game).start();
                 }
 
-                while ((clientMessage = in.readLine()) != null && !game.allComplete()) {
+                while ((clientMessage = in.readLine()) != null) {
                     if (player.isTurn()) {
                         System.out.println(clientMessage);
                         player.setTurnResponse(clientMessage);
+                    } else if (player.getIsChoosingBet()){
+                        player.setBetResponse(clientMessage);
                     }
                 }
-
-                if (clientMessage == null) {
-                    removeClient();
-                    break;
-                }
-
-                broadcastMessage(GenerateJson.generateGeneralMessage("All players completed.\n"));
-
-//                System.out.println("All players completed.");
             }
         } catch (IOException e) {
             System.out.println(e.getMessage());
@@ -72,8 +77,11 @@ public class PlayerManager implements Runnable {
         }
     }
 
-    public void chooseName() {
-//        sendMessage("Wanna play some BlackJack? \nPick a name first: ");
+    /**
+     * Method to validate and set the name chosen by the client.
+     * Creates the instance of the player in the game.
+     */
+    private void chooseName() {
         sendMessage(GenerateJson.generateGeneralMessage("Wanna play some BlackJack? \nPick a name first: "));
 
         try {
@@ -104,6 +112,11 @@ public class PlayerManager implements Runnable {
         }
     }
 
+    /**
+     * Check whether there is another player with the same name.
+     * @param requestedName --> chosen name.
+     * @return boolean --> true if it is available.
+     */
     public static boolean validateName(String requestedName) {
         for (PlayerManager player : players) {
             if (!(player.name == null) && player.name.equals(requestedName)) {
@@ -113,6 +126,9 @@ public class PlayerManager implements Runnable {
         return true;
     }
 
+    /**
+     * Remove the client.
+     */
     public void removeClient() {
         players.remove(this);
         if (!(game == null)) {
@@ -121,21 +137,10 @@ public class PlayerManager implements Runnable {
         System.out.println(name + " has left the game.");
     }
 
-    public void broadcastMessage(String message) {
-        for (PlayerManager player : players) {
-            try {
-                if (socket.isConnected() && !player.name.equals(name)) {
-                    player.out.write(message);
-                    player.out.newLine();
-                    player.out.flush();
-                }
-            } catch (IOException e) {
-                System.out.println(e.getMessage());
-                System.out.println("Failed to write message out.");
-            }
-        }
-    }
-
+    /**
+     * Write out a message to the client.
+     * @param message --> Json String to send.
+     */
     public void sendMessage(String message) {
         try {
             out.write(message);
@@ -146,6 +151,12 @@ public class PlayerManager implements Runnable {
         }
     }
 
+    /**
+     * Close the connection to the server.
+     * @param socket --> that the client is connected to
+     * @param in --> bufferedReader for input
+     * @param out --> bufferedWriter for output
+     */
     public void closeEverything(Socket socket, BufferedReader in, BufferedWriter out) {
         removeClient();
         try {

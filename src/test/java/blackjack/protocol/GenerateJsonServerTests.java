@@ -29,11 +29,11 @@ public class GenerateJsonServerTests {
     @Test
     public void testGenerateTurnRequestNoSplit() throws JsonProcessingException {
         Player fred = new Player("fred", mockPlayerManager);
-        fred.setState(new Normal());
+        fred.getCardsInHand().setState(new Normal());
 
         fred.getCardsInHand().addCard(new Card(Deck.SUITS[0], Deck.RANKS[4]));
         fred.getCardsInHand().addCard(new Card(Deck.SUITS[0], Deck.RANKS[2]));
-        String jsonString = GenerateJson.generateTurnRequest(fred);
+        String jsonString = GenerateJson.generateTurnRequest(fred, fred.getCardsInHand());
         ObjectMapper mapper = new ObjectMapper();
         JsonNode node = mapper.readTree(jsonString);
 
@@ -49,11 +49,11 @@ public class GenerateJsonServerTests {
     @Test
     public void testGenerateTurnRequestWithSplit() throws JsonProcessingException {
         Player fred = new Player("fred", mockPlayerManager);
-        fred.setState(new Normal());
+        fred.getCardsInHand().setState(new Normal());
 
         fred.getCardsInHand().addCard(new Card(Deck.SUITS[0], Deck.RANKS[4]));
         fred.getCardsInHand().addCard(new Card(Deck.SUITS[0], Deck.RANKS[4]));
-        String jsonString = GenerateJson.generateTurnRequest(fred);
+        String jsonString = GenerateJson.generateTurnRequest(fred, fred.getCardsInHand());
         ObjectMapper mapper = new ObjectMapper();
         JsonNode node = mapper.readTree(jsonString);
 
@@ -75,14 +75,14 @@ public class GenerateJsonServerTests {
         Player romeo = new Player("romeo", mockPlayerManager);
         Dealer dealer = game.getDealer();
 
-        sal.setState(new Normal());
+        sal.getCardsInHand().setState(new Normal());
         sal.setBet(20);
-        romeo.setState(new Bust());
+        romeo.getCardsInHand().setState(new Bust());
         romeo.setBet(10);
 
-        sal.addCardToHand(new Card(Deck.SUITS[0], Deck.RANKS[4]));
-        romeo.addCardToHand(new Card(Deck.SUITS[0], Deck.RANKS[2]));
-        dealer.addCardToHand(new Card(Deck.SUITS[0], Deck.RANKS[10]));
+        sal.getCardsInHand().addCard(new Card(Deck.SUITS[0], Deck.RANKS[4]));
+        romeo.getCardsInHand().addCard(new Card(Deck.SUITS[0], Deck.RANKS[2]));
+        dealer.getCardsInHand().addCard(new Card(Deck.SUITS[0], Deck.RANKS[10]));
 
         String jsonString = GenerateJson.generateUpdate(game);
         ObjectMapper mapper = new ObjectMapper();

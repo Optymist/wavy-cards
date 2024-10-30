@@ -4,6 +4,7 @@ import blackjack.Play;
 import blackjack.PlayerManager;
 import blackjack.deck.Card;
 import blackjack.deck.Deck;
+import blackjack.helperClasses.mockedPlayerManager;
 import blackjack.player.Hand;
 import blackjack.player.Player;
 import blackjack.player.state.Bust;
@@ -18,8 +19,7 @@ import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.util.ArrayList;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 public class HitTests {
@@ -28,20 +28,8 @@ public class HitTests {
 
     @BeforeEach
     public void setUp() {
-        // Create a mock Socket
-        Socket mockSocket = Mockito.mock(Socket.class);
-
-        // Create mocks for BufferedReader and BufferedWriter
-        BufferedReader mockBufferedReader = Mockito.mock(BufferedReader.class);
-        BufferedWriter mockBufferedWriter = Mockito.mock(BufferedWriter.class);
-
-        // Initialize the mock PlayerManager
-        mockPlayerManager = Mockito.mock(PlayerManager.class);
-
-        // Mock behaviors
-        when(mockPlayerManager.getPlayers()).thenReturn(new ArrayList<>());
-        doNothing().when(mockPlayerManager).sendMessage(anyString());
-        doNothing().when(mockPlayerManager).closeEverything(mockSocket, mockBufferedReader, mockBufferedWriter);
+        mockedPlayerManager.setUp();
+        this.mockPlayerManager = mockedPlayerManager.mockPlayerManager;
     }
 
     @Test
@@ -57,7 +45,7 @@ public class HitTests {
         player.performAction(new HitAction(), game);
         assertEquals(10, player.getBet());
         assertEquals(3, hand.getCards().size());
-        assertTrue(player.getState() instanceof Normal);
+        assertInstanceOf(Normal.class, hand.getState());
     }
 
     @Test
@@ -73,7 +61,7 @@ public class HitTests {
         player.performAction(new HitAction(), game);
         assertEquals(10, player.getBet());
         assertEquals(3, hand.getCards().size());
-        assertTrue(player.getState() instanceof Bust);
+        assertInstanceOf(Bust.class, hand.getState());
     }
 
 }

@@ -1,5 +1,3 @@
-// todo --> Convert all game state to json
-// nothing but static methods that shit out the json string
 package blackjack.protocol;
 
 import blackjack.deck.Card;
@@ -17,10 +15,14 @@ import java.util.List;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 
 /**
- * GenerateJson
+ * Class that converts messages from the server into json format
  */
 public class GenerateJson {
-
+    /**
+     * Generates a general message to send to the user.
+     * @param message --> to send
+     * @return the string json form
+     */
     public static String generateGeneralMessage(String message) {
         JsonNodeFactory nodeFactory = JsonNodeFactory.instance;
         ObjectNode rootNode = nodeFactory.objectNode();
@@ -31,6 +33,11 @@ public class GenerateJson {
         return rootNode.toString();
     }
 
+    /**
+     * Generates a connection update to send to the user.
+     * @param player --> that has been connected.
+     * @return the string json form.
+     */
     public static String generateConnectedUpdate(Player player) {
         JsonNodeFactory nodeFactory = JsonNodeFactory.instance;
         ObjectNode rootNode = nodeFactory.objectNode();
@@ -44,6 +51,12 @@ public class GenerateJson {
         return rootNode.toString();
     }
 
+    /**
+     * Generates a turn turnRequest to send to the user.
+     * @param player --> to whom the request is being sent.
+     * @param currentHand --> the hand that is being played.
+     * @return the string json form.
+     */
     public static String generateTurnRequest(Player player, Hand currentHand) {
         JsonNodeFactory factory = JsonNodeFactory.instance;
         ObjectNode rootNode = new ObjectNode(factory);
@@ -58,6 +71,26 @@ public class GenerateJson {
         return rootNode.toString();
     }
 
+    /**
+     * Generates a betRequest to send to the user.
+     * @param name --> of the player who is choosing a bet.
+     * @param message --> the message to add.
+     * @return the string json form.
+     */
+    public static String generateBetRequest(String name, String message) {
+        JsonNodeFactory factory = JsonNodeFactory.instance;
+        ObjectNode rootNode = new ObjectNode(factory);
+        rootNode.put("protocolType", "betRequest");
+        rootNode.put("playerName", name);
+        rootNode.put("message", message);
+        return rootNode.toString();
+    }
+
+    /**
+     * Generates an update of the entire state of the game.
+     * @param game --> the game to generate an update of.
+     * @return the string json form
+     */
     public static String generateUpdate(Play game) {
         JsonNodeFactory factory = JsonNodeFactory.instance;
         ObjectNode rootNode = new ObjectNode(factory);
@@ -75,6 +108,11 @@ public class GenerateJson {
         return rootNode.toString();
     }
 
+    /**
+     * Generate an ObjectNode with all the information of a player's state.
+     * @param player --> to generate an objectNode of.
+     * @return the object node.
+     */
     private static ObjectNode playerInformation(Player player) {
         JsonNodeFactory factory = JsonNodeFactory.instance;
         ObjectNode rootNode = new ObjectNode(factory);
@@ -93,6 +131,11 @@ public class GenerateJson {
         return rootNode;
     }
 
+    /**
+     * Generate an ObjectNode that represents the dealer's current state in the game.
+     * @param game --> the game that the dealer is currently in.
+     * @return the object node.
+     */
     private static ObjectNode dealerInformation(Play game) {
         JsonNodeFactory factory = JsonNodeFactory.instance;
         ObjectNode rootNode = new ObjectNode(factory);
@@ -108,6 +151,4 @@ public class GenerateJson {
 
         return rootNode;
     }
-
-
 }

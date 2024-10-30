@@ -1,0 +1,5 @@
+{
+  "protocolType" : "betRequest",
+  "currentPlayer": "playerName",
+  "message" : "bet message"
+}
