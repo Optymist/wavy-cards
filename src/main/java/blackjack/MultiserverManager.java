@@ -9,11 +9,18 @@ import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.util.Enumeration;
 
-
+/**
+ * The main class that needs to be run to start the game.
+ * Allows for multiple servers.
+ */
 public class MultiserverManager {
     public static String IP;
     public static int PORT;
 
+    /**
+     * Main method that allows someone to host a game or join a game that is running already.
+     * @param args --> passed to the main method.
+     */
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
         mainMenu();
@@ -24,9 +31,9 @@ public class MultiserverManager {
                 System.out.println("How many players would you like to host: ");
                 String players = scanner.nextLine();
 
-                while (!players.matches("[1-6]+")) {
+                while (!players.matches("[1-8]")) {
                     System.out.println("Not a valid input.");
-                    System.out.println("Enter a number from 1 to 6:");
+                    System.out.println("Enter a number from 1 to 8:");
                     players = scanner.nextLine();
                 }
                 setupServer(scanner);
@@ -48,6 +55,9 @@ public class MultiserverManager {
         scanner.close();
     }
 
+    /**
+     * Main menu display
+     */
     private static void mainMenu() {
         System.out.println("Let's Play Some BlackJack!");
         System.out.println("Choose an option [1/2]: ");
@@ -55,12 +65,19 @@ public class MultiserverManager {
         System.out.println("2. Join a game");
     }
 
+    /**
+     * Loading screen display
+     */
     private static void loadingScreenMessage(){
         System.out.println("Share these with the people you'd like to play with: ");
         System.out.println("Server IP address: "+ IP);
         System.out.println("Server PORT number: "+ PORT);
     }
 
+    /**
+     * Sets the IP address and PORT number for a server.
+     * @param scanner --> to read input.
+     */
     private static void setupServer(Scanner scanner) {
         try {
             IP = getIp();
@@ -73,7 +90,7 @@ public class MultiserverManager {
     /**
      * Attempt to get the IP address of the user trying to create a game.
      * @return String message --> either IP or error message
-     * @throws SocketException
+     * @throws SocketException -->
      */
     private static String getIp() throws SocketException {
         String message;
@@ -98,6 +115,12 @@ public class MultiserverManager {
         return message;
     }
 
+    /**
+     * Validate that the port number that is chosen is correct.
+     * @param scanner --> to read input.
+     * @param prompt --> to display before allowing the choice of the port.
+     * @return --> the chosen port number
+     */
     private static int getPort(Scanner scanner, String prompt) {
         int value;
         while (true) {
@@ -121,6 +144,10 @@ public class MultiserverManager {
         return value;
     }
 
+    /**
+     * Checks whether a user has valid credentials of a game they would like to join.
+     * @param scanner --> to read input.
+     */
     private static void joinServer(Scanner scanner){
         System.out.print("\nEnter the IP address of the server you want to join: (leave empty to use localhost): ");
         String ipAddress = scanner.nextLine().trim().strip();
@@ -136,8 +163,6 @@ public class MultiserverManager {
 
         System.out.print("Enter the PORT number of the server you want to join: ");
         PORT = Integer.parseInt(scanner.nextLine().trim().strip());
-
     }
-
 
 }

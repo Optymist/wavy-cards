@@ -12,8 +12,7 @@ import blackjack.player.state.Stand;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 
 public class DoubleTests {
@@ -39,7 +38,7 @@ public class DoubleTests {
 
         assertEquals(20, player.getBet());
         assertEquals(3, hand.getCards().size());
-        assertTrue(player.getState() instanceof Stand);
+        assertInstanceOf(Stand.class, hand.getState());
     }
 
     @Test
@@ -58,7 +57,7 @@ public class DoubleTests {
 
         assertEquals(20, player.getBet());
         assertEquals(3, hand.getCards().size());
-        assertTrue(player.getState() instanceof Bust);
+        assertInstanceOf(Bust.class, hand.getState());
     }
 
 }

@@ -7,7 +7,6 @@ import java.util.*;
 import blackjack.Client.protocol.Generate;
 import blackjack.MultiserverManager;
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 import static blackjack.Client.protocol.Decrypt.*;
 
@@ -78,8 +77,11 @@ public class Client {
                             break;
                         case ("update"):
                             serverRequestType = "update";
-                            System.out.println(getTurn(messageNode));
                             System.out.println(getPlayerCardInfo(messageNode, name));
+                            break;
+                        case ("betRequest"):
+                            serverRequestType = "betRequest";
+                            System.out.println(messageNode.get("message").asText());
                             break;
                     }
 
@@ -99,10 +101,20 @@ public class Client {
 
             if (serverRequestType.equals("turnRequest")) {
                 sendMessage(Generate.generateTurnResponse(name, messageToSend));
+            } else if (serverRequestType.equals("betRequest")) {
+                checkBet(messageToSend);
             } else {
                 sendMessage(messageToSend);
             }
+        }
+    }
 
+    private void checkBet(String bet) {
+        try {
+            int betValue = Integer.parseInt(bet);
+            sendMessage(Generate.generateBetResponse(name, betValue));
+        } catch (NumberFormatException e) {
+            sendMessage(Generate.generateBetResponse(name, null));
         }
     }
 

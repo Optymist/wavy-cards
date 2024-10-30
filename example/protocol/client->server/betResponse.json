@@ -1,0 +1,5 @@
+{
+  "protocolType": "betResponse",
+  "name": "String",
+  "bet": "int"
+}

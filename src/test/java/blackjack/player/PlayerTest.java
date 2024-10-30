@@ -1,4 +1,4 @@
 package blackjack.player;
 
-public class player {
+public class PlayerTest {
 }

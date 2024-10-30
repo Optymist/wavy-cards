@@ -1,33 +1,24 @@
 package blackjack.player;
 
 import blackjack.deck.Card;
-import blackjack.player.state.Normal;
-import blackjack.player.state.playerState;
 
+/**
+ * Dealer class:
+ * Holds all the necessary properties and methods for a dealer in the game.
+ */
 public class Dealer {
     private Hand cardsInHand;
     private boolean isBust = false;
-    private playerState state;
 
+    /**
+     * Initialize the dealer's hand.
+     */
     public Dealer() {
         cardsInHand = new Hand();
-        state = new Normal();
-    }
-
-    public void addCardToHand(Card dealtCard) {
-        cardsInHand.addCard(dealtCard);
     }
 
     public Hand getCardsInHand() {
         return this.cardsInHand;
-    }
-
-    public void setState(playerState state) {
-        this.state = state;
-    }
-
-    public playerState getState() {
-        return this.state;
     }
 
     public void setBust(boolean isBust) {
@@ -40,6 +31,14 @@ public class Dealer {
 
     public boolean getBust() {
         return isBust;
+    }
+
+    /**
+     * Reset the dealer's properties so that it is set for a new round.
+     */
+    public void reset() {
+        this.cardsInHand.clearCards();
+        this.isBust = false;
     }
 
     @Override

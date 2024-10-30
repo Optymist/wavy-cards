@@ -5,6 +5,9 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.Scanner;
 
+/**
+ * The server side of the application with a serverConsole
+ */
 public class Server {
     private static ServerSocket serverSocket;
     private static Play game;
@@ -12,10 +15,19 @@ public class Server {
     private static int playerNum;
     private static final int PORT = MultiserverManager.PORT;
 
+    /**
+     * Initialise the server's socket
+     * @param socket --> the socket passed through.
+     */
     public Server(ServerSocket socket) {
         serverSocket = socket;
     }
 
+    /**
+     * Main method which starts the server and its console in unison.
+     * @param args -- args passed to the main method.
+     *             Where we get the number of players the server admin has decided to host.
+     */
     public static void main(String[] args) {
         playerNum = Integer.parseInt(args[0]);
         game = new Play(playerNum);
@@ -38,6 +50,9 @@ public class Server {
         }
     }
 
+    /**
+     * Handles the server console commands.
+     */
     public static void serverConsole() {
         String endServerPrompts = "quit off bye";
         Scanner scanner = new Scanner(System.in);
@@ -55,6 +70,9 @@ public class Server {
         }
     }
 
+    /**
+     * Closing the server socket (stops all connections to it).
+     */
     public static void closeServerSocket() {
         try {
             if (serverSocket != null) {
@@ -66,9 +84,12 @@ public class Server {
         }
     }
 
+    /**
+     * Waits for connections to the socket and starts the player manager thread.
+     * Also checks whether the max players have been reached and sets gameOn to true.
+     */
     public void start() {
         try {
-
             while (!serverSocket.isClosed()) {
                 Socket socket = serverSocket.accept();
                 PlayerManager playerManager = new PlayerManager(socket, playerNum);

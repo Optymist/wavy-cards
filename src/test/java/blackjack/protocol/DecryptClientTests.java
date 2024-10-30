@@ -27,11 +27,11 @@ public class DecryptClientTests {
     @Test
     public void testGetAvailableActionsWithoutSplit() throws JsonProcessingException {
         Player gertrude = new Player("gertrude", mockPlayerManager);
-        gertrude.setState(new Normal());
-        gertrude.addCardToHand(new Card(Deck.SUITS[0], Deck.RANKS[0]));
-        gertrude.addCardToHand(new Card(Deck.SUITS[0], Deck.RANKS[2]));
+        gertrude.getCardsInHand().setState(new Normal());
+        gertrude.getCardsInHand().addCard(new Card(Deck.SUITS[0], Deck.RANKS[0]));
+        gertrude.getCardsInHand().addCard(new Card(Deck.SUITS[0], Deck.RANKS[2]));
 
-        String turnRequest = GenerateJson.generateTurnRequest(gertrude);
+        String turnRequest = GenerateJson.generateTurnRequest(gertrude, gertrude.getCardsInHand());
         JsonNode turnRequestNode = Decrypt.decryptServerMessage(turnRequest);
         String requestMessage = Decrypt.getAvailableActions(turnRequestNode);
 
@@ -45,11 +45,11 @@ public class DecryptClientTests {
     @Test
     public void testGetAvailableActionsWithSplit() throws JsonProcessingException {
         Player minnie = new Player("minnie", mockPlayerManager);
-        minnie.setState(new Normal());
-        minnie.addCardToHand(new Card(Deck.SUITS[0], Deck.RANKS[0]));
-        minnie.addCardToHand(new Card(Deck.SUITS[1], Deck.RANKS[0]));
+        minnie.getCardsInHand().setState(new Normal());
+        minnie.getCardsInHand().addCard(new Card(Deck.SUITS[0], Deck.RANKS[0]));
+        minnie.getCardsInHand().addCard(new Card(Deck.SUITS[1], Deck.RANKS[0]));
 
-        String turnRequest = GenerateJson.generateTurnRequest(minnie);
+        String turnRequest = GenerateJson.generateTurnRequest(minnie, minnie.getCardsInHand());
         JsonNode turnRequestNode = Decrypt.decryptServerMessage(turnRequest);
         String requestMessage = Decrypt.getAvailableActions(turnRequestNode);
 
@@ -66,11 +66,11 @@ public class DecryptClientTests {
         game.clearAllPlayers();
         Player fred = new Player("fred", mockPlayerManager);
         Player greg = new Player("greg", mockPlayerManager);
-        fred.setState(new Normal());
-        greg.setState(new Normal());
+        fred.getCardsInHand().setState(new Normal());
+        greg.getCardsInHand().setState(new Normal());
 
-        fred.addCardToHand(new Card(Deck.SUITS[0], Deck.RANKS[0]));
-        greg.addCardToHand(new Card(Deck.SUITS[0], Deck.RANKS[2]));
+        fred.getCardsInHand().addCard(new Card(Deck.SUITS[0], Deck.RANKS[0]));
+        greg.getCardsInHand().addCard(new Card(Deck.SUITS[0], Deck.RANKS[2]));
 
         String updateRequest = GenerateJson.generateUpdate(game);
         JsonNode updateRequestNode = Decrypt.decryptServerMessage(updateRequest);

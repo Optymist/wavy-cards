@@ -21,7 +21,7 @@ public class ActionsTests {
 
     @Test
     public void testBust() {
-        playerState state = new Bust();
+        handState state = new Bust();
         Hand hand = new Hand();
         Card card0 = new Card(Deck.SUITS[0], Deck.RANKS[0]);
         Card card1 = new Card(Deck.SUITS[1], Deck.RANKS[1]);
@@ -34,7 +34,7 @@ public class ActionsTests {
 
     @Test
     public void testBlackJack() {
-        playerState state = new BlackJack();
+        handState state = new BlackJack();
         Hand hand = new Hand();
         Card card0 = new Card(Deck.SUITS[0], Deck.RANKS[0]);
         Card card1 = new Card(Deck.SUITS[1], Deck.RANKS[1]);
@@ -47,7 +47,7 @@ public class ActionsTests {
 
     @Test
     public void testStand() {
-        playerState state = new Stand();
+        handState state = new Stand();
         Hand hand = new Hand();
         Card card0 = new Card(Deck.SUITS[0], Deck.RANKS[0]);
         Card card1 = new Card(Deck.SUITS[1], Deck.RANKS[1]);
@@ -60,7 +60,7 @@ public class ActionsTests {
 
     @Test
     public void testSurrender() {
-        playerState state = new Stand();
+        handState state = new Stand();
         Hand hand = new Hand();
         Card card0 = new Card(Deck.SUITS[0], Deck.RANKS[0]);
         Card card1 = new Card(Deck.SUITS[1], Deck.RANKS[1]);
@@ -73,7 +73,7 @@ public class ActionsTests {
 
     @Test
     public void testNormalNoSplit() {
-        playerState state = new Normal();
+        handState state = new Normal();
         Hand hand = new Hand();
         Card card0 = new Card(Deck.SUITS[0], Deck.RANKS[0]);
         Card card1 = new Card(Deck.SUITS[1], Deck.RANKS[1]);
@@ -89,7 +89,7 @@ public class ActionsTests {
 
     @Test
     public void testNormalWithSplit() {
-        playerState state = new Normal();
+        handState state = new Normal();
         Hand hand = new Hand();
         Card card0 = new Card(Deck.SUITS[0], Deck.RANKS[0]);
         Card card1 = new Card(Deck.SUITS[1], Deck.RANKS[0]);
