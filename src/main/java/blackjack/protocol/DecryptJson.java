@@ -4,6 +4,7 @@ import blackjack.actions.BlackJackAction;
 import blackjack.protocol.Exceptions.InvalidAction;
 import blackjack.protocol.Exceptions.InvalidBet;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -57,5 +58,20 @@ public class DecryptJson {
         } else {
             return bet;
         }
+    }
+
+    /**
+     * Validates whether an update is a connected updated
+     *
+     * @param update -> The response from the server
+     * @return True if a connectedUpdate, False if not
+     * @throws JsonProcessingException 
+     * @throws JsonMappingException 
+     */
+    public static boolean isConnectedToGame(String update) throws JsonMappingException, JsonProcessingException {
+        ObjectMapper mapper = new ObjectMapper();
+        JsonNode rootNode = mapper.readTree(update);
+        String protocol = rootNode.get("protocolType").asText();
+        return (protocol.equals("connectedUpdate"));
     }
 }

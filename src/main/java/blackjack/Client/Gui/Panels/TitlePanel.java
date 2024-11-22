@@ -32,7 +32,6 @@ public class TitlePanel extends JPanel {
     }
 
     public int[] getMiddle(Dimension panelDimension) {
-
         return null;
     }
 

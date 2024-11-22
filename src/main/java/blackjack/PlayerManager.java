@@ -61,6 +61,7 @@ public class PlayerManager implements Runnable {
                 }
 
                 while ((clientMessage = in.readLine()) != null) {
+                    System.out.println(clientMessage);
                     if (player.isTurn()) {
                         System.out.println(clientMessage);
                         player.setTurnResponse(clientMessage);
@@ -174,5 +175,9 @@ public class PlayerManager implements Runnable {
 
     public ArrayList<PlayerManager> getPlayers() {
         return players;
+    }
+
+    public String name() {
+        return this.name;
     }
 }

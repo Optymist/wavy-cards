@@ -2,11 +2,10 @@ package blackjack.Client.Gui.Panels;
 
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.Button;
-import java.awt.Component;
 import java.awt.event.ActionListener;
-import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 
 import javax.swing.JPanel;
@@ -17,7 +16,7 @@ import blackjack.Client.Gui.Frames.GameFrame;
 /**
  * GamePanel
  */
-public abstract class GamePanel extends JPanel implements Runnable {
+public abstract class GamePanel extends MenuPanel implements Runnable {
 
     protected Dimension resolution = new Dimension(1600, 900);
     protected Thread gameThread;
@@ -26,11 +25,8 @@ public abstract class GamePanel extends JPanel implements Runnable {
     protected GameFrame window;
     private ArrayList<GameEntity> entities = new ArrayList<>();
 
-    public GamePanel() {
-        super();
-    }
-
     public GamePanel(final GameFrame window, final Color colour) {
+        super(window);
         if (window != null) {
             this.window = window;
         }
@@ -40,19 +36,25 @@ public abstract class GamePanel extends JPanel implements Runnable {
         this.setFocusable(true);
     }
 
-    public GamePanel(final GameFrame gameFrame) {
+    public GamePanel(final GameFrame window) {
+        super(window);
         if (window != null) {
-            this.window = gameFrame;
+            this.window = window;
         }
         this.setPreferredSize(resolution);
         this.setDoubleBuffered(true);
         this.setFocusable(true);
     }
     
+    // /**
+    //  * Called just before Game Panel's Loop, use to setup panel.
+    //  */
+    // public abstract void packPanel();
+
     /**
-     * Called just before Game Panel's Loop, use to setup panel.
+     * Draw items on screen
      */
-    public abstract void packPanel();
+    public abstract void drawScreen();
 
     public void startGameThread() {
         gameThread = new Thread(this);
@@ -83,7 +85,7 @@ public abstract class GamePanel extends JPanel implements Runnable {
         long timer = 0;
         int drawCount = 0;
 
-        packPanel();
+        // packPanel();
 
         while (gameThread != null) {
             currentTime = System.nanoTime();
@@ -93,8 +95,9 @@ public abstract class GamePanel extends JPanel implements Runnable {
             lastTime = currentTime;
 
             if (delta >= 1) {
-                // update screen
 
+                // update screen
+                drawScreen();
                 repaint();
                 delta--;
                 drawCount++;
@@ -114,6 +117,30 @@ public abstract class GamePanel extends JPanel implements Runnable {
 
     }
 
+
+    /**
+     * Paints the components on the panel
+     *
+     * @param g Graphics parsed by swing to paint panel
+     */
+    public void paintComponent(Graphics g) {
+        super.paintComponent(g);
+
+        // Graphics2D g2D = (Graphics2D) g;
+        //
+        // g2D.setColor(Color.GREEN);
+        // g2D.fillRect(50, 50, 100, 100);
+        //
+        // g2D.dispose();
+        //
+    }
+
+    /**
+     * @param name
+     * @param cords
+     * @param eventListener
+     * @return
+     */
     public static Button createButton(String name, int[] cords, ActionListener eventListener) {
         Button button = new Button(name);
         button.setBounds(cords[0], cords[1], cords[2], cords[3]);

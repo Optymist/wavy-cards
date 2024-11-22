@@ -3,13 +3,14 @@ package blackjack.Client.Gui.Frames;
 import javax.swing.JFrame;
 
 import blackjack.Client.Gui.Panels.GamePanel;
+import blackjack.Client.Gui.Panels.MenuPanel;
 
 /**
  * GameFrame
  */
 public class GameFrame extends JFrame {
 
-    private volatile GamePanel currentPanel;
+    private volatile MenuPanel currentPanel;
 
     public GameFrame() {
         this("WavyCards");
@@ -22,23 +23,29 @@ public class GameFrame extends JFrame {
         setTitle(title);
     }
 
-    public void setPanel(GamePanel newPanel) {
+    public void setPanel(MenuPanel newPanel) {
         if (newPanel != null) {
             this.currentPanel = newPanel;
             this.add(currentPanel);
             this.pack();
-            this.currentPanel.startGameThread();
+            this.currentPanel.init();
+            this.pack();
         }
     }
 
     public void removePanel() {
-        this.currentPanel.getGameThread().interrupt();
+        this.currentPanel.dispose();
         this.remove(currentPanel);
         this.pack();
     }
 
-    public GamePanel currentPanel() {
-        return currentPanel();
+    public void replaceCurrentPanel(MenuPanel newPanel) {
+        removePanel();
+        setPanel(newPanel);
+    }
+
+    public MenuPanel currentPanel() {
+        return currentPanel;
     }
 
     

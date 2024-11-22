@@ -2,13 +2,18 @@ package blackjack.Client.Gui.Panels.JoinGamePanels.Buttons;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.IOException;
+import java.net.Socket;
 
+import blackjack.Client.Exceptions.UnsuccessfulConnectionException;
 import blackjack.Client.Gui.Frames.GameFrame;
 import blackjack.Client.Gui.MainMenu.MainMenu;
+import blackjack.Client.Gui.Panels.GamePanel;
 import blackjack.Client.Gui.Panels.JoinGamePanels.JoinGamePanel;
 
 /**
- * JoinGameButtonListener
+ * JoinGameButtonListener 
+ * Need to setJoinGamePanel()
  */
 public class JoinGameButton implements ActionListener {
 
@@ -21,11 +26,7 @@ public class JoinGameButton implements ActionListener {
 
 	@Override
 	public void actionPerformed(ActionEvent arg0) {
-        // TODO Attempt to join game and if no game is found then proceed to 
-        // let the user know that the game cannot be found
-
-        // this.window.removePanel();
-        // this.window.setPanel(new MainMenu(window));
+        this.window.replaceCurrentPanel(new JoinGamePanel(window));
 	}
 
     

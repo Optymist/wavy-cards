@@ -2,9 +2,10 @@ package blackjack.Client.Gui.MainMenu;
 
 import blackjack.Client.Gui.Frames.GameFrame;
 import blackjack.Client.Gui.MainMenu.Buttons.ExitButtonListener;
-import blackjack.Client.Gui.MainMenu.Buttons.JoinGameButtonListener;
 import blackjack.Client.Gui.Panels.GamePanel;
+import blackjack.Client.Gui.Panels.MenuPanel;
 import blackjack.Client.Gui.Panels.TitlePanel;
+import blackjack.Client.Gui.Panels.JoinGamePanels.Buttons.JoinGameButton;
 
 import java.awt.Button;
 import java.awt.Color;
@@ -14,7 +15,7 @@ import java.awt.GridBagLayout;
 /**
  * MainMenu
  */
-public class MainMenu extends GamePanel {
+public class MainMenu extends MenuPanel {
 
     private GameFrame window;
 
@@ -27,13 +28,13 @@ public class MainMenu extends GamePanel {
 
 
 	@Override
-	public void packPanel() {
+	public void init() {
         TitlePanel titlePanel = new TitlePanel("WavyCards");
         Button createGameButton = new Button("Create Game");
         Button joinGameButton = new Button("Join Game");
         Button exitGameButton = new Button("ExitGame");
 
-        joinGameButton.addActionListener(new JoinGameButtonListener(window));
+        joinGameButton.addActionListener(new JoinGameButton(window));
         exitGameButton.addActionListener(new ExitButtonListener(window));
 
         GridBagConstraints constraints = new GridBagConstraints();
@@ -41,11 +42,11 @@ public class MainMenu extends GamePanel {
         this.add(createGameButton, constraints);
         this.add(joinGameButton, constraints);
         this.add(exitGameButton, constraints);
+	}
 
 
-
-
-
+	@Override
+	public void dispose() {
 
 	}
 

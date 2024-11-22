@@ -26,9 +26,9 @@ public class GuiClient {
         GameFrame frame = new GameFrame();
 
         MainMenu menu = new MainMenu(frame);
-        frame.setPanel(menu);
-
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
+        frame.setPanel(menu);
+
     }
 }
