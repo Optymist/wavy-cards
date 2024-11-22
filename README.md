@@ -51,5 +51,8 @@ compared to your own cards' value, otherwise the dealer draws cards until he has
     cards and is considered a BlackJack. If the dealer does not also get a BlackJack then you get paid 1.5 times your 
     bet, otherwise you and the dealer will push, and you'll get your bet back.
 
+### Authors
+Kimlyn Smart - smartkimlyn@gmail.com
+Shane Carr - shanecarr1000@gmail.com
 
 
