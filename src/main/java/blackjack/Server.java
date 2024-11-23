@@ -3,6 +3,7 @@ package blackjack;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.HashMap;
 import java.util.Scanner;
 
 /**
@@ -13,6 +14,7 @@ public class Server {
     private static Play game;
     private static boolean gameOn = false;
     private static int playerNum;
+    private static PlayerManager playerManager;
     private static final int PORT = MultiserverManager.PORT;
 
     /**
@@ -61,11 +63,41 @@ public class Server {
             String serverCommand = scanner.nextLine().toLowerCase();
             if (endServerPrompts.contains(serverCommand)) {
                 System.out.println("Shutting down...");
+                scanner.close();
                 System.exit(0);
                 break;
-            }
-            else {
-                System.out.println(serverCommand);
+            } else {
+                switch (serverCommand.toLowerCase()) {
+                    case ("help"):
+                        HashMap<String, String> commands = new HashMap<>();
+                        commands.put("count", "The amount of players in the game");
+
+                        System.out.println("Commands:");
+                        commands.keySet().forEach(each -> System.out.println(String.format("%s - %s", each, commands.get(each))));
+                        break;
+
+                    case ("count"):
+                        if (playerManager == null) {
+                            System.out.println("There are currently no players.");
+                        } else {
+                            System.out.println(String.format("There are %d players.", playerManager.getPlayers().size()));
+                        }
+                        break;
+
+                    case ("players"):
+                        if (playerManager == null) {
+                            System.out.println("There are currently no players.");
+                        } else {
+                            System.out.println("Players:");
+                            playerManager.getPlayers().forEach(player -> {
+                                System.out.println(String.format("Name: %s", player.name()));
+                            });
+                        }
+                        break;
+
+                    default:
+                        System.out.println(String.format("Command not recognized: %s\n Try using help to see available commands", serverCommand));
+                }
             }
         }
     }
@@ -92,7 +124,7 @@ public class Server {
         try {
             while (!serverSocket.isClosed()) {
                 Socket socket = serverSocket.accept();
-                PlayerManager playerManager = new PlayerManager(socket, playerNum);
+                playerManager = new PlayerManager(socket, playerNum);
                 Thread handlerThread = new Thread(playerManager);
                 handlerThread.start();
                 if (playerNum == playerManager.getPlayers().size()) {
