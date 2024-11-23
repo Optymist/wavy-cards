@@ -1,6 +1,7 @@
 package blackjack.Client.Gui.Panels.JoinGamePanels;
 
 import blackjack.Client.ClientThread;
+import blackjack.Client.Gui.GuiClient;
 import blackjack.Client.Gui.Frames.GameFrame;
 import blackjack.Client.Gui.Panels.GamePanel;
 import blackjack.Client.Gui.Panels.MenuPanel;
@@ -15,10 +16,10 @@ public class PlayGamePanel extends GamePanel {
     private CreateNamePanel createNamePanel;
 
 
-    public PlayGamePanel(GameFrame mainFrame, ClientThread clientThread) {
+    public PlayGamePanel(GameFrame mainFrame) {
         super(mainFrame);
         this.window = mainFrame;
-        this.clientThread = clientThread;
+        this.clientThread = GuiClient.getClientThread();
     }
 
 

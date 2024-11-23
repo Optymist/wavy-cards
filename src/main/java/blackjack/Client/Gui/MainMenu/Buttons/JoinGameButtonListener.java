@@ -8,6 +8,7 @@ import java.net.Socket;
 
 import blackjack.Client.ClientThread;
 import blackjack.Client.Exceptions.UnsuccessfulConnectionException;
+import blackjack.Client.Gui.GuiClient;
 import blackjack.Client.Gui.Frames.GameFrame;
 import blackjack.Client.Gui.Panels.LobbyPanel;
 import blackjack.Client.Gui.Panels.JoinGamePanels.CreateNamePanel;
@@ -37,9 +38,11 @@ public class JoinGameButtonListener implements ActionListener {
             Socket connectionSocket = joinPanel.connectToHost();
 
             ClientThread clientThread = new ClientThread(connectionSocket);
+            GuiClient.setClientThread(clientThread);
+            GuiClient.startClientThread();
             // LobbyPanel playPanel = new LobbyPanel(window, clientThread);
 
-            this.window.replaceCurrentPanel(new CreateNamePanel(window, clientThread));
+            this.window.replaceCurrentPanel(new CreateNamePanel(window));
             // this.window.setPanel(playPanel);
 
         } catch (UnsuccessfulConnectionException e) {

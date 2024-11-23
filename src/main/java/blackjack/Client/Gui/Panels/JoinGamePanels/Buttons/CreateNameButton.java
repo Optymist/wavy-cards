@@ -8,6 +8,7 @@ import java.awt.event.ActionListener;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
 import blackjack.Client.ClientThread;
+import blackjack.Client.Gui.GuiClient;
 import blackjack.Client.Gui.Frames.GameFrame;
 import blackjack.Client.Gui.Panels.JoinGamePanels.CreateNamePanel;
 import blackjack.Client.Gui.Panels.JoinGamePanels.PlayGamePanel;
@@ -27,25 +28,29 @@ public class CreateNameButton implements ActionListener {
     private int currentCount;
 
 
-    public CreateNameButton(ClientThread client, GameFrame window) {
+    public CreateNameButton(GameFrame window) {
         super();
         this.window = window;
-        this.client = client;
+        this.client = GuiClient.getClientThread();
         this.panel = (CreateNamePanel) window.currentPanel();
         this.currentCount = client.getResponseCount();
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {
+        System.out.println(panel.getName());
         client.notifyServer(panel.getName());
 
         if (currentCount < client.getResponseCount()) {
             try {
+                System.out.println(client.lastMessage());
                 if (DecryptJson.isConnectedToGame(client.lastMessage())) {
-                    this.window.replaceCurrentPanel(new PlayGamePanel(window, client));
+                    this.window.replaceCurrentPanel(new PlayGamePanel(window));
                 } else {
+                    // TODO check that this works
                     panel.add(
                             new Label("Name Already Taken"));
+                    window.pack();
                 }
 
             } catch (JsonProcessingException e1) {

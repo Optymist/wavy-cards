@@ -1,6 +1,7 @@
 package blackjack.Client.Gui.Panels.JoinGamePanels;
 
 import blackjack.Client.ClientThread;
+import blackjack.Client.Gui.GuiClient;
 import blackjack.Client.Gui.Frames.GameFrame;
 import blackjack.Client.Gui.Panels.GamePanel;
 import blackjack.Client.Gui.Panels.MenuPanel;
@@ -26,13 +27,10 @@ public class CreateNamePanel extends MenuPanel {
     private Button createNameButton;
 
     private ClientThread client;
-    private GameFrame window;
 
-    public CreateNamePanel(GameFrame window, ClientThread client) {
+    public CreateNamePanel(GameFrame window) {
         super(window);
-        this.client = client;
-        // this.setPreferredSize(new Dimension(1000, 600));
-        // this.setVisible(true);
+        this.client = GuiClient.getClientThread();
 
         System.out.println("Initialized CreateNamePanel");
     }
@@ -53,14 +51,14 @@ public class CreateNamePanel extends MenuPanel {
         this.createNameButton.setLabel("Join Game");
         this.createNameButton.setSize(200, 200);
         // this.createNameButton.setLocation(600, 800);
-        this.createNameButton.addActionListener(new CreateNameButton(client, window));
+        this.createNameButton.addActionListener(new CreateNameButton(window));
     }
 
     public void init() {
         this.createNameLabel();
         this.createNameField();
         this.createNameButton();
-        this.setBackground(Color.GREEN);
+        // this.setBackground(Color.GREEN);
 
         GridBagConstraints constraints = new GridBagConstraints();
         this.add(createNameButton, constraints);

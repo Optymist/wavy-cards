@@ -1,5 +1,7 @@
 package blackjack.Client.Gui.Frames;
 
+import java.net.Socket;
+
 import javax.swing.JFrame;
 
 import blackjack.Client.Gui.Panels.GamePanel;

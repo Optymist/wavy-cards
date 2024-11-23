@@ -7,6 +7,8 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.Socket;
 
+import blackjack.protocol.DecryptJson;
+
 /**
  * ClientThread
  */
@@ -16,10 +18,11 @@ public class ClientThread extends Thread {
     private final BufferedWriter out;
     private final BufferedReader in;
     private String lastMessage;
-    private String toSend;
-    private Thread senderThread;
+    // private String toSend;
+    // private Thread senderThread;
     private Thread listenerThread;
     private int responseCount;
+    private boolean isConnected;
 
     public ClientThread(Socket socket) throws IOException {
         super();
@@ -44,6 +47,9 @@ public class ClientThread extends Thread {
             while (this.socket.isConnected()) {
                 try {
                     String serverMessage = in.readLine();
+                    if (DecryptJson.isConnectedToGame(serverMessage)) {
+
+                    }
                     System.out.println(serverMessage);
                     this.lastMessage = serverMessage;
                 } catch (IOException e) {
@@ -54,25 +60,25 @@ public class ClientThread extends Thread {
         });
 
         // send
-        senderThread = new Thread(() -> {
-            System.out.println("Starting sender Thread");
-            while (this.socket.isConnected()) {
-                try {
-                    this.wait();
-                    System.out.println(toSend);
-                    out.write(toSend);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                    System.out.println("IO Exception occurred");
-                } catch (InterruptedException e) {
-					e.printStackTrace();
-                    System.out.println("Sender Thread interuppted");
-				}
-            }
-        });
+    //     senderThread = new Thread(() -> {
+    //         System.out.println("Starting sender Thread");
+    //         while (this.socket.isConnected()) {
+    //             try {
+    //                 this.wait();
+    //                 System.out.println(toSend);
+    //                 out.write(toSend);
+    //             } catch (IOException e) {
+    //                 e.printStackTrace();
+    //                 System.out.println("IO Exception occurred");
+    //             } catch (InterruptedException e) {
+				// 	e.printStackTrace();
+    //                 System.out.println("Sender Thread interuppted");
+				// }
+    //         }
+    //     });
 
         listenerThread.start();
-        senderThread.start();
+        // senderThread.start();
 
 
 	}
@@ -87,9 +93,9 @@ public class ClientThread extends Thread {
                 listenerThread.interrupt();
             }
 
-            if (senderThread.isAlive()) {
-                senderThread.interrupt();
-            }
+            // if (senderThread.isAlive()) {
+            //     senderThread.interrupt();
+            // }
 
             System.exit(0);
         } catch (IOException e) {
@@ -103,12 +109,24 @@ public class ClientThread extends Thread {
     }
 
     public void notifyServer(String message) {
-        senderThread.notify();
-        this.toSend = message;
+        // this.notifyAll();
+        // this.toSend = message;
+        try {
+			out.write(message);
+            out.newLine();
+            out.flush();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
     }
 
     public int getResponseCount() {
         return responseCount;
+    }
+
+    public boolean isConnected() {
+        return this.isConnected;
     }
 
     
