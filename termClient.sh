@@ -1,4 +1,4 @@
 #! bin/bash
 
-mvn clean exec:java -Dexec.mainClass=blackjack.MultiserverManager
+mvn clean compile exec:java -Dexec.mainClass=blackjack.MultiserverManager
 
