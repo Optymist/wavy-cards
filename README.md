@@ -1,13 +1,14 @@
 # Simple BlackJack Game
-I just wanted to create a fun, text-based BlackJack game that you can play against the dealer in the terminal.
---> Add more here
+I just wanted to create a fun, text-based BlackJack game that you can play against the dealer in the terminal. A Graphical
+User Interface is currently being implemented (using Java Swing) so that the users who struggle using the terminal will be 
+able to play as well.
 
 ## Rules
-First 2 decks of cards are initialized and shuffled.
+First, a couple of decks of cards are initialized and shuffled.
 Then a card is dealt to you, as the player, then one to the dealer and then another to you and the dealer's second card
 is kept hidden. You will not know the value of this card until you have finished the round. 
-Now each card has a value assigned to it: 
-- A = 1
+Each card has a value assigned to it: 
+- A = 1 or 11
 - 2 to 10 = the number on the card
 - J, Q & K = 10
 
@@ -29,12 +30,12 @@ HIT or SPLIT (can only be done in special cases).
     This is a special case where, when you have 2 cards of the same value as your starting cards, you can choose to 
     separate them and play them as two separate hands. When playing with chips (a representation of money in casino
     games) you will be required to pay the same amount as what you paid to play in the beginning. After splitting, you
-    will be play each hand one at a time until you bust or decide to stand. Then your remaining hand(s) will be 
+    will play each hand one at a time until you bust or decide to stand. Then your remaining hand(s) will be 
     compared to the dealer's.
 
 If your hand(s) bust(s) then you instantly lose to the dealer. If not the dealer will reveal his face down card to show
-his starting value. If it is 17 or above the dealer will not draw another card and that initial value will be compared 
-to your own cards' value, otherwise the dealer draws cards until he has 17 or above.
+his starting value. If it is 17 or above the dealer will not draw another card (stand) and that initial value will be 
+compared to your own cards' value, otherwise the dealer draws cards until he has 17 or above.
 
 ### You Lose If:
     The dealer ends up with a higher value than you have or if you bust.
@@ -50,5 +51,8 @@ to your own cards' value, otherwise the dealer draws cards until he has 17 or ab
     cards and is considered a BlackJack. If the dealer does not also get a BlackJack then you get paid 1.5 times your 
     bet, otherwise you and the dealer will push, and you'll get your bet back.
 
+### Authors
+Kimlyn Smart - smartkimlyn@gmail.com
+Shane Carr - shanecarr1000@gmail.com
 
 

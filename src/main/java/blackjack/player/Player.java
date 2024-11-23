@@ -86,7 +86,7 @@ public class Player {
                 try {
                     Thread.sleep(1000);
                 } catch (InterruptedException e) {
-                    System.out.println("Sleep inturuppted");
+                    System.out.println("Sleep interrupted.");
                 }
                 if (turnResponse != null) {
                     BlackJackAction action;

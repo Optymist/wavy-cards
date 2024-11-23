@@ -5,6 +5,8 @@ import blackjack.player.Hand;
 import blackjack.player.Player;
 import blackjack.protocol.Exceptions.InvalidAction;
 
+import java.util.Objects;
+
 
 public abstract class BlackJackAction {
     protected String actionName;
@@ -17,6 +19,19 @@ public abstract class BlackJackAction {
 
     public String getActionName() {
         return actionName;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        BlackJackAction that = (BlackJackAction) o;
+        return Objects.equals(actionName, that.actionName);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(actionName);
     }
 
     public static BlackJackAction create(String actionName) throws InvalidAction {
