@@ -54,6 +54,8 @@ public class PlayerManager implements Runnable {
             }
 
             chooseName();
+            // send lobby update (GUI client)
+            sendMessage(GenerateJson.generateLobbyUpdate(players));
 
             while (true) {
                 if (Server.getGameOn()) {
@@ -174,5 +176,9 @@ public class PlayerManager implements Runnable {
 
     public ArrayList<PlayerManager> getPlayers() {
         return players;
+    }
+
+    public String getName() {
+        return this.name;
     }
 }

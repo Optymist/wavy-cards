@@ -1,5 +1,6 @@
 package blackjack.protocol;
 
+import blackjack.PlayerManager;
 import blackjack.deck.Card;
 import blackjack.player.Dealer;
 import blackjack.player.Hand;
@@ -10,6 +11,7 @@ import blackjack.Play;
 import blackjack.actions.BlackJackAction;
 import blackjack.player.Player;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.fasterxml.jackson.databind.node.ArrayNode;
@@ -109,6 +111,29 @@ public class GenerateJson {
     }
 
     /**
+     * Generates lobby update for the gui client to use
+     * @param players --> list of playerHandlers
+     * @return lobby update in string json form
+     */
+    public static String generateLobbyUpdate(ArrayList<PlayerManager> players) {
+        JsonNodeFactory factory = JsonNodeFactory.instance;
+        ObjectNode rootNode = new ObjectNode(factory);
+        ObjectNode playerNamesNode = new ObjectNode(factory);
+        int counter = 1;
+        for (PlayerManager player : players) {
+            playerNamesNode.put(String.valueOf(counter), player.getName());
+            counter++;
+        }
+
+        rootNode.put("protocolType", "lobbyUpdate");
+        rootNode.set("players", playerNamesNode);
+
+        System.out.println(rootNode);
+
+        return rootNode.toString();
+    }
+
+    /**
      * Generate an ObjectNode with all the information of a player's state.
      * @param player --> to generate an objectNode of.
      * @return the object node.
@@ -151,4 +176,6 @@ public class GenerateJson {
 
         return rootNode;
     }
+
+
 }

@@ -10,6 +10,10 @@ import com.fasterxml.jackson.databind.JsonNode;
 
 import static blackjack.Client.protocol.Decrypt.*;
 
+/**
+ * The Client class handles communication with a Blackjack game server.
+ * It connects via a socket, processes server messages, and sends appropriate responses.
+ */
 public class Client {
     private static final String SERVER_IP = MultiserverManager.IP;
     private static final int PORT = MultiserverManager.PORT;
@@ -20,6 +24,11 @@ public class Client {
     private String name;
     private String serverRequestType;
 
+    /**
+     * Constructor for the Client class.
+     *
+     * @param socket the socket used to connect to the server.
+     */
     public Client(Socket socket) {
         try {
             this.socket = socket;
@@ -31,6 +40,12 @@ public class Client {
         }
     }
 
+    /**
+     * The entry point of the client application.
+     * Connects to the server, starts listening for responses, and handles user input.
+     *
+     * @param args command-line arguments (not used).
+     */
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
         try {
@@ -47,6 +62,10 @@ public class Client {
         }
     }
 
+    /**
+     * Continuously listens for server responses on a separate thread.
+     * Parses messages and takes appropriate actions based on the server's protocol.
+     */
     public void handleResponse() {
         new Thread(() -> {
             while (socket.isConnected()) {
@@ -83,6 +102,13 @@ public class Client {
                             serverRequestType = "betRequest";
                             System.out.println(messageNode.get("message").asText());
                             break;
+                        case ("lobbyUpdate"):
+                            serverRequestType = "lobbyUpdate";
+                            break;
+                        default:
+                            serverRequestType = "unknown";
+                            System.out.println("Unknown protocol type.");
+                            break;
                     }
 
 
@@ -95,6 +121,11 @@ public class Client {
         }).start();
     }
 
+    /**
+     * Reads user input from the console and sends appropriate requests to the server.
+     *
+     * @param scanner a Scanner object for reading user input.
+     */
     public void sendRequest(Scanner scanner) {
         while (socket.isConnected()) {
             String messageToSend = scanner.nextLine();
@@ -109,6 +140,11 @@ public class Client {
         }
     }
 
+    /**
+     * Validates and sends a betting request to the server.
+     *
+     * @param bet the betting amount entered by the user.
+     */
     private void checkBet(String bet) {
         try {
             int betValue = Integer.parseInt(bet);
@@ -118,6 +154,11 @@ public class Client {
         }
     }
 
+    /**
+     * Sends a raw message to the server.
+     *
+     * @param message the message to send.
+     */
     private void sendMessage(String message) {
         try {
             out.write(message);
@@ -129,6 +170,14 @@ public class Client {
         }
     }
 
+    /**
+     * Closes the socket and associated I/O streams.
+     * Ensures all resources are released and terminates the client.
+     *
+     * @param socket the socket to close.
+     * @param in     the BufferedReader to close.
+     * @param out    the BufferedWriter to close.
+     */
     private void closeEverything(Socket socket, BufferedReader in, BufferedWriter out) {
         try {
             socket.close();
