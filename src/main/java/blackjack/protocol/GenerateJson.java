@@ -70,6 +70,7 @@ public class GenerateJson {
         rootNode.put("protocolType", "turnRequest");
         rootNode.put("currentPlayer", player.getName());
         rootNode.set("actions", actionArrayNode);
+
         return rootNode.toString();
     }
 
@@ -85,6 +86,7 @@ public class GenerateJson {
         rootNode.put("protocolType", "betRequest");
         rootNode.put("playerName", name);
         rootNode.put("message", message);
+
         return rootNode.toString();
     }
 
@@ -127,8 +129,6 @@ public class GenerateJson {
 
         rootNode.put("protocolType", "lobbyUpdate");
         rootNode.set("players", playerNamesNode);
-
-        System.out.println(rootNode);
 
         return rootNode.toString();
     }
