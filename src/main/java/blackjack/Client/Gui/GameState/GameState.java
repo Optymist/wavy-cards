@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.fasterxml.jackson.databind.JsonNode;
-
+import blackjack.Client.Gui.GameState.UpdateState;
 import blackjack.Client.Exceptions.InvalidGameStateException;
 
 /**
@@ -13,37 +13,26 @@ import blackjack.Client.Exceptions.InvalidGameStateException;
  */
 public abstract class GameState {
 
-
-    public GameState decrypt(JsonNode serverUpdate) throws InvalidGameStateException {
+    public static GameState decrypt(JsonNode serverUpdate) throws InvalidGameStateException {
 
         switch (serverUpdate.get("protocolType").asText()) {
 
             case ("connectedUpdate"):
-
-
                 break;
 
             case ("betRequest"):
                 return new BetRequestState(serverUpdate.get("message").asText());
 
             case ("turnRequest"):
-                String[] actions = new String[]{};
+                String[] actions = new String[] {};
                 actions = getActions(serverUpdate.get("actions"));
 
                 return new TurnRequestState(actions);
 
-
-
             case ("update"):
-                
-
-
-                break;
-
+                return new UpdateState(serverUpdate.get("players"));
 
             case ("general"):
-
-
                 break;
 
             default:
@@ -53,11 +42,9 @@ public abstract class GameState {
         return null;
     }
 
+    public abstract void draw(Graphics g);
 
-    public abstract void draw(Graphics g); 
-
-    
-    private String[] getActions(JsonNode protocolNode) {
+    private static String[] getActions(JsonNode protocolNode) {
         JsonNode actionsNode = protocolNode.get("actions");
         ArrayList<String> actions = new ArrayList<String>();
 
