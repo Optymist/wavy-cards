@@ -6,6 +6,7 @@ import java.util.List;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import blackjack.Client.Gui.GameState.UpdateState;
+import blackjack.Client.Gui.Panels.MenuPanel;
 import blackjack.Client.Exceptions.InvalidGameStateException;
 
 /**
@@ -40,6 +41,8 @@ public abstract class GameState {
     }
 
     public abstract void draw(Graphics g);
+
+    public abstract void initComponents(MenuPanel panel);
 
     private static String[] getActions(JsonNode protocolNode) {
         JsonNode actionsNode = protocolNode.get("actions");

@@ -5,6 +5,8 @@ import java.util.ArrayList;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
+import blackjack.Client.Gui.Panels.MenuPanel;
+
 /**
  * BetRequestState
  */
@@ -37,5 +39,9 @@ public class UpdateState extends GameState {
     public ArrayList<PlayerState> getPlayerStates() {
         return this.playerStates;
     }
+
+	@Override
+	public void initComponents(MenuPanel panel) {
+	}
     
 }

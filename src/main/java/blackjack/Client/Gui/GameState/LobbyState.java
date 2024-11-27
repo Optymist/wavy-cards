@@ -8,6 +8,8 @@ import javax.swing.text.html.HTMLDocument.Iterator;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
+import blackjack.Client.Gui.Panels.MenuPanel;
+
 /**
  * LobbyState
  */
@@ -34,5 +36,11 @@ public class LobbyState extends GameState {
     public ArrayList<String> getPlayerNames() {
         return playerNames;
     }
+
+	@Override
+	public void initComponents(MenuPanel panel) {
+		// TODO Auto-generated method stub
+		throw new UnsupportedOperationException("Unimplemented method 'initComponents'");
+	}
     
 }
