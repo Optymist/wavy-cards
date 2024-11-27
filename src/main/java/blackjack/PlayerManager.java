@@ -177,7 +177,7 @@ public class PlayerManager implements Runnable {
         return players;
     }
 
-    public String name() {
+    public String getName() {
         return this.name;
     }
 }

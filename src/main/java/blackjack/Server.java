@@ -90,7 +90,7 @@ public class Server {
                         } else {
                             System.out.println("Players:");
                             playerManager.getPlayers().forEach(player -> {
-                                System.out.println(String.format("Name: %s", player.name()));
+                                System.out.println(String.format("Name: %s", player.getName()));
                             });
                         }
                         break;

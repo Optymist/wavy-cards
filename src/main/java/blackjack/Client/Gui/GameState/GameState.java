@@ -16,10 +16,6 @@ public abstract class GameState {
     public static GameState decrypt(JsonNode serverUpdate) throws InvalidGameStateException {
 
         switch (serverUpdate.get("protocolType").asText()) {
-
-            case ("connectedUpdate"):
-                break;
-
             case ("betRequest"):
                 return new BetRequestState(serverUpdate.get("message").asText());
 
@@ -31,6 +27,9 @@ public abstract class GameState {
 
             case ("update"):
                 return new UpdateState(serverUpdate.get("players"));
+
+            case ("connectedUpdate"):
+                break;
 
             case ("general"):
                 break;
