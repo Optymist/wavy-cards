@@ -28,17 +28,15 @@ public abstract class GameState {
             case ("update"):
                 return new UpdateState(serverUpdate.get("players"));
 
+            case ("lobbyUpdate"):
+                return new LobbyState(serverUpdate.get("players"));
+
             case ("connectedUpdate"):
-                break;
-
             case ("general"):
-                break;
-
             default:
                 throw new InvalidGameStateException(serverUpdate.asText());
         }
 
-        return null;
     }
 
     public abstract void draw(Graphics g);
