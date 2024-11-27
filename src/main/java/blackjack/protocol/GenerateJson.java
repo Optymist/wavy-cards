@@ -1,5 +1,6 @@
 package blackjack.protocol;
 
+import blackjack.PlayerManager;
 import blackjack.deck.Card;
 import blackjack.player.Dealer;
 import blackjack.player.Hand;
@@ -10,6 +11,7 @@ import blackjack.Play;
 import blackjack.actions.BlackJackAction;
 import blackjack.player.Player;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.fasterxml.jackson.databind.node.ArrayNode;
@@ -68,6 +70,7 @@ public class GenerateJson {
         rootNode.put("protocolType", "turnRequest");
         rootNode.put("currentPlayer", player.getName());
         rootNode.set("actions", actionArrayNode);
+
         return rootNode.toString();
     }
 
@@ -83,6 +86,7 @@ public class GenerateJson {
         rootNode.put("protocolType", "betRequest");
         rootNode.put("playerName", name);
         rootNode.put("message", message);
+
         return rootNode.toString();
     }
 
@@ -104,6 +108,27 @@ public class GenerateJson {
         rootNode.put("currentPlayer", game.getCurrentPlayer().getName());
         rootNode.set("players", playerObjectNode);
         rootNode.set("dealer", dealerInformation(game));
+
+        return rootNode.toString();
+    }
+
+    /**
+     * Generates lobby update for the gui client to use
+     * @param players --> list of playerHandlers
+     * @return lobby update in string json form
+     */
+    public static String generateLobbyUpdate(ArrayList<PlayerManager> players) {
+        JsonNodeFactory factory = JsonNodeFactory.instance;
+        ObjectNode rootNode = new ObjectNode(factory);
+        ObjectNode playerNamesNode = new ObjectNode(factory);
+        int counter = 1;
+        for (PlayerManager player : players) {
+            playerNamesNode.put(String.valueOf(counter), player.getName());
+            counter++;
+        }
+
+        rootNode.put("protocolType", "lobbyUpdate");
+        rootNode.set("players", playerNamesNode);
 
         return rootNode.toString();
     }
@@ -151,4 +176,6 @@ public class GenerateJson {
 
         return rootNode;
     }
+
+
 }

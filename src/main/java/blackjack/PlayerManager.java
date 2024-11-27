@@ -54,6 +54,8 @@ public class PlayerManager implements Runnable {
             }
 
             chooseName();
+            // send lobby update (GUI client)
+            sendMessage(GenerateJson.generateLobbyUpdate(players));
 
             while (true) {
                 if (Server.getGameOn()) {
