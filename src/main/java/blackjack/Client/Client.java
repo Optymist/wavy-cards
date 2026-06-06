@@ -18,7 +18,7 @@ public class Client {
     private BufferedWriter out;
     private BufferedReader in;
     private String name;
-    private String serverRequestType;
+    private volatile String serverRequestType = "general";
 
     public Client(Socket socket) {
         try {
@@ -100,9 +100,9 @@ public class Client {
             String messageToSend = scanner.nextLine();
 
             if (serverRequestType.equals("turnRequest")) {
-                sendMessage(Generate.generateTurnResponse(name, messageToSend));
+                sendMessage(Generate.generateTurnResponse(name, messageToSend.trim().toLowerCase()));
             } else if (serverRequestType.equals("betRequest")) {
-                checkBet(messageToSend);
+                checkBet(messageToSend.trim());
             } else {
                 sendMessage(messageToSend);
             }

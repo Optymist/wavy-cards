@@ -95,7 +95,7 @@ public class GenerateJsonServerTests {
         romeo.getCardsInHand().addCard(new Card(Deck.SUITS[0], Deck.RANKS[2]));
         dealer.getCardsInHand().addCard(new Card(Deck.SUITS[0], Deck.RANKS[10]));
 
-        String jsonString = GenerateJson.generateUpdate(game);
+        String jsonString = GenerateJson.generateUpdate(game, false);
         ObjectMapper mapper = new ObjectMapper();
         JsonNode node = mapper.readTree(jsonString);
 

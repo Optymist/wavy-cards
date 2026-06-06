@@ -89,9 +89,10 @@ public class GenerateJson {
     /**
      * Generates an update of the entire state of the game.
      * @param game --> the game to generate an update of.
+     * @param hideHoleCard --> true during player turns (hole card hidden), false once dealer reveals.
      * @return the string json form
      */
-    public static String generateUpdate(Play game) {
+    public static String generateUpdate(Play game, boolean hideHoleCard) {
         JsonNodeFactory factory = JsonNodeFactory.instance;
         ObjectNode rootNode = new ObjectNode(factory);
         List<Player> playersInGame = game.getPlayers();
@@ -103,7 +104,7 @@ public class GenerateJson {
         rootNode.put("protocolType", "update");
         rootNode.put("currentPlayer", game.getCurrentPlayer().getName());
         rootNode.set("players", playerObjectNode);
-        rootNode.set("dealer", dealerInformation(game));
+        rootNode.set("dealer", dealerInformation(game, hideHoleCard));
 
         return rootNode.toString();
     }
@@ -133,21 +134,32 @@ public class GenerateJson {
 
     /**
      * Generate an ObjectNode that represents the dealer's current state in the game.
+     * When hideHoleCard is true, only the face-up card is revealed — standard blackjack rules.
      * @param game --> the game that the dealer is currently in.
+     * @param hideHoleCard --> true during player turns; false when the dealer reveals.
      * @return the object node.
      */
-    private static ObjectNode dealerInformation(Play game) {
+    private static ObjectNode dealerInformation(Play game, boolean hideHoleCard) {
         JsonNodeFactory factory = JsonNodeFactory.instance;
         ObjectNode rootNode = new ObjectNode(factory);
         Dealer dealer = game.getDealer();
         List<Card> cardList = dealer.getCardsInHand().getCards();
         ArrayNode cardArrayNode = new ArrayNode(factory);
-        for (Card card : cardList) {
-            cardArrayNode.add(card.toString());
+
+        if (hideHoleCard && cardList.size() >= 2) {
+            cardArrayNode.add(cardList.get(0).toString());
+            cardArrayNode.add("[hidden]");
+            rootNode.put("state", "?");
+            rootNode.set("hand", cardArrayNode);
+            rootNode.put("handValue", cardList.get(0).getValue());
+        } else {
+            for (Card card : cardList) {
+                cardArrayNode.add(card.toString());
+            }
+            rootNode.put("state", dealer.getCardsInHand().getState().toString());
+            rootNode.set("hand", cardArrayNode);
+            rootNode.put("handValue", dealer.getHandValue());
         }
-        rootNode.put("state", dealer.getCardsInHand().getState().toString());
-        rootNode.set("hand", cardArrayNode);
-        rootNode.put("handValue", dealer.getHandValue());
 
         return rootNode;
     }

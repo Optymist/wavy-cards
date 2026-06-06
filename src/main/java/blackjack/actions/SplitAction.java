@@ -21,10 +21,12 @@ public class SplitAction extends BlackJackAction {
      */
     @Override
     public void execute(Hand playingHand, Player player, Play game) {
-        Hand splitPlayerHand = player.splitHand(game);
+        Hand splitPlayerHand = player.splitHand(game, playingHand);
         System.out.println(player.getName() + " splits.");
-        player.getPlayerManager().sendMessage(GenerateJson.generateGeneralMessage(player.getCardsInHand().toString()));
-        player.getPlayerManager().sendMessage(GenerateJson.generateGeneralMessage(splitPlayerHand.toString()));
+        player.getPlayerManager().sendMessage(GenerateJson.generateGeneralMessage(
+            "Hand 1: " + formatHand(playingHand) + "  [" + playingHand.getValue() + "]"));
+        player.getPlayerManager().sendMessage(GenerateJson.generateGeneralMessage(
+            "Hand 2: " + formatHand(splitPlayerHand) + "  [" + splitPlayerHand.getValue() + "]"));
     }
 
     @Override

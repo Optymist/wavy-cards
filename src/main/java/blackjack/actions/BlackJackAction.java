@@ -1,10 +1,12 @@
 package blackjack.actions;
 
 import blackjack.Play;
+import blackjack.deck.Card;
 import blackjack.player.Hand;
 import blackjack.player.Player;
 import blackjack.protocol.Exceptions.InvalidAction;
 
+import java.util.List;
 import java.util.Objects;
 
 
@@ -32,6 +34,15 @@ public abstract class BlackJackAction {
     @Override
     public int hashCode() {
         return Objects.hashCode(actionName);
+    }
+
+    protected static String formatHand(Hand hand) {
+        StringBuilder sb = new StringBuilder();
+        for (Card c : hand.getCards()) {
+            if (sb.length() > 0) sb.append("  ");
+            sb.append(c);
+        }
+        return sb.toString();
     }
 
     public static BlackJackAction create(String actionName) throws InvalidAction {
