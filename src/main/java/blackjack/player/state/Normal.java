@@ -21,7 +21,7 @@ public class Normal implements handState {
         List<BlackJackAction> availableActions =
                 new ArrayList<>(List.of(new DoubleAction(), new HitAction(), new StandAction(), new SurrenderAction()));
 
-        if (canSplit(hand) && !hand.isBeanSplit()) {
+        if (canSplit(hand)) {
             availableActions.add(new SplitAction());
         }
 

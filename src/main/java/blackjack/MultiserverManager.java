@@ -162,7 +162,12 @@ public class MultiserverManager {
         }
 
         System.out.print("Enter the PORT number of the server you want to join: ");
-        PORT = Integer.parseInt(scanner.nextLine().trim().strip());
+        try {
+            PORT = Integer.parseInt(scanner.nextLine().trim().strip());
+        } catch (NumberFormatException e) {
+            System.out.println("Invalid port number.");
+            IP = "";
+        }
     }
 
 }

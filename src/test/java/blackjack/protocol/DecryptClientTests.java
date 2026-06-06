@@ -72,7 +72,7 @@ public class DecryptClientTests {
         fred.getCardsInHand().addCard(new Card(Deck.SUITS[0], Deck.RANKS[0]));
         greg.getCardsInHand().addCard(new Card(Deck.SUITS[0], Deck.RANKS[2]));
 
-        String updateRequest = GenerateJson.generateUpdate(game);
+        String updateRequest = GenerateJson.generateUpdate(game, false);
         JsonNode updateRequestNode = Decrypt.decryptServerMessage(updateRequest);
         String turnMessage = Decrypt.getTurn(updateRequestNode);
         String fredCards = Decrypt.getPlayerCardInfo(updateRequestNode, "fred");

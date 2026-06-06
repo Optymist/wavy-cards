@@ -51,22 +51,24 @@ public class PlayerManager implements Runnable {
             if (players.size() > maxPlayers) {
                 sendMessage(GenerateJson.generateGeneralMessage("Table full."));
                 closeEverything(socket, in, out);
+                return;
             }
 
             chooseName();
 
-            while (true) {
-                if (Server.getGameOn()) {
+            synchronized (Server.class) {
+                if (!Server.getGameOn()) {
+                    Server.setGameOn(true);
                     new Thread(game).start();
                 }
+            }
 
-                while ((clientMessage = in.readLine()) != null) {
-                    if (player.isTurn()) {
-                        System.out.println(clientMessage);
-                        player.setTurnResponse(clientMessage);
-                    } else if (player.getIsChoosingBet()){
-                        player.setBetResponse(clientMessage);
-                    }
+            while ((clientMessage = in.readLine()) != null) {
+                if (player.isTurn()) {
+                    System.out.println(clientMessage);
+                    player.setTurnResponse(clientMessage);
+                } else if (player.getIsChoosingBet()) {
+                    player.setBetResponse(clientMessage);
                 }
             }
         } catch (IOException e) {
