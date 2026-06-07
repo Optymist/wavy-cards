@@ -133,6 +133,9 @@ public class PlayerManager implements Runnable {
      */
     public void removeClient() {
         players.remove(this);
+        if (player != null) {
+            player.setDisconnected(true);
+        }
         if (!(game == null)) {
             game.removePlayer(player);
         }

@@ -9,8 +9,10 @@ public class Deck {
     public static final String[] SUITS = {"♠", "♥", "♦", "♣"};
     public static final String[] RANKS = {"2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K", "A"};
     private static List<Card> PLAY_DECK = new ArrayList<>();
+    private int numDecks;
 
     public Deck(int numDecks) {
+        this.numDecks = numDecks;
         PLAY_DECK = createDeck(numDecks);
         Collections.shuffle(PLAY_DECK);
     }
@@ -31,7 +33,8 @@ public class Deck {
 
     public Card deal() {
         if (PLAY_DECK.isEmpty()) {
-            return null;
+            PLAY_DECK = createDeck(numDecks);
+            Collections.shuffle(PLAY_DECK);
         }
         return PLAY_DECK.remove(PLAY_DECK.size() - 1);
     }

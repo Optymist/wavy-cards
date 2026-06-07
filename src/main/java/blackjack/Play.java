@@ -55,24 +55,26 @@ public class Play implements Runnable {
      */
     @Override
     public void run() {
-        synchronized (Play.class) {
-            for (Player p : pendingPlayers) {
-                p.getPlayerManager().sendMessage(GenerateJson.generateGeneralMessage("Round starting — you're in!"));
-                players.add(p);
+        while (true) {
+            synchronized (Play.class) {
+                for (Player p : pendingPlayers) {
+                    p.getPlayerManager().sendMessage(GenerateJson.generateGeneralMessage("Round starting — you're in!"));
+                    players.add(p);
+                }
+                pendingPlayers.clear();
             }
-            pendingPlayers.clear();
-        }
-        if (deck.getPlayDeck().size() < numPlayers*5) {
-            setupDeck();
-        }
-        broadcastToAllPlayers(GenerateJson.generateGeneralMessage("\nRound Starting...\n"));
-        running = true;
-        getBets();
-        try {
-            startGame();
-        } catch (Exception e) {
-            System.out.println("Game encountered an error:\n" + e.getMessage());
-            e.printStackTrace();
+            if (deck.getPlayDeck().size() < numPlayers * 5) {
+                setupDeck();
+            }
+            broadcastToAllPlayers(GenerateJson.generateGeneralMessage("\nRound Starting...\n"));
+            running = true;
+            try {
+                getBets();
+                startGame();
+            } catch (Exception e) {
+                System.out.println("Game encountered an error:\n" + e.getMessage());
+                e.printStackTrace();
+            }
         }
     }
 
@@ -84,7 +86,7 @@ public class Play implements Runnable {
         pause(600);
         broadcastToAllPlayers(GenerateJson.generateUpdate(this, true));
         pause(800);
-        for (Player player : players) {
+        for (Player player : new ArrayList<>(players)) {
             player.removeBet();
             if (player.getCardsInHand().getState() instanceof BlackJack) {
                 player.getPlayerManager().sendMessage(GenerateJson.generateGeneralMessage("You got blackjack! Waiting for dealer..."));
@@ -95,7 +97,7 @@ public class Play implements Runnable {
         System.out.println(dealer);
 
         while (running) {
-            for (Player player : players) {
+            for (Player player : new ArrayList<>(players)) {
                 broadcastExcludingCurrent(GenerateJson.generateGeneralMessage(player.getName() + "'s turn."), player);
                 player.manageTurn(player.getCardsInHand(), this);
                 if (player.getIsSplit()) {
@@ -124,7 +126,6 @@ public class Play implements Runnable {
             pause(800);
             stopGame();
         }
-        this.run();
     }
 
     /**
@@ -132,7 +133,7 @@ public class Play implements Runnable {
      */
     private void getBets() {
         roundInProgress = true;
-        for (Player player : players) {
+        for (Player player : new ArrayList<>(players)) {
             player.manageBet();
         }
     }

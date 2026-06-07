@@ -38,6 +38,7 @@ public class Player {
     private boolean isSplit;
     private String betResponse = null;
     private boolean isChoosingBet;
+    private volatile boolean disconnected = false;
 
 
     /**
@@ -73,16 +74,21 @@ public class Player {
      *             we can call `action.execute(Play)`
      */
     public void manageTurn(Hand playerHand, Play game) {
-        while (playerHand.getState() instanceof Normal) {
+        while (playerHand.getState() instanceof Normal && !disconnected) {
             this.setTurn(true);
 
             this.actions = playerHand.getState().getActions(playerHand);
+            this.actions.removeIf(a -> a instanceof DoubleAction && money < bet);
 
             String turnRequest = GenerateJson.generateTurnRequest(this, playerHand);
             playerManager.sendMessage(turnRequest);
 
             boolean continueTurn = true;
             while (continueTurn) {
+                if (disconnected) {
+                    continueTurn = false;
+                    break;
+                }
                 try {
                     Thread.sleep(1000);
                 } catch (InterruptedException e) {
@@ -169,6 +175,10 @@ public class Player {
 
         boolean betting = true;
         while (betting) {
+            if (disconnected) {
+                betting = false;
+                break;
+            }
             try {
                 Thread.sleep(1000);
             } catch (InterruptedException e) {
@@ -233,6 +243,10 @@ public class Player {
     public void setTurn(boolean turn) {
         this.isTurn = turn;
     }
+
+    public boolean isDisconnected() { return disconnected; }
+
+    public void setDisconnected(boolean d) { this.disconnected = d; }
 
     public boolean isBust() { return this.bust; }
 
