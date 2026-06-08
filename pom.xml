@@ -55,13 +55,6 @@
             <scope>test</scope>
         </dependency>
 
-        <!-- To package the application as a fat jar -->
-        <dependency>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-assembly-plugin</artifactId>
-            <version>3.6.0</version>
-            <type>maven-plugin</type>
-        </dependency>
     </dependencies>
 
     <build>
