@@ -70,7 +70,6 @@ public class Play implements Runnable {
      */
     public void startGame() {
         dealInitialCards();
-        broadcastToAllPlayers(GenerateJson.generateUpdate(this));
         for (Player player : players) {
             player.removeBet();
             if (player.getCardsInHand().getState() instanceof BlackJack) {
@@ -96,7 +95,7 @@ public class Play implements Runnable {
                     }
                 }
             }
-            broadcastToAllPlayers(GenerateJson.generateUpdate(this));
+            broadcastToAllPlayers(GenerateJson.generateUpdate(this, true));
             dealerTurn();
             payout();
             stopGame();
@@ -130,18 +129,31 @@ public class Play implements Runnable {
     }
 
     /**
-     * Deals the starting cards to the players and the dealer.
+     * Deals the starting cards one at a time, broadcasting after each card so the
+     * frontend can animate them arriving.
      */
-    public static void dealInitialCards() {
+    private void dealInitialCards() {
         for (int i = 0; i < 2; i++) {
             for (Player player : players) {
                 if (player.getCardsInHand().getCards().size() < 2) {
                     player.getCardsInHand().addCard(deck.deal());
+                    broadcastToAllPlayers(GenerateJson.generateUpdate(this, true));
+                    sleep(400);
                 }
             }
             if (dealer.getCardsInHand().getCards().size() < 2) {
                 dealer.getCardsInHand().addCard(deck.deal());
+                broadcastToAllPlayers(GenerateJson.generateUpdate(this, true));
+                sleep(400);
             }
+        }
+    }
+
+    private void sleep(int ms) {
+        try {
+            Thread.sleep(ms);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
         }
     }
 
@@ -149,10 +161,14 @@ public class Play implements Runnable {
      * Handles the dealers turn.
      */
     public void dealerTurn() {
+        sleep(600);
+        broadcastToAllPlayers(GenerateJson.generateUpdate(this, false));
         broadcastToAllPlayers(GenerateJson.generateGeneralMessage("Dealer's turn."));
         broadcastToAllPlayers(GenerateJson.generateGeneralMessage("Initial cards: " + dealer.toString()));
         while (dealer.getCardsInHand().getValue() < 17) {
+            sleep(1000);
             dealer.getCardsInHand().addCard(deck.deal());
+            broadcastToAllPlayers(GenerateJson.generateUpdate(this, false));
             broadcastToAllPlayers(GenerateJson.generateGeneralMessage(dealer.toString()));
         }
         if (dealer.getCardsInHand().getValue() > 21) {

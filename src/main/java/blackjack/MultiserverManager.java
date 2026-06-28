@@ -70,8 +70,8 @@ public class MultiserverManager {
      */
     private static void loadingScreenMessage(){
         System.out.println("Share these with the people you'd like to play with: ");
-        System.out.println("Server IP address: "+ IP);
-        System.out.println("Server PORT number: "+ PORT);
+        System.out.println("Terminal clients  →  IP: " + IP + "  PORT: " + PORT);
+        System.out.println("Browser / mobile  →  ws://" + IP + ":" + (PORT + 1));
     }
 
     /**

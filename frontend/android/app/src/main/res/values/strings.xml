@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Wavy Cards</string>
+    <string name="title_activity_main">Wavy Cards</string>
+    <string name="package_name">com.wavycards.blackjack</string>
+    <string name="custom_url_scheme">com.wavycards.blackjack</string>
+</resources>

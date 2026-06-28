@@ -1,7 +1,7 @@
 package blackjack.player;
 
 import blackjack.Play;
-import blackjack.PlayerManager;
+import blackjack.PlayerConnection;
 import blackjack.actions.*;
 import blackjack.deck.Card;
 import blackjack.player.state.Bust;
@@ -23,7 +23,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
  * Holds all the necessary properties and methods for a player in the game.
  */
 public class Player {
-    private final PlayerManager playerManager;
+    private final PlayerConnection playerManager;
     private final Hand cardsInHand;
     private ArrayList<Hand> splitPlay = new ArrayList<>();
     private double money;
@@ -45,7 +45,7 @@ public class Player {
      * @param name the name chosen by the client.
      * @param playerManager responsible for this player.
      */
-    public Player(String name, PlayerManager playerManager) {
+    public Player(String name, PlayerConnection playerManager) {
         this.name = name;
         this.playerManager = playerManager;
         this.cardsInHand = new Hand();
@@ -93,6 +93,7 @@ public class Player {
                     try {
                         action = DecryptJson.getChosenAction(turnResponse, this.actions);
                         action.execute(playerHand,this, game);
+                        game.broadcastToAllPlayers(GenerateJson.generateUpdate(game, true));
                         continueTurn = false;
                         turnResponse = null;
                         if (this.isSplit) {
@@ -313,7 +314,7 @@ public class Player {
         this.bet = 0.0;
     }
 
-    public PlayerManager getPlayerManager() {
+    public PlayerConnection getPlayerManager() {
         return playerManager;
     }
 

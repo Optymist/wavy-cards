@@ -6,12 +6,16 @@ import blackjack.protocol.GenerateJson;
 import java.io.*;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Player manager that handles the sending and receiving of messages to anf from the client.
  */
-public class PlayerManager implements Runnable {
+public class PlayerManager implements Runnable, PlayerConnection {
     public static ArrayList<PlayerManager> players = new ArrayList<>();
+    public static final Set<String> takenNames = Collections.synchronizedSet(new HashSet<>());
     private int maxPlayers;
     private Socket socket;
     private BufferedReader in;
@@ -104,6 +108,7 @@ public class PlayerManager implements Runnable {
             }
 
             name = clientMessage;
+            takenNames.add(name);
             player = new Player(name, this);
             sendMessage(GenerateJson.generateConnectedUpdate(player));
         } catch (IOException e) {
@@ -118,12 +123,8 @@ public class PlayerManager implements Runnable {
      * @return boolean --> true if it is available.
      */
     public static boolean validateName(String requestedName) {
-        for (PlayerManager player : players) {
-            if (!(player.name == null) && player.name.equals(requestedName)) {
-                return false;
-            }
-        }
-        return true;
+        if (requestedName == null) return false;
+        return !takenNames.contains(requestedName);
     }
 
     /**
@@ -131,6 +132,7 @@ public class PlayerManager implements Runnable {
      */
     public void removeClient() {
         players.remove(this);
+        if (name != null) takenNames.remove(name);
         if (!(game == null)) {
             game.removePlayer(player);
         }
