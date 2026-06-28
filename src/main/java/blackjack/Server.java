@@ -100,9 +100,6 @@ public class Server {
                 PlayerManager playerManager = new PlayerManager(socket, playerNum);
                 Thread handlerThread = new Thread(playerManager);
                 handlerThread.start();
-                if (playerNum == playerManager.getPlayers().size()) {
-                    gameOn = true;
-                }
             }
         } catch (IOException e) {
             System.out.println(e.getMessage());
