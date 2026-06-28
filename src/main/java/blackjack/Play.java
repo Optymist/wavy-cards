@@ -1,5 +1,6 @@
 package blackjack;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -23,6 +24,8 @@ import blackjack.protocol.GenerateJson;
  */
 public class Play implements Runnable {
     public static List<Player> players = new CopyOnWriteArrayList<>();
+    private static final List<Player> pendingPlayers = new ArrayList<>();
+    private static volatile boolean roundInProgress = false;
     private volatile boolean running = true;
     private static Dealer dealer;
     private static int numPlayers;
