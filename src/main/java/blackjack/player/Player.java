@@ -76,7 +76,7 @@ public class Player {
         while (playerHand.getState() instanceof Normal) {
             this.setTurn(true);
 
-            this.actions = playerHand.getState().getActions(cardsInHand);
+            this.actions = playerHand.getState().getActions(playerHand);
 
             String turnRequest = GenerateJson.generateTurnRequest(this, playerHand);
             playerManager.sendMessage(turnRequest);
@@ -129,14 +129,13 @@ public class Player {
      */
     private void bustOrSurrendered(Hand playerHand) {
         if (playerHand.getState() instanceof Bust) {
-            playerManager.sendMessage(GenerateJson.generateGeneralMessage("You have been busted! \n" +
-                    "You have lost your bet of $" + bet + "\n" +
-                    "Money remaining: " + money));
+            playerManager.sendMessage(GenerateJson.generateGeneralMessage("Bust! You lost your bet of $" + (int) bet + "\n" +
+                    "Balance: $" + (int) money));
         }
         if (playerHand.getState() instanceof Surrender) {
             this.surrenderPayout();
-            playerManager.sendMessage(GenerateJson.generateGeneralMessage("You have lost half your bet: $" + bet + "\n" +
-                    "Money remaining: " + money));
+            playerManager.sendMessage(GenerateJson.generateGeneralMessage("Surrendered — half bet returned: $" + (int) bet + "\n" +
+                    "Balance: $" + (int) money));
         }
     }
 
@@ -145,19 +144,21 @@ public class Player {
      * @param game the current game the player is a part of.
      * @return secondHand created from the original hand.
      */
-    public Hand splitHand(Play game) {
+    public Hand splitHand(Play game, Hand handToSplit) {
         isSplit = true;
         Hand secondHand = new Hand();
 
-        List<Card> cards = getCardsInHand().getCards();
-        Card newDeckCard = getCardsInHand().getCards().remove(cards.size() - 1);
+        List<Card> cards = handToSplit.getCards();
+        Card newDeckCard = cards.remove(cards.size() - 1);
 
         secondHand.addCard(newDeckCard);
 
-        this.cardsInHand.addCard(game.getDeck().deal());
+        handToSplit.addCard(game.getDeck().deal());
         secondHand.addCard(game.getDeck().deal());
 
-        this.splitPlay.add(cardsInHand);
+        if (splitPlay.isEmpty()) {
+            this.splitPlay.add(handToSplit);
+        }
         this.splitPlay.add(secondHand);
 
         return secondHand;
@@ -244,8 +245,7 @@ public class Player {
 
     public void removeBet() {
         this.money -= bet;
-        playerManager.sendMessage(GenerateJson.generateGeneralMessage("You have placed a bet of $" + bet + "\n" +
-                "Money remaining: " + money));
+        playerManager.sendMessage(GenerateJson.generateGeneralMessage("Bet placed: $" + (int) bet + "  |  Balance: $" + (int) money));
     }
 
     public void surrenderPayout() {
@@ -253,27 +253,23 @@ public class Player {
     }
 
     public void winBet() {
-        this.money += 2*bet;
-        playerManager.sendMessage(GenerateJson.generateGeneralMessage("You won. \n" +
-                "Money remaining: " + money));
+        this.money += 2 * bet;
+        playerManager.sendMessage(GenerateJson.generateGeneralMessage("You win — $" + (int)(2 * bet) + " returned  |  Balance: $" + (int) money));
     }
 
     public void pushBet() {
         this.money += bet;
-        playerManager.sendMessage(GenerateJson.generateGeneralMessage("You pushed. \n" +
-                "Money remaining: " + money));
+        playerManager.sendMessage(GenerateJson.generateGeneralMessage("Push — bet returned: $" + (int) bet + "  |  Balance: $" + (int) money));
     }
 
     public void loseBet() {
-        playerManager.sendMessage(GenerateJson.generateGeneralMessage("You lost your bet.\n" +
-                "Money remaining: " + money));
+        playerManager.sendMessage(GenerateJson.generateGeneralMessage("You lost $" + (int) bet + ".  |  Balance: $" + (int) money));
     }
 
     public void blackJackPayout() {
-        double payout = bet + (1.5*bet);
+        double payout = bet + (1.5 * bet);
         this.money += payout;
-        playerManager.sendMessage(GenerateJson.generateGeneralMessage("Payout: $" + payout + "\n" +
-                "Money remaining: $" + money));
+        playerManager.sendMessage(GenerateJson.generateGeneralMessage("Blackjack! Payout: $" + (int) payout + "  |  Balance: $" + (int) money));
     }
 
     public Hand getCardsInHand() {

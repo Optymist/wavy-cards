@@ -1,6 +1,7 @@
 package blackjack.actions;
 
 import blackjack.Play;
+import blackjack.deck.Card;
 import blackjack.player.Hand;
 import blackjack.player.Player;
 import blackjack.player.state.Bust;
@@ -15,10 +16,11 @@ public class DoubleAction extends BlackJackAction {
     @Override
     public void execute(Hand playingHand, Player player, Play game) {
         player.doubleBet();
-        playingHand.setState(playingHand.addCard(game.getDeck().deal()));
+        Card drawn = game.getDeck().deal();
+        playingHand.setState(playingHand.addCard(drawn));
         System.out.println(player.getName() + " doubles.");
-        // TODO idk what to do, you can choose \/
-        player.getPlayerManager().sendMessage(GenerateJson.generateGeneralMessage(player.toString()));
+        player.getPlayerManager().sendMessage(GenerateJson.generateGeneralMessage(
+            "Doubled! Drew " + drawn + "  →  " + formatHand(playingHand) + "  [" + playingHand.getValue() + "]"));
 
         switch (playingHand.getState().toString()) {
             case "normal":

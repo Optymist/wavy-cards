@@ -15,7 +15,8 @@ public class StandAction extends BlackJackAction {
     @Override
     public void execute(Hand playingHand, Player player, Play game) {
         System.out.println(player.getName() + " stands.");
-        player.getPlayerManager().sendMessage(GenerateJson.generateGeneralMessage(player.toString()));
+        player.getPlayerManager().sendMessage(GenerateJson.generateGeneralMessage(
+            "You stand on " + playingHand.getValue() + "."));
         if (playingHand.getState() instanceof Normal) {
             playingHand.setState(new Stand());
         }

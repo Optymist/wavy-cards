@@ -148,6 +148,7 @@ public class GenerateJson {
 
     /**
      * Generate an ObjectNode that represents the dealer's current state in the game.
+     * When hideHoleCard is true, only the face-up card is revealed — standard blackjack rules.
      * @param game --> the game that the dealer is currently in.
      * @param hideDealer --> if true, cards at index 1+ are replaced with "[hidden]" and handValue is 0.
      * @return the object node.

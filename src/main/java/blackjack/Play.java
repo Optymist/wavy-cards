@@ -7,6 +7,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import blackjack.protocol.DecryptJson;
 import blackjack.protocol.Exceptions.InvalidBet;
 
+import blackjack.deck.Card;
 import blackjack.deck.Deck;
 import blackjack.player.Dealer;
 import blackjack.player.Hand;
@@ -56,6 +57,13 @@ public class Play implements Runnable {
      */
     @Override
     public void run() {
+        synchronized (Play.class) {
+            for (Player p : pendingPlayers) {
+                p.getPlayerManager().sendMessage(GenerateJson.generateGeneralMessage("Round starting — you're in!"));
+                players.add(p);
+            }
+            pendingPlayers.clear();
+        }
         if (deck.getPlayDeck().size() < numPlayers*5) {
             setupDeck();
         }
@@ -77,8 +85,7 @@ public class Play implements Runnable {
         dealInitialCards();
         for (Player player : players) {
             if (player.getCardsInHand().getState() instanceof BlackJack) {
-                player.getPlayerManager().sendMessage(GenerateJson.generateGeneralMessage("You got blackjack!"));
-                player.blackJackPayout();
+                player.getPlayerManager().sendMessage(GenerateJson.generateGeneralMessage("You got blackjack! Waiting for dealer..."));
             }
             System.out.println(player);
         }
@@ -92,16 +99,25 @@ public class Play implements Runnable {
                 if (player.getIsSplit()) {
                     player.removeBet();
                     player.setIsSplit(false);
-                    for (Hand hand : player.getSplitPlay()) {
+                    for (int i = 0; i < player.getSplitPlay().size(); i++) {
+                        Hand hand = player.getSplitPlay().get(i);
                         hand.setBeanSplit(true);
-                        player.getPlayerManager().sendMessage(GenerateJson.generateGeneralMessage("Current playing hand: " + hand));
+                        pause(500);
+                        player.getPlayerManager().sendMessage(GenerateJson.generateGeneralMessage(
+                            "Playing split hand " + (i + 1) + ": " + formatCards(hand.getCards()) + "  [" + hand.getValue() + "]"));
                         player.manageTurn(hand, this);
+                        if (player.getIsSplit()) {
+                            player.removeBet();
+                            player.setIsSplit(false);
+                        }
                     }
                 }
             }
             broadcastToAllPlayers(GenerateJson.generateUpdate(this, true));
             dealerTurn();
+            pause(600);
             payout();
+            pause(800);
             stopGame();
         }
         this.run();
@@ -114,6 +130,7 @@ public class Play implements Runnable {
      * Players who do not bet in time are kicked.
      */
     private void getBets() {
+        roundInProgress = true;
         for (Player player : players) {
             player.manageBet();
         }
@@ -158,19 +175,28 @@ public class Play implements Runnable {
     }
 
     /**
-     * Adds a player to the game.
+     * Adds a player to the game. Routes to pendingPlayers during an active round.
      * @param player --> the player to add to the game.
      */
-    public static void addPlayer(Player player) {
-        players.add(player);
+    public static synchronized void addPlayer(Player player) {
+        if (roundInProgress) {
+            pendingPlayers.add(player);
+            player.getPlayerManager().sendMessage(
+                GenerateJson.generateGeneralMessage("A round is already in progress. You'll join at the start of the next round."));
+        } else {
+            players.add(player);
+        }
     }
 
     /**
-     * Removes a player from the game.
+     * Removes a player from the game (active or pending).
      * @param player --> the player to remove from the game.
      */
     public void removePlayer(Player player) {
         players.remove(player);
+        synchronized (Play.class) {
+            pendingPlayers.remove(player);
+        }
     }
 
     /**
@@ -216,12 +242,33 @@ public class Play implements Runnable {
             broadcastToAllPlayers(GenerateJson.generateUpdate(this, false));
             broadcastToAllPlayers(GenerateJson.generateGeneralMessage(dealer.toString()));
         }
-        if (dealer.getCardsInHand().getValue() > 21) {
+        int finalValue = dealer.getCardsInHand().getValue();
+        String finalHand = formatCards(dealer.getCardsInHand().getCards());
+        if (finalValue > 21) {
             dealer.setBust(true);
-            broadcastToAllPlayers(GenerateJson.generateGeneralMessage("Dealer busts with " + dealer.getCardsInHand().getValue() + "!"));
+            broadcastToAllPlayers(GenerateJson.generateGeneralMessage(
+                "Dealer busts!  " + finalHand + "  [" + finalValue + "]"));
         } else {
-            broadcastToAllPlayers(GenerateJson.generateGeneralMessage("Dealer stands on " + dealer.getCardsInHand().getValue() + "."));
+            broadcastToAllPlayers(GenerateJson.generateGeneralMessage(
+                "Dealer stands on " + finalValue + ".  " + finalHand));
         }
+    }
+
+    private void pause(int ms) {
+        try {
+            Thread.sleep(ms);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
+    }
+
+    private String formatCards(List<Card> cards) {
+        StringBuilder sb = new StringBuilder();
+        for (Card c : cards) {
+            if (sb.length() > 0) sb.append("  ");
+            sb.append(c);
+        }
+        return sb.toString();
     }
 
     /**
@@ -300,7 +347,8 @@ public class Play implements Runnable {
      */
     public void stopGame() {
         running = false;
-        broadcastToAllPlayers(GenerateJson.generateGeneralMessage("\nStopping round..."));
+        roundInProgress = false;
+        broadcastToAllPlayers(GenerateJson.generateGeneralMessage("\n═══════════════════════════════════════\n           Round complete!\n═══════════════════════════════════════"));
         for (Player player : players) {
             player.reset();
         }
