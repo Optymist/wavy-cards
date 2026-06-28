@@ -81,9 +81,6 @@ public class Play implements Runnable {
      */
     public void startGame() {
         dealInitialCards();
-        pause(600);
-        broadcastToAllPlayers(GenerateJson.generateUpdate(this, true));
-        pause(800);
         for (Player player : players) {
             player.removeBet();
             if (player.getCardsInHand().getState() instanceof BlackJack) {
@@ -115,9 +112,7 @@ public class Play implements Runnable {
                     }
                 }
             }
-            pause(800);
-            broadcastToAllPlayers(GenerateJson.generateUpdate(this, false));
-            pause(1000);
+            broadcastToAllPlayers(GenerateJson.generateUpdate(this, true));
             dealerTurn();
             pause(600);
             payout();
@@ -163,18 +158,31 @@ public class Play implements Runnable {
     }
 
     /**
-     * Deals the starting cards to the players and the dealer.
+     * Deals the starting cards one at a time, broadcasting after each card so the
+     * frontend can animate them arriving.
      */
-    public static void dealInitialCards() {
+    private void dealInitialCards() {
         for (int i = 0; i < 2; i++) {
             for (Player player : players) {
                 if (player.getCardsInHand().getCards().size() < 2) {
                     player.getCardsInHand().addCard(deck.deal());
+                    broadcastToAllPlayers(GenerateJson.generateUpdate(this, true));
+                    sleep(400);
                 }
             }
             if (dealer.getCardsInHand().getCards().size() < 2) {
                 dealer.getCardsInHand().addCard(deck.deal());
+                broadcastToAllPlayers(GenerateJson.generateUpdate(this, true));
+                sleep(400);
             }
+        }
+    }
+
+    private void sleep(int ms) {
+        try {
+            Thread.sleep(ms);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
         }
     }
 
@@ -182,14 +190,15 @@ public class Play implements Runnable {
      * Handles the dealers turn.
      */
     public void dealerTurn() {
-        broadcastToAllPlayers(GenerateJson.generateGeneralMessage("--- Dealer's Turn ---"));
-        pause(800);
+        sleep(600);
+        broadcastToAllPlayers(GenerateJson.generateUpdate(this, false));
+        broadcastToAllPlayers(GenerateJson.generateGeneralMessage("Dealer's turn."));
+        broadcastToAllPlayers(GenerateJson.generateGeneralMessage("Initial cards: " + dealer.toString()));
         while (dealer.getCardsInHand().getValue() < 17) {
-            Card drawn = deck.deal();
-            dealer.getCardsInHand().addCard(drawn);
-            broadcastToAllPlayers(GenerateJson.generateGeneralMessage(
-                "Dealer draws " + drawn + "  →  " + formatCards(dealer.getCardsInHand().getCards()) + "  [" + dealer.getCardsInHand().getValue() + "]"));
-            pause(900);
+            sleep(1000);
+            dealer.getCardsInHand().addCard(deck.deal());
+            broadcastToAllPlayers(GenerateJson.generateUpdate(this, false));
+            broadcastToAllPlayers(GenerateJson.generateGeneralMessage(dealer.toString()));
         }
         int finalValue = dealer.getCardsInHand().getValue();
         String finalHand = formatCards(dealer.getCardsInHand().getCards());

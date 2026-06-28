@@ -1,6 +1,7 @@
 package blackjack;
 
 import java.io.IOException;
+import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.Scanner;
@@ -34,6 +35,10 @@ public class Server {
         try {
             ServerSocket socket = new ServerSocket(PORT);
             Server server = new Server(socket);
+
+            WebSocketGameServer wsServer = new WebSocketGameServer(new InetSocketAddress(PORT + 1), game);
+            wsServer.start();
+            System.out.println("WebSocket server listening on port " + (PORT + 1));
 
             Thread serverThread = new Thread(server::start);
             serverThread.start();

@@ -89,10 +89,10 @@ public class GenerateJson {
     /**
      * Generates an update of the entire state of the game.
      * @param game --> the game to generate an update of.
-     * @param hideHoleCard --> true during player turns (hole card hidden), false once dealer reveals.
+     * @param hideDealer --> if true, the dealer's hole card (index 1+) is sent as "[hidden]".
      * @return the string json form
      */
-    public static String generateUpdate(Play game, boolean hideHoleCard) {
+    public static String generateUpdate(Play game, boolean hideDealer) {
         JsonNodeFactory factory = JsonNodeFactory.instance;
         ObjectNode rootNode = new ObjectNode(factory);
         List<Player> playersInGame = game.getPlayers();
@@ -104,7 +104,7 @@ public class GenerateJson {
         rootNode.put("protocolType", "update");
         rootNode.put("currentPlayer", game.getCurrentPlayer().getName());
         rootNode.set("players", playerObjectNode);
-        rootNode.set("dealer", dealerInformation(game, hideHoleCard));
+        rootNode.set("dealer", dealerInformation(game, hideDealer));
 
         return rootNode.toString();
     }
@@ -129,6 +129,20 @@ public class GenerateJson {
         rootNode.put("money", player.getMoney());
         rootNode.put("bet", player.getBet());
 
+        ArrayNode splitHandsNode = new ArrayNode(factory);
+        for (blackjack.player.Hand splitHand : player.getSplitPlay()) {
+            ObjectNode splitHandNode = new ObjectNode(factory);
+            ArrayNode splitCardArrayNode = new ArrayNode(factory);
+            for (Card card : splitHand.getCards()) {
+                splitCardArrayNode.add(card.toString());
+            }
+            splitHandNode.set("hand", splitCardArrayNode);
+            splitHandNode.put("handValue", splitHand.getValue());
+            splitHandNode.put("state", splitHand.getState().toString());
+            splitHandsNode.add(splitHandNode);
+        }
+        rootNode.set("splitHands", splitHandsNode);
+
         return rootNode;
     }
 
@@ -136,30 +150,22 @@ public class GenerateJson {
      * Generate an ObjectNode that represents the dealer's current state in the game.
      * When hideHoleCard is true, only the face-up card is revealed — standard blackjack rules.
      * @param game --> the game that the dealer is currently in.
-     * @param hideHoleCard --> true during player turns; false when the dealer reveals.
+     * @param hideDealer --> if true, cards at index 1+ are replaced with "[hidden]" and handValue is 0.
      * @return the object node.
      */
-    private static ObjectNode dealerInformation(Play game, boolean hideHoleCard) {
+    private static ObjectNode dealerInformation(Play game, boolean hideDealer) {
         JsonNodeFactory factory = JsonNodeFactory.instance;
         ObjectNode rootNode = new ObjectNode(factory);
         Dealer dealer = game.getDealer();
         List<Card> cardList = dealer.getCardsInHand().getCards();
         ArrayNode cardArrayNode = new ArrayNode(factory);
-
-        if (hideHoleCard && cardList.size() >= 2) {
-            cardArrayNode.add(cardList.get(0).toString());
-            cardArrayNode.add("[hidden]");
-            rootNode.put("state", "?");
-            rootNode.set("hand", cardArrayNode);
-            rootNode.put("handValue", cardList.get(0).getValue());
-        } else {
-            for (Card card : cardList) {
-                cardArrayNode.add(card.toString());
-            }
-            rootNode.put("state", dealer.getCardsInHand().getState().toString());
-            rootNode.set("hand", cardArrayNode);
-            rootNode.put("handValue", dealer.getHandValue());
+        for (int i = 0; i < cardList.size(); i++) {
+            cardArrayNode.add(hideDealer && i > 0 ? "[hidden]" : cardList.get(i).toString());
         }
+        int handValue = (hideDealer && cardList.size() >= 2) ? 0 : dealer.getHandValue();
+        rootNode.put("state", dealer.getCardsInHand().getState().toString());
+        rootNode.set("hand", cardArrayNode);
+        rootNode.put("handValue", handValue);
 
         return rootNode;
     }
