@@ -101,8 +101,9 @@ public class GenerateJson {
             playerObjectNode.set(player.getName(), playerInformation(player));
         }
 
+        Player current = game.getCurrentPlayer();
         rootNode.put("protocolType", "update");
-        rootNode.put("currentPlayer", game.getCurrentPlayer().getName());
+        rootNode.put("currentPlayer", current != null ? current.getName() : "");
         rootNode.set("players", playerObjectNode);
         rootNode.set("dealer", dealerInformation(game, hideDealer));
 

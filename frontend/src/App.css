@@ -518,6 +518,66 @@ body {
   flex-shrink: 0;
 }
 
+/* ── Split hand active / done states ── */
+.me-split-hand {
+  border-radius: var(--radius);
+  border: 1px solid transparent;
+  padding: 8px 10px;
+  margin-bottom: 4px;
+  transition: border-color 200ms, box-shadow 200ms, opacity 200ms, filter 200ms;
+}
+
+.me-split-hand--active {
+  border-color: var(--gold);
+  box-shadow: 0 0 0 2px rgba(212,168,67,0.18), 0 4px 18px rgba(212,168,67,0.15);
+  background: rgba(212,168,67,0.05);
+}
+
+.me-split-hand--done {
+  opacity: 0.42;
+  filter: grayscale(30%);
+}
+
+.split-hand-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 5px;
+}
+
+.split-playing-tag {
+  font-size: 0.55rem;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--gold);
+  background: rgba(212,168,67,0.15);
+  border: 1px solid rgba(212,168,67,0.35);
+  border-radius: 20px;
+  padding: 2px 8px;
+  animation: playingPulse 1.4s ease-in-out infinite;
+}
+
+@keyframes playingPulse {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.4; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .split-playing-tag { animation: none; }
+}
+
+.split-hand--active {
+  border-left: 2px solid var(--gold);
+  padding-left: 8px;
+  background: rgba(212,168,67,0.05);
+  border-radius: 0 var(--radius) var(--radius) 0;
+}
+
+.split-hand--done {
+  opacity: 0.42;
+}
+
 /* ── State badges ── */
 .badge {
   font-size: 0.53rem;

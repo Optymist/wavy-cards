@@ -73,7 +73,7 @@ public class Player {
      *             we can call `action.execute(Play)`
      */
     public void manageTurn(Hand playerHand, Play game) {
-        while (playerHand.getState() instanceof Normal) {
+        while (playerHand.getState() instanceof Normal && game.getPlayers().contains(this)) {
             this.setTurn(true);
 
             this.actions = playerHand.getState().getActions(playerHand);

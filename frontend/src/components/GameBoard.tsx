@@ -17,6 +17,10 @@ function HandRow({ cards }: { cards: string[] }) {
 }
 
 
+function getActiveSplitIndex(splitHands: SplitHandState[]): number {
+  return splitHands.findIndex(sh => sh.state === 'normal' || sh.state === '?');
+}
+
 function StateBadge({ state }: { state: string }) {
   if (!state || state === 'normal' || state === '?') return null;
   return <span className={`badge badge-${state}`}>{state.toUpperCase()}</span>;
@@ -67,18 +71,23 @@ export function GameBoard({ players, dealer, currentPlayer, myName }: Props) {
                 </div>
 
                 <div className="other-hand">
-                  {p.splitHands && p.splitHands.length > 0 ? (
-                    p.splitHands.map((sh: SplitHandState, i: number) => (
-                      <div key={i} className="player-hand-row">
-                        <span className="split-label">Hand {i + 1}</span>
-                        <HandRow cards={sh.hand} />
-                        <div className="hand-meta">
-                          <ValueChip value={sh.handValue} />
-                          <StateBadge state={sh.state} />
+                  {p.splitHands && p.splitHands.length > 0 ? (() => {
+                    const activeSplitIdx = isCurrent ? getActiveSplitIndex(p.splitHands!) : -1;
+                    return p.splitHands!.map((sh: SplitHandState, i: number) => {
+                      const isActive = i === activeSplitIdx;
+                      const isDone = sh.state !== 'normal' && sh.state !== '?';
+                      return (
+                        <div key={i} className={`player-hand-row${isActive ? ' split-hand--active' : isDone ? ' split-hand--done' : ''}`}>
+                          <span className="split-label">Hand {i + 1}</span>
+                          <HandRow cards={sh.hand} />
+                          <div className="hand-meta">
+                            <ValueChip value={sh.handValue} />
+                            <StateBadge state={sh.state} />
+                          </div>
                         </div>
-                      </div>
-                    ))
-                  ) : (
+                      );
+                    });
+                  })() : (
                     <div className="player-hand-row">
                       <HandRow cards={p.hand} />
                       <div className="hand-meta">
@@ -110,18 +119,28 @@ export function GameBoard({ players, dealer, currentPlayer, myName }: Props) {
             </div>
           </div>
 
-          {myEntry.splitHands && myEntry.splitHands.length > 0 ? (
-            myEntry.splitHands.map((sh: SplitHandState, i: number) => (
-              <div key={i} className="me-hand">
-                <span className="split-label">Hand {i + 1}</span>
-                <HandRow cards={sh.hand} />
-                <div className="me-hand-meta">
-                  <ValueChip value={sh.handValue} />
-                  <StateBadge state={sh.state} />
+          {myEntry.splitHands && myEntry.splitHands.length > 0 ? (() => {
+            const activeSplitIdx = isMeTurn ? getActiveSplitIndex(myEntry.splitHands!) : -1;
+            return myEntry.splitHands!.map((sh: SplitHandState, i: number) => {
+              const isActive = i === activeSplitIdx;
+              const isDone = sh.state !== 'normal' && sh.state !== '?';
+              return (
+                <div key={i} className={`me-split-hand${isActive ? ' me-split-hand--active' : isDone ? ' me-split-hand--done' : ''}`}>
+                  <div className="split-hand-header">
+                    <span className="split-label">Hand {i + 1}</span>
+                    {isActive && <span className="split-playing-tag">Now Playing</span>}
+                  </div>
+                  <div className="me-hand">
+                    <HandRow cards={sh.hand} />
+                    <div className="me-hand-meta">
+                      <ValueChip value={sh.handValue} />
+                      <StateBadge state={sh.state} />
+                    </div>
+                  </div>
                 </div>
-              </div>
-            ))
-          ) : (
+              );
+            });
+          })() : (
             <div className="me-hand">
               <HandRow cards={myEntry.hand} />
               <div className="me-hand-meta">

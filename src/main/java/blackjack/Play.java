@@ -103,6 +103,7 @@ public class Play implements Runnable {
                     player.removeBet();
                     player.setIsSplit(false);
                     for (int i = 0; i < player.getSplitPlay().size(); i++) {
+                        if (!players.contains(player)) break;
                         Hand hand = player.getSplitPlay().get(i);
                         hand.setBeanSplit(true);
                         pause(500);
@@ -115,6 +116,10 @@ public class Play implements Runnable {
                         }
                     }
                 }
+            }
+            if (players.isEmpty()) {
+                stopGame();
+                return;
             }
             broadcastToAllPlayers(GenerateJson.generateUpdate(this, true));
             dealerTurn();
@@ -413,6 +418,8 @@ public class Play implements Runnable {
     }
 
     public Player getCurrentPlayer() {
+        if (players.isEmpty()) return null;
+        if (currentPlayerIndex >= players.size()) currentPlayerIndex = 0;
         return players.get(currentPlayerIndex);
     }
 }
