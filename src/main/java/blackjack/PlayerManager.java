@@ -159,6 +159,11 @@ public class PlayerManager implements Runnable, PlayerConnection {
      * @param in --> bufferedReader for input
      * @param out --> bufferedWriter for output
      */
+    @Override
+    public void disconnect() {
+        closeEverything(socket, in, out);
+    }
+
     public void closeEverything(Socket socket, BufferedReader in, BufferedWriter out) {
         removeClient();
         try {

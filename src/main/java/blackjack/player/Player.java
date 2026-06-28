@@ -82,12 +82,14 @@ public class Player {
             playerManager.sendMessage(turnRequest);
 
             boolean continueTurn = true;
+            int elapsed = 0;
             while (continueTurn) {
                 try {
                     Thread.sleep(1000);
                 } catch (InterruptedException e) {
                     System.out.println("Sleep interrupted.");
                 }
+                elapsed++;
                 if (turnResponse != null) {
                     BlackJackAction action;
                     try {
@@ -108,6 +110,10 @@ public class Player {
                         turnResponse = null;
                         e.printStackTrace();
                     }
+                } else if (elapsed >= 30) {
+                    game.kickPlayer(this, "You were removed for taking too long to act.");
+                    this.setTurn(false);
+                    return;
                 }
             }
             bustOrSurrendered(playerHand);
@@ -158,41 +164,12 @@ public class Player {
     }
 
     /**
-     * Handles the betting choice of the player.
+     * Sends the bet request to this player. Polling and timeout are handled by Play.getBets().
      */
     public void manageBet() {
         this.setIsChoosingBet(true);
-
-        String betRequest = GenerateJson.generateBetRequest(name, "Starting amount: $" + money + "\n" +
-                "Please choose a bet amount: ");
-        playerManager.sendMessage(betRequest);
-
-        boolean betting = true;
-        while (betting) {
-            try {
-                Thread.sleep(1000);
-            } catch (InterruptedException e) {
-                System.out.println("Sleep interrupted");
-            }
-            if (betResponse != null) {
-                int betChoice;
-                try {
-                    betChoice = DecryptJson.getBet(this.money, this.betResponse);
-                    bet = betChoice;
-                    betting = false;
-                    betResponse = null;
-                } catch (InvalidBet e) {
-                    playerManager.sendMessage(GenerateJson.generateGeneralMessage("Invalid bet."));
-                    playerManager.sendMessage(betRequest);
-                    betResponse = null;
-                } catch (JsonProcessingException e) {
-                    playerManager.sendMessage(GenerateJson.generateGeneralMessage("Json processing error."));
-                    playerManager.sendMessage(betRequest);
-                    betResponse = null;
-                }
-            }
-        }
-        this.setIsChoosingBet(false);
+        playerManager.sendMessage(GenerateJson.generateBetRequest(name,
+                "Balance: $" + (int) money + " — You have 45 seconds to place your bet."));
     }
 
 
@@ -209,6 +186,10 @@ public class Player {
         this.betResponse = response;
         System.out.println("Setting response: " + response);
     }
+
+    public String getBetResponse() { return betResponse; }
+
+    public void clearBetResponse() { betResponse = null; }
 
     public boolean getIsChoosingBet() {
         return isChoosingBet;

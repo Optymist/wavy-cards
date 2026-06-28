@@ -16,6 +16,7 @@ function HandRow({ cards }: { cards: string[] }) {
   );
 }
 
+
 function StateBadge({ state }: { state: string }) {
   if (!state || state === 'normal' || state === '?') return null;
   return <span className={`badge badge-${state}`}>{state.toUpperCase()}</span>;
@@ -26,12 +27,14 @@ function ValueChip({ value }: { value: number }) {
 }
 
 export function GameBoard({ players, dealer, currentPlayer, myName }: Props) {
-  const playerList = Object.entries(players) as [string, PlayerState][];
+  const myEntry = players[myName] ?? null;
+  const otherEntries = Object.entries(players).filter(([n]) => n !== myName) as [string, PlayerState][];
+  const isMeTurn = currentPlayer === myName;
 
   return (
     <div className="board">
 
-      {/* ── Dealer ── */}
+      {/* ── Dealer — far end of table ── */}
       <div className="board-dealer">
         <span className="area-label">Dealer</span>
         {dealer && (
@@ -42,51 +45,98 @@ export function GameBoard({ players, dealer, currentPlayer, myName }: Props) {
         )}
       </div>
 
-      {/* ── Players ── */}
-      <div className="board-players">
-        {playerList.map(([name, p]) => {
-          const isMe = name === myName;
-          const isCurrent = name === currentPlayer;
-          return (
-            <div
-              key={name}
-              className={`player-card ${isMe ? 'is-me' : ''} ${isCurrent ? 'is-active' : ''}`}
-            >
-              <div className="player-meta">
-                <span className="player-name">
-                  {name}
-                  {isMe && <span className="you-tag">YOU</span>}
-                </span>
-                <div className="player-money-row">
-                  <span className="money">${Math.floor(p.money)}</span>
-                  {p.bet > 0 && <span className="bet-chip">BET ${Math.floor(p.bet)}</span>}
+      <div className="table-rail" />
+
+      {/* ── Other players — middle, scrollable ── */}
+      {otherEntries.length > 0 ? (
+        <div className="board-others">
+          {otherEntries.map(([name, p]) => {
+            const isCurrent = name === currentPlayer;
+            return (
+              <div
+                key={name}
+                className={`other-player${isCurrent ? ' other-active' : ''}`}
+              >
+                <div className="other-header">
+                  <span className="player-name">{name}</span>
                   {isCurrent && <span className="turn-dot" />}
+                  <div className="player-money-row">
+                    <span className="money">${Math.floor(p.money)}</span>
+                    {p.bet > 0 && <span className="bet-chip">BET ${Math.floor(p.bet)}</span>}
+                  </div>
+                </div>
+
+                <div className="other-hand">
+                  {p.splitHands && p.splitHands.length > 0 ? (
+                    p.splitHands.map((sh: SplitHandState, i: number) => (
+                      <div key={i} className="player-hand-row">
+                        <span className="split-label">Hand {i + 1}</span>
+                        <HandRow cards={sh.hand} />
+                        <div className="hand-meta">
+                          <ValueChip value={sh.handValue} />
+                          <StateBadge state={sh.state} />
+                        </div>
+                      </div>
+                    ))
+                  ) : (
+                    <div className="player-hand-row">
+                      <HandRow cards={p.hand} />
+                      <div className="hand-meta">
+                        <ValueChip value={p.handValue} />
+                        <StateBadge state={p.state} />
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
-              {p.splitHands && p.splitHands.length > 0 ? (
-                p.splitHands.map((sh: SplitHandState, i: number) => (
-                  <div key={i} className="player-hand-row">
-                    <span className="split-label">Hand {i + 1}</span>
-                    <HandRow cards={sh.hand} />
-                    <div className="hand-meta">
-                      <ValueChip value={sh.handValue} />
-                      <StateBadge state={sh.state} />
-                    </div>
-                  </div>
-                ))
-              ) : (
-                <div className="player-hand-row">
-                  <HandRow cards={p.hand} />
-                  <div className="hand-meta">
-                    <ValueChip value={p.handValue} />
-                    <StateBadge state={p.state} />
-                  </div>
-                </div>
-              )}
+            );
+          })}
+        </div>
+      ) : (
+        <div className="board-spacer" />
+      )}
+
+      <div className="table-rail" />
+
+      {/* ── My hand — near end of table, always featured ── */}
+      {myEntry ? (
+        <div className={`board-me${isMeTurn ? ' board-me--active' : ''}`}>
+          <div className="me-header">
+            <span className="me-name">You</span>
+            {isMeTurn && <span className="turn-dot" />}
+            <div className="player-money-row">
+              <span className="money">${Math.floor(myEntry.money)}</span>
+              {myEntry.bet > 0 && <span className="bet-chip">BET ${Math.floor(myEntry.bet)}</span>}
             </div>
-          );
-        })}
-      </div>
+          </div>
+
+          {myEntry.splitHands && myEntry.splitHands.length > 0 ? (
+            myEntry.splitHands.map((sh: SplitHandState, i: number) => (
+              <div key={i} className="me-hand">
+                <span className="split-label">Hand {i + 1}</span>
+                <HandRow cards={sh.hand} />
+                <div className="me-hand-meta">
+                  <ValueChip value={sh.handValue} />
+                  <StateBadge state={sh.state} />
+                </div>
+              </div>
+            ))
+          ) : (
+            <div className="me-hand">
+              <HandRow cards={myEntry.hand} />
+              <div className="me-hand-meta">
+                <ValueChip value={myEntry.handValue} />
+                <StateBadge state={myEntry.state} />
+              </div>
+            </div>
+          )}
+        </div>
+      ) : (
+        <div className="board-me">
+          <span className="me-name">You</span>
+          <p className="me-waiting">Waiting for the next round…</p>
+        </div>
+      )}
 
     </div>
   );

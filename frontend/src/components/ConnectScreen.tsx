@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 interface Props {
   onConnect: (host: string, port: number, name: string) => void;
@@ -13,6 +13,10 @@ export function ConnectScreen({ onConnect, nameTaken, onRetryName, connectError 
   const [name, setName] = useState('');
   const [connecting, setConnecting] = useState(false);
 
+  useEffect(() => {
+    if (nameTaken) setConnecting(false);
+  }, [nameTaken]);
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!name.trim()) return;
@@ -24,13 +28,13 @@ export function ConnectScreen({ onConnect, nameTaken, onRetryName, connectError 
     }
   };
 
-  // Reset connecting state if an error comes back
-  if (connectError && connecting) setConnecting(false);
-
   return (
     <div className="connect-screen">
-      <h1>♠ Wavy Cards ♠</h1>
-      <h2>Blackjack</h2>
+      <div className="connect-suits">♠ ♥ ♦ ♣</div>
+      <h1 className="connect-title">Wavy Cards</h1>
+      <p className="connect-subtitle">Multiplayer Blackjack</p>
+      <div className="connect-divider" />
+
       <form onSubmit={handleSubmit} className="connect-form">
         {!nameTaken && (
           <>
@@ -55,12 +59,13 @@ export function ConnectScreen({ onConnect, nameTaken, onRetryName, connectError 
             </label>
           </>
         )}
+
         <label>
           {nameTaken ? 'Name taken — choose another' : 'Your name'}
           <input
             value={name}
             onChange={(e) => setName(e.target.value)}
-            placeholder="Enter name"
+            placeholder="Enter your name"
             autoFocus
             disabled={connecting}
             className={nameTaken ? 'error' : ''}
@@ -72,7 +77,7 @@ export function ConnectScreen({ onConnect, nameTaken, onRetryName, connectError 
         )}
 
         <button type="submit" disabled={connecting}>
-          {connecting ? 'Connecting…' : nameTaken ? 'Try again' : 'Join game'}
+          {connecting ? 'Connecting…' : nameTaken ? 'Try Again' : 'Join Game'}
         </button>
       </form>
     </div>

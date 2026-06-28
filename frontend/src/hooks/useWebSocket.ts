@@ -1,4 +1,22 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
+
+export interface GameEvent {
+  type: string;
+  text: string;
+  id: number;
+}
+
+function classifyEvent(text: string): string | null {
+  const t = text.toLowerCase();
+  if (t.includes('blackjack'))         return 'blackjack';
+  if (t.includes('have been busted'))  return 'bust';
+  if (t.includes('you won'))           return 'win';
+  if (t.includes('you pushed'))        return 'push';
+  if (t.includes('you lost your bet')) return 'lose';
+  if (t.includes('lost half'))         return 'surrender';
+  if (t.includes('dealer busts'))      return 'dealer-bust';
+  return null;
+}
 import type {
   DealerState,
   GamePhase,
@@ -23,6 +41,7 @@ interface UseWebSocketReturn {
   isConnected: boolean;
   nameTaken: boolean;
   connectError: string;
+  gameEvent: GameEvent | null;
   connect: (host: string, port: number, name: string) => void;
   retryName: (name: string) => void;
   sendTurnResponse: (action: string) => void;
@@ -31,8 +50,10 @@ interface UseWebSocketReturn {
 
 export function useWebSocket(): UseWebSocketReturn {
   const wsRef = useRef<WebSocket | null>(null);
+  const eventTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const [phase, setPhase] = useState<GamePhase>('connecting');
+  const [gameEvent, setGameEvent] = useState<GameEvent | null>(null);
   const [myName, setMyName] = useState('');
   const [isConnected, setIsConnected] = useState(false);
   const [nameTaken, setNameTaken] = useState(false);
@@ -111,12 +132,17 @@ export function useWebSocket(): UseWebSocketReturn {
           case 'general': {
             const text = msg.message;
             if (text.includes('Pick a name')) {
-              // Server is prompting for a name — send the chosen name
               ws.send(name);
             } else if (text.includes('Name already taken')) {
               setNameTaken(true);
             } else {
               addMessage(text);
+              const evType = classifyEvent(text);
+              if (evType) {
+                if (eventTimerRef.current) clearTimeout(eventTimerRef.current);
+                setGameEvent({ type: evType, text, id: Date.now() });
+                eventTimerRef.current = setTimeout(() => setGameEvent(null), 3500);
+              }
             }
             break;
           }
@@ -167,7 +193,10 @@ export function useWebSocket(): UseWebSocketReturn {
     [addMessage]
   );
 
-  useEffect(() => () => { wsRef.current?.close(); }, []);
+  useEffect(() => () => {
+    wsRef.current?.close();
+    if (eventTimerRef.current) clearTimeout(eventTimerRef.current);
+  }, []);
 
   return {
     phase,
@@ -179,6 +208,7 @@ export function useWebSocket(): UseWebSocketReturn {
     isConnected,
     nameTaken,
     connectError,
+    gameEvent,
     connect,
     retryName,
     sendTurnResponse,
