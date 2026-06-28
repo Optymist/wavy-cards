@@ -2,6 +2,11 @@ package blackjack;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import blackjack.protocol.DecryptJson;
+import blackjack.protocol.Exceptions.InvalidBet;
 
 import blackjack.deck.Card;
 import blackjack.deck.Deck;
@@ -18,7 +23,7 @@ import blackjack.protocol.GenerateJson;
  * Play class that manages the game play.
  */
 public class Play implements Runnable {
-    public static List<Player> players = new ArrayList<>();
+    public static List<Player> players = new CopyOnWriteArrayList<>();
     private static final List<Player> pendingPlayers = new ArrayList<>();
     private static volatile boolean roundInProgress = false;
     private volatile boolean running = true;
@@ -82,7 +87,6 @@ public class Play implements Runnable {
     public void startGame() {
         dealInitialCards();
         for (Player player : players) {
-            player.removeBet();
             if (player.getCardsInHand().getState() instanceof BlackJack) {
                 player.getPlayerManager().sendMessage(GenerateJson.generateGeneralMessage("You got blackjack! Waiting for dealer..."));
             }
@@ -99,6 +103,7 @@ public class Play implements Runnable {
                     player.removeBet();
                     player.setIsSplit(false);
                     for (int i = 0; i < player.getSplitPlay().size(); i++) {
+                        if (!players.contains(player)) break;
                         Hand hand = player.getSplitPlay().get(i);
                         hand.setBeanSplit(true);
                         pause(500);
@@ -112,6 +117,10 @@ public class Play implements Runnable {
                     }
                 }
             }
+            if (players.isEmpty()) {
+                stopGame();
+                return;
+            }
             broadcastToAllPlayers(GenerateJson.generateUpdate(this, true));
             dealerTurn();
             pause(600);
@@ -122,14 +131,55 @@ public class Play implements Runnable {
         this.run();
     }
 
+    private static final int BET_TIMEOUT_SECONDS = 45;
+
     /**
-     * Loops through players in the game and calls the method to manage the bet chosen by each player.
+     * Sends bet requests to all players simultaneously, then collects responses for up to 45 seconds.
+     * Players who do not bet in time are kicked.
      */
     private void getBets() {
         roundInProgress = true;
         for (Player player : players) {
             player.manageBet();
         }
+
+        long deadline = System.currentTimeMillis() + BET_TIMEOUT_SECONDS * 1000L;
+        while (System.currentTimeMillis() < deadline && players.stream().anyMatch(Player::getIsChoosingBet)) {
+            for (Player player : players) {
+                if (!player.getIsChoosingBet()) continue;
+                String response = player.getBetResponse();
+                if (response == null) continue;
+                try {
+                    int bet = DecryptJson.getBet(player.getMoney(), response);
+                    player.setBet(bet);
+                    player.clearBetResponse();
+                    player.setIsChoosingBet(false);
+                    player.removeBet();
+                } catch (InvalidBet | JsonProcessingException e) {
+                    player.clearBetResponse();
+                    player.getPlayerManager().sendMessage(
+                            GenerateJson.generateGeneralMessage("Invalid bet. Please enter a valid amount."));
+                }
+            }
+            sleep(500);
+        }
+
+        for (Player player : players) {
+            if (player.getIsChoosingBet()) {
+                player.setIsChoosingBet(false);
+                kickPlayer(player, "You were removed for not placing a bet within " + BET_TIMEOUT_SECONDS + " seconds.");
+            }
+        }
+    }
+
+    /**
+     * Sends a reason message, removes the player from the game, notifies others, then disconnects them.
+     */
+    public void kickPlayer(Player player, String reason) {
+        player.getPlayerManager().sendMessage(GenerateJson.generateGeneralMessage(reason));
+        removePlayer(player);
+        broadcastToAllPlayers(GenerateJson.generateGeneralMessage(player.getName() + " was removed for being AFK."));
+        player.getPlayerManager().disconnect();
     }
 
     /**
@@ -248,17 +298,13 @@ public class Play implements Runnable {
      * @param hand --> their current hand.
      */
     private void determinePayout(Player player, Hand hand) {
-        if (hand.getState() instanceof BlackJack) {
-            if (dealer.getCardsInHand().getState() instanceof BlackJack) {
-                player.pushBet();
-            } else {
-                player.blackJackPayout();
-            }
-        } else if (hand.getState() instanceof Surrender) {
-            // already settled in Player.bustOrSurrendered()
-        } else if (hand.getState() instanceof Bust) {
-            player.loseBet();
-        } else if (dealer.getBust()) {
+        // Blackjack, bust, and surrender are already resolved during the player's turn.
+        if (hand.getState() instanceof BlackJack
+                || hand.getState() instanceof Bust
+                || hand.getState() instanceof Surrender) {
+            return;
+        }
+        if (dealer.getBust()) {
             player.winBet();
         } else {
             handleCardAnalysis(player, hand);
@@ -372,6 +418,8 @@ public class Play implements Runnable {
     }
 
     public Player getCurrentPlayer() {
+        if (players.isEmpty()) return null;
+        if (currentPlayerIndex >= players.size()) currentPlayerIndex = 0;
         return players.get(currentPlayerIndex);
     }
 }

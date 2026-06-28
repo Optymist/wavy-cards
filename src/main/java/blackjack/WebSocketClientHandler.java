@@ -64,4 +64,11 @@ public class WebSocketClientHandler implements PlayerConnection {
             conn.send(message);
         }
     }
+
+    @Override
+    public void disconnect() {
+        if (conn.isOpen()) {
+            conn.close();
+        }
+    }
 }
