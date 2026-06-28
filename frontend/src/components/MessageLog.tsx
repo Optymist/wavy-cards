@@ -7,9 +7,10 @@ interface Props {
 function getLogClass(text: string): string {
   const t = text.toLowerCase();
   if (t.includes('blackjack'))                               return 'log-blackjack';
-  if (t.includes('you won') || t.includes('dealer busts'))  return 'log-win';
-  if (t.includes('busted') || t.includes('lost'))           return 'log-loss';
-  if (t.includes('pushed') || t.includes('push'))           return 'log-push';
+  if (t.includes('you win') || t.includes('you won') || t.includes('dealer busts') || t.includes('blackjack!')) return 'log-win';
+  if (t.includes('bust!') || t.includes('you lost'))        return 'log-loss';
+  if (t.includes('push'))                                    return 'log-push';
+  if (t.includes('surrendered'))                             return 'log-surrender';
   if (
     t.includes("dealer") ||
     t.includes('round') ||

@@ -1,4 +1,5 @@
 import { ActionButtons } from './components/ActionButtons';
+import { BalanceBar } from './components/BalanceBar';
 import { BetInput } from './components/BetInput';
 import { ConnectScreen } from './components/ConnectScreen';
 import { EventBanner } from './components/EventBanner';
@@ -25,6 +26,7 @@ export default function App() {
   } = useWebSocket();
 
   const showConnect = phase === 'connecting' || phase === 'naming' || nameTaken;
+  const myPlayer = gameState.players[myName];
 
   return (
     <div className="app">
@@ -60,12 +62,16 @@ export default function App() {
 
           <MessageLog messages={messages} />
 
+          {myPlayer && (
+            <BalanceBar balance={myPlayer.money} bet={myPlayer.bet} />
+          )}
+
           {phase === 'playing' && availableActions.length > 0 && (
             <ActionButtons actions={availableActions} onAction={sendTurnResponse} />
           )}
 
           {phase === 'betting' && (
-            <BetInput message={betMessage} onBet={sendBet} maxBet={gameState.players[myName]?.money} />
+            <BetInput message={betMessage} onBet={sendBet} maxBet={myPlayer?.money} />
           )}
         </div>
       )}

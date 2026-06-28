@@ -667,6 +667,69 @@ body {
 .log-dealer    { color: #607d6a; font-style: italic; }
 
 /* ═══════════════════════════════════════════
+   BALANCE BAR
+═══════════════════════════════════════════ */
+.balance-bar {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 10px 20px;
+  background: rgba(0,0,0,0.5);
+  border-top: 1px solid rgba(212,168,67,0.2);
+  position: relative;
+}
+
+.balance-label {
+  font-size: 0.57rem;
+  text-transform: uppercase;
+  letter-spacing: 0.22em;
+  color: var(--text-muted);
+}
+
+.balance-amount {
+  font-family: var(--font-display);
+  font-size: 1.7rem;
+  font-weight: 900;
+  color: #6ddb88;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.01em;
+  line-height: 1;
+}
+
+.balance-delta {
+  font-size: 0.82rem;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  animation: deltaFade 2s ease-out forwards;
+}
+
+.balance-delta--pos { color: #6ddb88; }
+.balance-delta--neg { color: #e07070; }
+
+@keyframes deltaFade {
+  0%   { opacity: 1; transform: translateY(0);    }
+  50%  { opacity: 1; transform: translateY(-5px); }
+  100% { opacity: 0; transform: translateY(-10px);}
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .balance-delta { animation: none; }
+}
+
+.balance-bet-pill {
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: #ffe082;
+  background: rgba(255,193,7,0.1);
+  border: 1px solid rgba(255,193,7,0.28);
+  border-radius: 12px;
+  padding: 3px 10px;
+  letter-spacing: 0.02em;
+}
+
+/* ═══════════════════════════════════════════
    ACTION BAR
 ═══════════════════════════════════════════ */
 .action-bar {

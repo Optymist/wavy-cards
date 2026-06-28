@@ -113,10 +113,11 @@ export function GameBoard({ players, dealer, currentPlayer, myName }: Props) {
           <div className="me-header">
             <span className="me-name">You</span>
             {isMeTurn && <span className="turn-dot" />}
-            <div className="player-money-row">
-              <span className="money">${Math.floor(myEntry.money)}</span>
-              {myEntry.bet > 0 && <span className="bet-chip">BET ${Math.floor(myEntry.bet)}</span>}
-            </div>
+            {myEntry.bet > 0 && (
+              <div className="player-money-row">
+                <span className="bet-chip">BET ${Math.floor(myEntry.bet).toLocaleString()}</span>
+              </div>
+            )}
           </div>
 
           {myEntry.splitHands && myEntry.splitHands.length > 0 ? (() => {

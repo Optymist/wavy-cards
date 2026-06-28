@@ -8,13 +8,13 @@ export interface GameEvent {
 
 function classifyEvent(text: string): string | null {
   const t = text.toLowerCase();
-  if (t.includes('blackjack'))         return 'blackjack';
-  if (t.includes('have been busted'))  return 'bust';
-  if (t.includes('you won'))           return 'win';
-  if (t.includes('you pushed'))        return 'push';
-  if (t.includes('you lost your bet')) return 'lose';
-  if (t.includes('lost half'))         return 'surrender';
-  if (t.includes('dealer busts'))      return 'dealer-bust';
+  if (t.includes('blackjack'))    return 'blackjack';
+  if (t.includes('bust!'))        return 'bust';
+  if (t.includes('you win'))      return 'win';
+  if (t.includes('push'))         return 'push';
+  if (t.includes('you lost'))     return 'lose';
+  if (t.includes('surrendered'))  return 'surrender';
+  if (t.includes('dealer busts')) return 'dealer-bust';
   return null;
 }
 import type {

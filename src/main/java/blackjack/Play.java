@@ -298,13 +298,15 @@ public class Play implements Runnable {
      * @param hand --> their current hand.
      */
     private void determinePayout(Player player, Hand hand) {
-        // Blackjack, bust, and surrender are already resolved during the player's turn.
-        if (hand.getState() instanceof BlackJack
-                || hand.getState() instanceof Bust
-                || hand.getState() instanceof Surrender) {
-            return;
-        }
-        if (dealer.getBust()) {
+        if (hand.getState() instanceof BlackJack) {
+            if (dealer.getCardsInHand().getState() instanceof BlackJack) {
+                player.pushBet();
+            } else {
+                player.blackJackPayout();
+            }
+        } else if (hand.getState() instanceof Bust || hand.getState() instanceof Surrender) {
+            // Already settled during the player's turn.
+        } else if (dealer.getBust()) {
             player.winBet();
         } else {
             handleCardAnalysis(player, hand);
