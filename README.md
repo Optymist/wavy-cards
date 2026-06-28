@@ -55,4 +55,10 @@ compared to your own cards' value, otherwise the dealer draws cards until he has
 Kimlyn Smart - smartkimlyn@gmail.com
 Shane Carr - shanecarr1000@gmail.com
 
+# Generating Signed APK
 
+  cd frontend
+  npm install @capacitor/core @capacitor/cli
+  @capacitor/android
+  npx cap add android
+  npm run build && npx cap sync android

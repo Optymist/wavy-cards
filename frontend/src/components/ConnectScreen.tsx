@@ -8,7 +8,7 @@ interface Props {
 }
 
 export function ConnectScreen({ onConnect, nameTaken, onRetryName, connectError }: Props) {
-  const [host, setHost] = useState('10.0.2.2');
+  const [host, setHost] = useState('localhost');
   const [port, setPort] = useState('2346');
   const [name, setName] = useState('');
   const [connecting, setConnecting] = useState(false);
@@ -43,7 +43,7 @@ export function ConnectScreen({ onConnect, nameTaken, onRetryName, connectError 
               <input
                 value={host}
                 onChange={(e) => setHost(e.target.value)}
-                placeholder="10.0.2.2"
+                placeholder="localhost"
                 disabled={connecting}
               />
             </label>
