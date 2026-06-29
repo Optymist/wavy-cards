@@ -38,6 +38,7 @@ public class Player {
     private boolean isSplit;
     private String betResponse = null;
     private boolean isChoosingBet;
+    private boolean sittingOut = false;
 
 
     /**
@@ -111,7 +112,12 @@ public class Player {
                         e.printStackTrace();
                     }
                 } else if (elapsed >= 30) {
-                    game.kickPlayer(this, "You were removed for taking too long to act.");
+                    this.sittingOut = true;
+                    playerManager.sendMessage(GenerateJson.generateGeneralMessage(
+                        "You were sat out for inactivity. Place a bet next round to re-join."));
+                    game.broadcastExcludingCurrent(GenerateJson.generateGeneralMessage(
+                        name + " was sat out for inactivity."), this);
+                    game.broadcastToAllPlayers(GenerateJson.generateUpdate(game, true));
                     this.setTurn(false);
                     return;
                 }
@@ -169,8 +175,10 @@ public class Player {
      */
     public void manageBet() {
         this.setIsChoosingBet(true);
-        playerManager.sendMessage(GenerateJson.generateBetRequest(name,
-                "Balance: $" + (int) money + " — You have 45 seconds to place your bet."));
+        String msg = sittingOut
+            ? "You're sitting out. Place a bet to re-join!  Balance: $" + (int) money
+            : "Balance: $" + (int) money + " — You have 45 seconds to place your bet.";
+        playerManager.sendMessage(GenerateJson.generateBetRequest(name, msg));
     }
 
 
@@ -199,6 +207,10 @@ public class Player {
     public void setIsChoosingBet(boolean isChoosingBet) {
         this.isChoosingBet = isChoosingBet;
     }
+
+    public boolean isSittingOut() { return sittingOut; }
+
+    public void setSittingOut(boolean sittingOut) { this.sittingOut = sittingOut; }
 
     public void setIsSplit(boolean bool) {
         this.isSplit = bool;

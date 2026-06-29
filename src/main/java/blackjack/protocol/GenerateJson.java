@@ -129,6 +129,7 @@ public class GenerateJson {
         rootNode.put("handValue", player.getHandValue());
         rootNode.put("money", player.getMoney());
         rootNode.put("bet", player.getBet());
+        rootNode.put("sittingOut", player.isSittingOut());
 
         ArrayNode splitHandsNode = new ArrayNode(factory);
         for (blackjack.player.Hand splitHand : player.getSplitPlay()) {

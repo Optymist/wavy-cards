@@ -189,6 +189,23 @@ body {
   border-radius: 50%;
 }
 
+.leave-btn {
+  margin-left: auto;
+  padding: 4px 12px;
+  border-radius: 6px;
+  border: 1px solid rgba(192,57,43,0.4);
+  background: rgba(192,57,43,0.1);
+  color: #e07070;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+}
+.leave-btn:hover  { background: rgba(192,57,43,0.22); border-color: rgba(192,57,43,0.7); }
+.leave-btn:active { transform: scale(0.96); }
+
 .table-subtitle {
   font-size: 0.57rem;
   color: var(--text-muted);
@@ -207,6 +224,22 @@ body {
   letter-spacing: 0.14em;
   text-transform: uppercase;
   border-bottom: 1px solid rgba(255,255,255,0.04);
+}
+
+.waiting-banner--bets {
+  background: rgba(212,168,67,0.07);
+  color: var(--gold-light);
+  border-bottom-color: rgba(212,168,67,0.12);
+  animation: betPulse 2.2s ease-in-out infinite;
+}
+
+@keyframes betPulse {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.65; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .waiting-banner--bets { animation: none; }
 }
 
 /* ═══════════════════════════════════════════
@@ -599,6 +632,18 @@ body {
 .badge-stand      { background: #1565c0;     color: #fff; }
 .badge-surrender  { background: #444;        color: #bbb; }
 
+.sitting-out-badge {
+  font-size: 0.52rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 4px;
+  padding: 2px 6px;
+}
+
 /* ═══════════════════════════════════════════
    PLAYING CARDS
 ═══════════════════════════════════════════ */
@@ -788,12 +833,29 @@ body {
   padding: 8px 12px 14px;
 }
 
+.bet-bar-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
 .bet-bar-label {
   font-size: 0.6rem;
   text-transform: uppercase;
   letter-spacing: 0.16em;
   color: var(--text-muted);
-  margin-bottom: 8px;
+}
+
+.bet-players-ready {
+  font-size: 0.62rem;
+  font-weight: 700;
+  color: var(--gold);
+  letter-spacing: 0.06em;
+  background: rgba(212,168,67,0.1);
+  border: 1px solid rgba(212,168,67,0.25);
+  border-radius: 10px;
+  padding: 2px 8px;
 }
 
 .bet-quick-picks {

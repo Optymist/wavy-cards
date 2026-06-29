@@ -87,6 +87,7 @@ public class Play implements Runnable {
     public void startGame() {
         dealInitialCards();
         for (Player player : players) {
+            if (player.isSittingOut()) continue;
             if (player.getCardsInHand().getState() instanceof BlackJack) {
                 player.getPlayerManager().sendMessage(GenerateJson.generateGeneralMessage("You got blackjack! Waiting for dealer..."));
             }
@@ -97,9 +98,10 @@ public class Play implements Runnable {
 
         while (running) {
             for (Player player : players) {
+                if (player.isSittingOut()) continue;
                 broadcastExcludingCurrent(GenerateJson.generateGeneralMessage(player.getName() + "'s turn."), player);
                 player.manageTurn(player.getCardsInHand(), this);
-                if (player.getIsSplit()) {
+                if (player.getIsSplit() && !player.isSittingOut()) {
                     player.removeBet();
                     player.setIsSplit(false);
                     for (int i = 0; i < player.getSplitPlay().size(); i++) {
@@ -139,6 +141,7 @@ public class Play implements Runnable {
      */
     private void getBets() {
         roundInProgress = true;
+        broadcastToAllPlayers(GenerateJson.generateUpdate(this, true));
         for (Player player : players) {
             player.manageBet();
         }
@@ -154,7 +157,9 @@ public class Play implements Runnable {
                     player.setBet(bet);
                     player.clearBetResponse();
                     player.setIsChoosingBet(false);
+                    player.setSittingOut(false);
                     player.removeBet();
+                    broadcastToAllPlayers(GenerateJson.generateUpdate(this, true));
                 } catch (InvalidBet | JsonProcessingException e) {
                     player.clearBetResponse();
                     player.getPlayerManager().sendMessage(
@@ -167,7 +172,11 @@ public class Play implements Runnable {
         for (Player player : players) {
             if (player.getIsChoosingBet()) {
                 player.setIsChoosingBet(false);
-                kickPlayer(player, "You were removed for not placing a bet within " + BET_TIMEOUT_SECONDS + " seconds.");
+                player.setSittingOut(true);
+                player.getPlayerManager().sendMessage(GenerateJson.generateGeneralMessage(
+                    "You were sat out for not placing a bet. Place a bet next round to re-join."));
+                broadcastExcludingCurrent(GenerateJson.generateGeneralMessage(
+                    player.getName() + " was sat out for inactivity."), player);
             }
         }
     }
@@ -214,7 +223,7 @@ public class Play implements Runnable {
     private void dealInitialCards() {
         for (int i = 0; i < 2; i++) {
             for (Player player : players) {
-                if (player.getCardsInHand().getCards().size() < 2) {
+                if (!player.isSittingOut() && player.getCardsInHand().getCards().size() < 2) {
                     player.getCardsInHand().addCard(deck.deal());
                     broadcastToAllPlayers(GenerateJson.generateUpdate(this, true));
                     sleep(400);
@@ -284,6 +293,7 @@ public class Play implements Runnable {
      */
     private void payout() {
         for (Player player : players) {
+            if (player.isSittingOut()) continue;
             if (!(player.getSplitPlay().isEmpty())) {
                 handleSplitPlayPayout(player);
             } else {

@@ -4,11 +4,13 @@ interface Props {
   message: string;
   onBet: (amount: number) => void;
   maxBet?: number;
+  betsPlaced?: number;
+  betsTotal?: number;
 }
 
 const CHIPS = [5, 10, 25, 50, 100, 250, 500];
 
-export function BetInput({ message, onBet, maxBet }: Props) {
+export function BetInput({ message, onBet, maxBet, betsPlaced, betsTotal }: Props) {
   const [custom, setCustom] = useState('');
 
   const handleCustomSubmit = (e: React.FormEvent) => {
@@ -25,7 +27,14 @@ export function BetInput({ message, onBet, maxBet }: Props) {
 
   return (
     <div className="bet-bar">
-      <div className="bet-bar-label">{message}</div>
+      <div className="bet-bar-header">
+        <span className="bet-bar-label">{message}</span>
+        {betsTotal != null && betsTotal > 1 && (
+          <span className="bet-players-ready">
+            {betsPlaced}/{betsTotal} ready
+          </span>
+        )}
+      </div>
 
       <div className="bet-quick-picks">
         {affordable.map(amount => (

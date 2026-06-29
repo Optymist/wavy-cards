@@ -42,18 +42,24 @@ interface UseWebSocketReturn {
   nameTaken: boolean;
   connectError: string;
   gameEvent: GameEvent | null;
+  waitingForBets: boolean;
   connect: (host: string, port: number, name: string) => void;
   retryName: (name: string) => void;
   sendTurnResponse: (action: string) => void;
   sendBet: (amount: number) => void;
+  disconnect: () => void;
 }
+
+const CONNECT_TIMEOUT_MS = 10_000;
 
 export function useWebSocket(): UseWebSocketReturn {
   const wsRef = useRef<WebSocket | null>(null);
   const eventTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const connectTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const [phase, setPhase] = useState<GamePhase>('connecting');
   const [gameEvent, setGameEvent] = useState<GameEvent | null>(null);
+  const [waitingForBets, setWaitingForBets] = useState(false);
   const [myName, setMyName] = useState('');
   const [isConnected, setIsConnected] = useState(false);
   const [nameTaken, setNameTaken] = useState(false);
@@ -95,6 +101,7 @@ export function useWebSocket(): UseWebSocketReturn {
     (amount: number) => {
       sendRaw({ protocolType: 'betResponse', playerName: myName, bet: amount });
       setPhase('watching');
+      // still waitingForBets — cleared when cards appear or turnRequest arrives
     },
     [myName, sendRaw]
   );
@@ -107,6 +114,14 @@ export function useWebSocket(): UseWebSocketReturn {
     [sendPlain]
   );
 
+  const disconnect = useCallback(() => {
+    wsRef.current?.close(1000, 'user left');
+    setMyName('');
+    setGameState({ players: {}, dealer: null, currentPlayer: '' });
+    setMessages([]);
+    setAvailableActions([]);
+  }, []);
+
   const connect = useCallback(
     (host: string, port: number, name: string) => {
       if (wsRef.current) wsRef.current.close();
@@ -114,7 +129,16 @@ export function useWebSocket(): UseWebSocketReturn {
       const ws = new WebSocket(`ws://${host}:${port}`);
       wsRef.current = ws;
 
+      if (connectTimerRef.current) clearTimeout(connectTimerRef.current);
+      connectTimerRef.current = setTimeout(() => {
+        if (ws.readyState !== WebSocket.OPEN) {
+          ws.close();
+          setConnectError(`Connection timed out — no response from ws://${host}:${port}. Check the host, port, and that the server is running.`);
+        }
+      }, CONNECT_TIMEOUT_MS);
+
       ws.onopen = () => {
+        if (connectTimerRef.current) clearTimeout(connectTimerRef.current);
         setConnectError('');
         setIsConnected(true);
         setPhase('naming');
@@ -156,11 +180,13 @@ export function useWebSocket(): UseWebSocketReturn {
           case 'betRequest':
             setBetMessage(msg.message);
             setPhase('betting');
+            setWaitingForBets(true);
             break;
 
           case 'turnRequest':
             setAvailableActions(msg.actions);
             setPhase('playing');
+            setWaitingForBets(false);
             break;
 
           case 'update': {
@@ -170,6 +196,10 @@ export function useWebSocket(): UseWebSocketReturn {
               dealer: u.dealer,
               currentPlayer: u.currentPlayer,
             });
+            // Betting is over once cards start appearing
+            const cardsDealt = u.dealer.hand.length > 0 ||
+              Object.values(u.players).some(p => p.hand.length > 0);
+            if (cardsDealt) setWaitingForBets(false);
             setPhase((prev) =>
               prev === 'playing' || prev === 'betting' ? prev : 'watching'
             );
@@ -179,6 +209,7 @@ export function useWebSocket(): UseWebSocketReturn {
       };
 
       ws.onclose = (event) => {
+        if (connectTimerRef.current) clearTimeout(connectTimerRef.current);
         setIsConnected(false);
         setPhase('connecting');
         if (event.code !== 1000) {
@@ -187,6 +218,7 @@ export function useWebSocket(): UseWebSocketReturn {
       };
 
       ws.onerror = () => {
+        if (connectTimerRef.current) clearTimeout(connectTimerRef.current);
         setConnectError(`Connection failed to ws://${host}:${port}. Make sure the server is running and the address is correct.`);
       };
     },
@@ -196,6 +228,7 @@ export function useWebSocket(): UseWebSocketReturn {
   useEffect(() => () => {
     wsRef.current?.close();
     if (eventTimerRef.current) clearTimeout(eventTimerRef.current);
+    if (connectTimerRef.current) clearTimeout(connectTimerRef.current);
   }, []);
 
   return {
@@ -213,5 +246,7 @@ export function useWebSocket(): UseWebSocketReturn {
     retryName,
     sendTurnResponse,
     sendBet,
+    disconnect,
+    waitingForBets,
   };
 }

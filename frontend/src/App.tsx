@@ -19,14 +19,22 @@ export default function App() {
     nameTaken,
     connectError,
     gameEvent,
+    waitingForBets,
     connect,
     retryName,
     sendTurnResponse,
     sendBet,
+    disconnect,
   } = useWebSocket();
 
   const showConnect = phase === 'connecting' || phase === 'naming' || nameTaken;
   const myPlayer = gameState.players[myName];
+
+  const allPlayers = Object.values(gameState.players);
+  const activePlayers = allPlayers.filter(p => !p.sittingOut);
+  const betsPlaced = activePlayers.filter(p => p.bet > 0).length;
+  const betsTotal = activePlayers.length;
+  const betsRemaining = betsTotal - betsPlaced;
 
   return (
     <div className="app">
@@ -43,10 +51,21 @@ export default function App() {
             <span className="table-title">Wavy Cards</span>
             <span className="table-dot" />
             <span className="table-subtitle">Blackjack</span>
+            <button className="leave-btn" onClick={disconnect} aria-label="Leave game">
+              Leave
+            </button>
           </header>
 
-          {phase === 'waiting' && (
+          {phase === 'waiting' && !waitingForBets && (
             <div className="waiting-banner">Waiting for round to start…</div>
+          )}
+
+          {waitingForBets && phase !== 'betting' && (
+            <div className="waiting-banner waiting-banner--bets">
+              {betsRemaining > 0
+                ? `Waiting for ${betsRemaining} player${betsRemaining !== 1 ? 's' : ''} to bet…  (${betsPlaced}/${betsTotal} ready)`
+                : 'All bets placed — starting round…'}
+            </div>
           )}
 
           {gameEvent && <EventBanner key={gameEvent.id} event={gameEvent} />}
@@ -71,7 +90,13 @@ export default function App() {
           )}
 
           {phase === 'betting' && (
-            <BetInput message={betMessage} onBet={sendBet} maxBet={myPlayer?.money} />
+            <BetInput
+              message={betMessage}
+              onBet={sendBet}
+              maxBet={myPlayer?.money}
+              betsPlaced={betsPlaced}
+              betsTotal={betsTotal}
+            />
           )}
         </div>
       )}
