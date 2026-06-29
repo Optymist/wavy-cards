@@ -4,7 +4,6 @@ import { BetInput } from './components/BetInput';
 import { ConnectScreen } from './components/ConnectScreen';
 import { EventBanner } from './components/EventBanner';
 import { GameBoard } from './components/GameBoard';
-import { MessageLog } from './components/MessageLog';
 import { useWebSocket } from './hooks/useWebSocket';
 import './App.css';
 
@@ -15,7 +14,6 @@ export default function App() {
     gameState,
     availableActions,
     betMessage,
-    messages,
     nameTaken,
     connectError,
     gameEvent,
@@ -79,7 +77,6 @@ export default function App() {
             />
           )}
 
-          <MessageLog messages={messages} />
 
           {myPlayer && (
             <BalanceBar balance={myPlayer.money} bet={myPlayer.bet} />
