@@ -48,9 +48,12 @@ interface UseWebSocketReturn {
   sendBet: (amount: number) => void;
 }
 
+const CONNECT_TIMEOUT_MS = 10_000;
+
 export function useWebSocket(): UseWebSocketReturn {
   const wsRef = useRef<WebSocket | null>(null);
   const eventTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const connectTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const [phase, setPhase] = useState<GamePhase>('connecting');
   const [gameEvent, setGameEvent] = useState<GameEvent | null>(null);
@@ -114,7 +117,16 @@ export function useWebSocket(): UseWebSocketReturn {
       const ws = new WebSocket(`ws://${host}:${port}`);
       wsRef.current = ws;
 
+      if (connectTimerRef.current) clearTimeout(connectTimerRef.current);
+      connectTimerRef.current = setTimeout(() => {
+        if (ws.readyState !== WebSocket.OPEN) {
+          ws.close();
+          setConnectError(`Connection timed out — no response from ws://${host}:${port}. Check the host, port, and that the server is running.`);
+        }
+      }, CONNECT_TIMEOUT_MS);
+
       ws.onopen = () => {
+        if (connectTimerRef.current) clearTimeout(connectTimerRef.current);
         setConnectError('');
         setIsConnected(true);
         setPhase('naming');
@@ -179,6 +191,7 @@ export function useWebSocket(): UseWebSocketReturn {
       };
 
       ws.onclose = (event) => {
+        if (connectTimerRef.current) clearTimeout(connectTimerRef.current);
         setIsConnected(false);
         setPhase('connecting');
         if (event.code !== 1000) {
@@ -187,6 +200,7 @@ export function useWebSocket(): UseWebSocketReturn {
       };
 
       ws.onerror = () => {
+        if (connectTimerRef.current) clearTimeout(connectTimerRef.current);
         setConnectError(`Connection failed to ws://${host}:${port}. Make sure the server is running and the address is correct.`);
       };
     },
@@ -196,6 +210,7 @@ export function useWebSocket(): UseWebSocketReturn {
   useEffect(() => () => {
     wsRef.current?.close();
     if (eventTimerRef.current) clearTimeout(eventTimerRef.current);
+    if (connectTimerRef.current) clearTimeout(connectTimerRef.current);
   }, []);
 
   return {

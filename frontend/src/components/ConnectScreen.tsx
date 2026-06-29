@@ -17,6 +17,10 @@ export function ConnectScreen({ onConnect, nameTaken, onRetryName, connectError 
     if (nameTaken) setConnecting(false);
   }, [nameTaken]);
 
+  useEffect(() => {
+    if (connectError) setConnecting(false);
+  }, [connectError]);
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!name.trim()) return;
