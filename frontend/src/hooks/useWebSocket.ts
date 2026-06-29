@@ -42,10 +42,12 @@ interface UseWebSocketReturn {
   nameTaken: boolean;
   connectError: string;
   gameEvent: GameEvent | null;
+  waitingForBets: boolean;
   connect: (host: string, port: number, name: string) => void;
   retryName: (name: string) => void;
   sendTurnResponse: (action: string) => void;
   sendBet: (amount: number) => void;
+  disconnect: () => void;
 }
 
 const CONNECT_TIMEOUT_MS = 10_000;
@@ -57,6 +59,7 @@ export function useWebSocket(): UseWebSocketReturn {
 
   const [phase, setPhase] = useState<GamePhase>('connecting');
   const [gameEvent, setGameEvent] = useState<GameEvent | null>(null);
+  const [waitingForBets, setWaitingForBets] = useState(false);
   const [myName, setMyName] = useState('');
   const [isConnected, setIsConnected] = useState(false);
   const [nameTaken, setNameTaken] = useState(false);
@@ -98,6 +101,7 @@ export function useWebSocket(): UseWebSocketReturn {
     (amount: number) => {
       sendRaw({ protocolType: 'betResponse', playerName: myName, bet: amount });
       setPhase('watching');
+      // still waitingForBets — cleared when cards appear or turnRequest arrives
     },
     [myName, sendRaw]
   );
@@ -109,6 +113,14 @@ export function useWebSocket(): UseWebSocketReturn {
     },
     [sendPlain]
   );
+
+  const disconnect = useCallback(() => {
+    wsRef.current?.close(1000, 'user left');
+    setMyName('');
+    setGameState({ players: {}, dealer: null, currentPlayer: '' });
+    setMessages([]);
+    setAvailableActions([]);
+  }, []);
 
   const connect = useCallback(
     (host: string, port: number, name: string) => {
@@ -168,11 +180,13 @@ export function useWebSocket(): UseWebSocketReturn {
           case 'betRequest':
             setBetMessage(msg.message);
             setPhase('betting');
+            setWaitingForBets(true);
             break;
 
           case 'turnRequest':
             setAvailableActions(msg.actions);
             setPhase('playing');
+            setWaitingForBets(false);
             break;
 
           case 'update': {
@@ -182,6 +196,10 @@ export function useWebSocket(): UseWebSocketReturn {
               dealer: u.dealer,
               currentPlayer: u.currentPlayer,
             });
+            // Betting is over once cards start appearing
+            const cardsDealt = u.dealer.hand.length > 0 ||
+              Object.values(u.players).some(p => p.hand.length > 0);
+            if (cardsDealt) setWaitingForBets(false);
             setPhase((prev) =>
               prev === 'playing' || prev === 'betting' ? prev : 'watching'
             );
@@ -228,5 +246,7 @@ export function useWebSocket(): UseWebSocketReturn {
     retryName,
     sendTurnResponse,
     sendBet,
+    disconnect,
+    waitingForBets,
   };
 }

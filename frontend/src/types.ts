@@ -39,6 +39,7 @@ export interface PlayerState {
   money: number;
   bet: number;
   splitHands: SplitHandState[];
+  sittingOut?: boolean;
 }
 
 export interface DealerState {

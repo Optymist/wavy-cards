@@ -64,6 +64,7 @@ export function GameBoard({ players, dealer, currentPlayer, myName }: Props) {
                 <div className="other-header">
                   <span className="player-name">{name}</span>
                   {isCurrent && <span className="turn-dot" />}
+                  {p.sittingOut && <span className="sitting-out-badge">Sitting Out</span>}
                   <div className="player-money-row">
                     <span className="money">${Math.floor(p.money)}</span>
                     {p.bet > 0 && <span className="bet-chip">BET ${Math.floor(p.bet)}</span>}
@@ -113,6 +114,7 @@ export function GameBoard({ players, dealer, currentPlayer, myName }: Props) {
           <div className="me-header">
             <span className="me-name">You</span>
             {isMeTurn && <span className="turn-dot" />}
+            {myEntry.sittingOut && <span className="sitting-out-badge">Sitting Out</span>}
             {myEntry.bet > 0 && (
               <div className="player-money-row">
                 <span className="bet-chip">BET ${Math.floor(myEntry.bet).toLocaleString()}</span>
@@ -120,7 +122,9 @@ export function GameBoard({ players, dealer, currentPlayer, myName }: Props) {
             )}
           </div>
 
-          {myEntry.splitHands && myEntry.splitHands.length > 0 ? (() => {
+          {myEntry.sittingOut && myEntry.hand.length === 0 ? (
+            <p className="me-waiting">Sitting out — place a bet next round to re-join.</p>
+          ) : myEntry.splitHands && myEntry.splitHands.length > 0 ? (() => {
             const activeSplitIdx = isMeTurn ? getActiveSplitIndex(myEntry.splitHands!) : -1;
             return myEntry.splitHands!.map((sh: SplitHandState, i: number) => {
               const isActive = i === activeSplitIdx;
